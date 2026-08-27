@@ -1,0 +1,19 @@
+Finite Region Gravity v4.99 — WALLABY Gate-A/B Stage-0 pretarget timestamp payload
+
+PRETARGET_MANIFEST_SHA256.txt file SHA-256:
+61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c
+
+Deterministic standalone pretarget ZIP SHA-256:
+3275cd272e02e8879b73045fb37db67b2cd3f8bd26088fe01f38daaaf04b3649
+
+TARGET_ADAPTER_LOCK.json SHA-256:
+de9de2a36ce0d6488f7b59faa0143538090a1c90462677044d4462bb22bd7223
+
+Deterministic full v4.99 archive SHA-256:
+fb449811c319a7bb0d550b8feded06f96ed19bd53723a153b2d3b8ef8ac355b6
+
+Scope statement:
+No WALLABY validation source rows, validation kinematics, residuals, Gate-A/B target statistics or validation outcomes were inspected in preparing this seal.
+
+Required next gate:
+Externally timestamp this payload or, at minimum, the PRETARGET_MANIFEST_SHA256.txt file hash above before any validation source row is loaded. The external proof must have an independently verifiable time/provenance reference.
