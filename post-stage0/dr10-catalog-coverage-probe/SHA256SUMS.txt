@@ -1,3 +1,3 @@
-bd72402c00a1af3215bae50f56cdbb615e3e681c57649c42e8f797bcf41894bb  post-stage0/dr10-catalog-coverage-probe/counts.csv
-0e8269abcf7e6d8220ae07bd1639b5c4949ee744d104fe54f899f9b7080d1ff4  post-stage0/dr10-catalog-coverage-probe/ngc4808_pilot.csv
-0e8269abcf7e6d8220ae07bd1639b5c4949ee744d104fe54f899f9b7080d1ff4  post-stage0/dr10-catalog-coverage-probe/vela_pilot.csv
+abeabd85e7283a4feb019531eb0f249f2bc36a20f6a609aad240cf87917e2d42  post-stage0/dr10-catalog-coverage-probe/counts.csv
+b2efe5c0f9077a98b46db54ad363f0584f00d9b92b445e556fd53705f87404e1  post-stage0/dr10-catalog-coverage-probe/ngc4808_pilot.csv
+4faf10a245e3e66fcd73082bd500d87983f8ee368448e7de0b5a82c7b423fa41  post-stage0/dr10-catalog-coverage-probe/vela_pilot.csv
