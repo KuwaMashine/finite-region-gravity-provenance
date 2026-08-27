@@ -1,0 +1,80 @@
+{
+  "common_aperture_fully_contained": true,
+  "comparison_512": {
+    "R50_r_arcsec": 16.29641001240356,
+    "Rd_star_kpc": 5.233288044001478,
+    "common_aperture_radius_arcsec": 96.5267693674208,
+    "contained": false,
+    "log10_Mstar_adopted_median": 10.874324103891878,
+    "orientation_independent_safe_radius_arcsec_from_aux": 63.09222
+  },
+  "cutout_side_arcsec": 268.288,
+  "cutout_size_pix": 1024,
+  "decision": "512-pixel mass receipt is invalid for production because its adopted common aperture was not guaranteed contained; 1024 result is usable only if common_aperture_fully_contained=true.",
+  "delta_1024_minus_512": {
+    "R50_r_arcsec": -0.11209333236674013,
+    "Rd_star_kpc": -0.03599668243746024,
+    "log10_Mstar_adopted_median": -0.00816434876005978
+  },
+  "details_1024": {
+    "A_mag": {
+      "g": 0.2333364,
+      "r": 0.15717899999999999,
+      "z": 0.0879186
+    },
+    "R50_r_arcsec": 16.18431668003682,
+    "R50_r_kpc": 8.722858312920561,
+    "Rd_star_arcsec": 9.643009923636924,
+    "Rd_star_kpc": 5.197291361564018,
+    "SFD_EBV": 0.0726,
+    "autoprof_checkfit": {
+      "g": {},
+      "r": {
+        "FFT coefficients": true,
+        "Light symmetry": true,
+        "initial fit compare": true,
+        "isophote variability": true
+      },
+      "z": {}
+    },
+    "colours_mag": {
+      "g-r": 0.7789888077697391,
+      "g-z": 1.4361060442713303,
+      "r-z": 0.6571172365015912
+    },
+    "common_aperture_radius_arcsec": 116.79739093457917,
+    "first_bad_SB_e": {
+      "g": 0.09436022800319345,
+      "r": 0.09040594311248239,
+      "z": 0.275892394617244
+    },
+    "first_bad_radius_arcsec": 128.4771300280371,
+    "foreground_corrected_common_aperture_mag": {
+      "g": 14.576578264696822,
+      "r": 13.797589456927083,
+      "z": 13.140472220425492
+    },
+    "log10_Mstar_adopted_median": 10.866159755131818,
+    "log10_Mstar_method_population_sd": 0.12430055209073919,
+    "max_log10_Mstar": 11.05974974056216,
+    "min_log10_Mstar": 10.475662945795952,
+    "n_common_profile_rows": 70,
+    "n_mlcr_estimates": 45,
+    "n_retained": 65,
+    "observed_common_aperture_mag": {
+      "g": 14.809914664696823,
+      "r": 13.954768456927082,
+      "z": 13.228390820425492
+    }
+  },
+  "fitted_center_pix": {
+    "x": 524.04,
+    "y": 496.81
+  },
+  "full_stellar_1024": true,
+  "orientation_independent_safe_radius_arcsec": 130.16422,
+  "pixscale_arcsec": 0.262,
+  "scope": "source-only 1024-pixel frame-containment correction probe; no validation kinematics queried",
+  "source_name": "WALLABY J133209-245132",
+  "team_release": "NGC 5044 TR3"
+}
