@@ -5,8 +5,8 @@
     "z": 0.0369355
   },
   "SFD_EBV_at_source": 0.0305,
-  "dr10_fits_sha256": "4b6cd99b637d8fea434b0e01c68a1a8fc84c55927a8f8f06631576b71fff7ad7",
-  "dust_xml_sha256": "c4bead62804c600f223e9f878b7d711dd7ae128d293e33efd47257c3153aa70e",
+  "dr10_fits_sha256": "fdc2d7ab89e47969e74d02da7bb1112ba543f81ed7a65db59c4203e76951bdf5",
+  "dust_xml_sha256": "4ca1444cb982438dbbb2f972a94680e3872f02e98bd04def85ac6d887f661fb5",
   "fits_hdus": [
     {
       "bands": "grz",
@@ -27,7 +27,8 @@
     "r": 2.165,
     "z": 1.211
   },
-  "legacy_layer": "ls-dr10-south",
+  "legacy_endpoint": "viewer/cutout.fits",
+  "legacy_layer": "ls-dr10",
   "mw_transmission": {
     "g": 0.9136696523360281,
     "r": 0.9409943157518792,
@@ -46,6 +47,13 @@
   "requested_bands": "grz",
   "requested_size_pix": 512,
   "scope": "post-Stage-0A source-only optical structural pilot; no validation kinematics queried",
+  "selected_header": {
+    "BANDS": "grz",
+    "CD1_1": -7.27777777777778e-05,
+    "CD2_2": 7.27777777777778e-05,
+    "CRVAL1": 191.945981018954,
+    "CRVAL2": 4.33817561380282
+  },
   "source": {
     "dec": "4.33817561380282",
     "dist_h": "14.096033774125186",
@@ -58,5 +66,6 @@
     "ra": "191.9459810189541",
     "rel": "1.0",
     "team_release": "NGC 4808 TR1"
-  }
+  },
+  "source_ell_maj_beams_30arcsec": 2994.187624050625
 }
