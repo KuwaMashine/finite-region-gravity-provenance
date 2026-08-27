@@ -5,6 +5,7 @@
     "z": 0.0369355
   },
   "SFD_EBV_at_source": 0.0305,
+  "correction_note": "Mechanical metadata correction only: WALLABY source-catalogue ell_maj is in 6-arcsec source-map pixels, so 30-arcsec beam count is ell_maj/5. Optical values and input file hashes are unchanged from the successful structural acquisition.",
   "dr10_fits_sha256": "fdc2d7ab89e47969e74d02da7bb1112ba543f81ed7a65db59c4203e76951bdf5",
   "dust_xml_sha256": "4ca1444cb982438dbbb2f972a94680e3872f02e98bd04def85ac6d887f661fb5",
   "fits_hdus": [
@@ -67,5 +68,6 @@
     "rel": "1.0",
     "team_release": "NGC 4808 TR1"
   },
-  "source_ell_maj_beams_30arcsec": 2994.187624050625
+  "source_ell_maj_beams_30arcsec": 4.990312706751042,
+  "source_ell_maj_unit": "6-arcsec source-map pixels"
 }
