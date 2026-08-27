@@ -1,0 +1,107 @@
+name: WALLABY source-only validation census
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_only_census.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build source-only census
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv, json, math, hashlib
+          from collections import Counter, defaultdict
+          from pathlib import Path
+
+          src = Path('post-stage0/source-only-probe/source_catalogue_safe.csv')
+          out = Path('post-stage0/source-only-census')
+          out.mkdir(parents=True, exist_ok=True)
+          forbidden = {'kflag','kin_pa','Vrot_model','QFlag_model','gobs','gbar','rar_residual','Vmax','Vflat'}
+
+          with src.open(newline='', encoding='utf-8') as f:
+              rows = list(csv.DictReader(f))
+          if not rows:
+              raise SystemExit('empty source catalogue')
+          overlap = forbidden.intersection(rows[0].keys())
+          if overlap:
+              raise SystemExit(f'forbidden response-derived columns present: {sorted(overlap)}')
+
+          def fval(r,k):
+              try: return float(r[k])
+              except: return math.nan
+          def stats(vals):
+              vals = sorted(x for x in vals if math.isfinite(x))
+              if not vals: return {'n':0}
+              def q(p):
+                  if len(vals)==1: return vals[0]
+                  x=(len(vals)-1)*p; i=int(math.floor(x)); j=min(i+1,len(vals)-1); t=x-i
+                  return vals[i]*(1-t)+vals[j]*t
+              return {'n':len(vals),'min':vals[0],'q25':q(.25),'median':q(.5),'q75':q(.75),'max':vals[-1]}
+
+          releases = Counter(r['team_release'] for r in rows)
+          qflags = Counter(r['qflag'] for r in rows)
+          by_release = {}
+          for rel in sorted(releases):
+              rr=[r for r in rows if r['team_release']==rel]
+              by_release[rel]={
+                  'n':len(rr),
+                  'qflag_counts':dict(sorted(Counter(r['qflag'] for r in rr).items())),
+                  'distance_mpc':stats([fval(r,'dist_h') for r in rr]),
+                  'logMHI':stats([fval(r,'log_m_hi_corr') for r in rr]),
+                  'ell_maj_beams_30arcsec':stats([fval(r,'ell_maj')/5.0 for r in rr]),
+                  'reliability':stats([fval(r,'rel') for r in rr]),
+              }
+          phase2_tokens=('Vela','NGC5044','NGC4808')
+          validation=[r for r in rows if any(tok.lower() in r['team_release'].lower() for tok in phase2_tokens)]
+          census={
+              'scope':'source-only; no kinematic columns read',
+              'input_sha256':hashlib.sha256(src.read_bytes()).hexdigest(),
+              'n_all_dr2_source_rows':len(rows),
+              'team_release_counts':dict(sorted(releases.items())),
+              'qflag_counts_all':dict(sorted(qflags.items())),
+              'by_team_release':by_release,
+              'phase2_validation_rule':'team_release contains Vela, NGC5044, or NGC4808',
+              'n_phase2_validation_rows':len(validation),
+              'phase2_validation':{
+                  'distance_mpc':stats([fval(r,'dist_h') for r in validation]),
+                  'logMHI':stats([fval(r,'log_m_hi_corr') for r in validation]),
+                  'ell_maj_beams_30arcsec':stats([fval(r,'ell_maj')/5.0 for r in validation]),
+                  'qflag_counts':dict(sorted(Counter(r['qflag'] for r in validation).items())),
+                  'team_release_counts':dict(sorted(Counter(r['team_release'] for r in validation).items())),
+              }
+          }
+          (out/'source_only_census.json').write_text(json.dumps(census,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          with (out/'phase2_source_ids.csv').open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=['name','team_release','ra','dec','dist_h','log_m_hi_corr','ell_maj_beams_30arcsec','rel','qflag'])
+              w.writeheader()
+              for r in sorted(validation,key=lambda z:(z['team_release'],z['name'])):
+                  w.writerow({
+                      'name':r['name'],'team_release':r['team_release'],'ra':r['ra'],'dec':r['dec'],'dist_h':r['dist_h'],
+                      'log_m_hi_corr':r['log_m_hi_corr'],'ell_maj_beams_30arcsec':f"{fval(r,'ell_maj')/5.0:.12g}",'rel':r['rel'],'qflag':r['qflag']})
+          for p in [out/'source_only_census.json',out/'phase2_source_ids.csv']:
+              print(hashlib.sha256(p.read_bytes()).hexdigest(),p)
+          PY
+          sha256sum post-stage0/source-only-census/source_only_census.json post-stage0/source-only-census/phase2_source_ids.csv > post-stage0/source-only-census/SHA256SUMS.txt
+      - name: Commit census
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-only-census
+          if git diff --cached --quiet; then
+            echo 'No census changes.'
+          else
+            git commit -m 'Record WALLABY source-only Phase-2 census'
+            git push
+          fi
