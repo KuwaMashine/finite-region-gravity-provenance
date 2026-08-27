@@ -1,0 +1,59 @@
+name: WALLABY source-only schema probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_only_probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe-source-catalogue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Query public CANFAR source catalogue only
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=post-stage0/source-only-probe
+          mkdir -p "$out"
+          tap='https://ws-uv.canfar.net/youcat/sync'
+          curl -fSsG "$tap" \
+            --data-urlencode 'REQUEST=doQuery' \
+            --data-urlencode 'LANG=ADQL' \
+            --data-urlencode 'FORMAT=csv' \
+            --data-urlencode "QUERY=SELECT column_name,datatype,description,unit FROM TAP_SCHEMA.columns WHERE table_name='cirada.Wallaby_dr2_source_catalogue'" \
+            -o "$out/source_catalogue_schema.csv"
+          curl -fSsG "$tap" \
+            --data-urlencode 'REQUEST=doQuery' \
+            --data-urlencode 'LANG=ADQL' \
+            --data-urlencode 'FORMAT=csv' \
+            --data-urlencode 'QUERY=SELECT TOP 5 * FROM cirada.Wallaby_dr2_source_catalogue' \
+            -o "$out/source_catalogue_sample.csv"
+          if head -n 1 "$out/source_catalogue_sample.csv" | grep -Eqi 'Vrot_model|QFlag_model|gobs|gbar|rar_residual'; then
+            echo 'Source-only firewall violation in returned table header' >&2
+            exit 1
+          fi
+          sha256sum "$out/source_catalogue_schema.csv" "$out/source_catalogue_sample.csv" > "$out/SHA256SUMS.txt"
+          cat > "$out/PROBE_SCOPE.txt" <<'EOF'
+          Post-Stage-0 acquisition probe.
+          Queried table: cirada.Wallaby_dr2_source_catalogue only.
+          No kinematic catalogue query is present in this workflow.
+          Purpose: freeze the public source-catalogue schema before constructing normalized validation exports.
+          EOF
+      - name: Commit source-only probe outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-only-probe
+          if git diff --cached --quiet; then
+            echo 'No probe changes to commit.'
+          else
+            git commit -m 'Record WALLABY source-only catalogue schema probe'
+            git push
+          fi
