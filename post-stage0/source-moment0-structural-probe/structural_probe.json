@@ -1,0 +1,60 @@
+{
+  "celestial_pixel_scale_arcsec": [
+    6.000000000012,
+    6.000000000012
+  ],
+  "finite_inside_projected_mask_pixels": 103,
+  "finite_moment0_pixels": 825,
+  "finite_outside_projected_mask_pixels": 722,
+  "mask_bunit": "",
+  "mask_cube_shape": [
+    83,
+    33,
+    25
+  ],
+  "mask_dtype": "uint8",
+  "mask_label_counts_3d": {
+    "0": 66128,
+    "1": 2347
+  },
+  "mask_md5": "d870b6a2045cac18b7b30561c2e8c9c6",
+  "mask_projection_rule": "2-D source footprint = any(mask_cube > 0, spectral axis)",
+  "mom0_bunit": "Jy/beam*Hz",
+  "mom0_md5": "8d788ec1ef7e347c441c58aaeff2ba53",
+  "moment0_all_finite_stats": {
+    "max": 1089.836181640625,
+    "min": -107.60783386230469,
+    "n": 825,
+    "negative_n": 8,
+    "positive_n": 95,
+    "sum": 41954.71520662308,
+    "zero_n": 722
+  },
+  "moment0_dtype": ">f4",
+  "moment0_inside_projected_mask_stats": {
+    "max": 1089.836181640625,
+    "min": -107.60783386230469,
+    "n": 103,
+    "negative_n": 8,
+    "positive_n": 95,
+    "sum": 41954.71520662308,
+    "zero_n": 0
+  },
+  "moment0_outside_projected_mask_stats": {
+    "max": 0.0,
+    "min": 0.0,
+    "n": 722,
+    "negative_n": 0,
+    "positive_n": 0,
+    "sum": 0.0,
+    "zero_n": 722
+  },
+  "moment0_shape": [
+    33,
+    25
+  ],
+  "object": "WALLABY_J094821-452603",
+  "projected_mask_pixels": 103,
+  "scope": "post-Stage-0 source-only structural probe; no kinematic product queried",
+  "source_release": "Vela TR1"
+}
