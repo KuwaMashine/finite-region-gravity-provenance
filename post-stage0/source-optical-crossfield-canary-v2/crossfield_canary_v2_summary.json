@@ -1,0 +1,86 @@
+{
+  "containment_margin_pix": 2.0,
+  "cutout_size_pix": 1024,
+  "n_canaries": 3,
+  "n_full_stellar_false": 1,
+  "n_full_stellar_true": 0,
+  "n_unresolved": 2,
+  "note": "AutoProf checkfit flags remain diagnostics only. Frame-limited and network-exhausted cases are unresolved, not astrophysical false classifications.",
+  "pixscale_arcsec": 0.262,
+  "results": [
+    {
+      "classification_status": "unresolved_network_after_retries",
+      "containment_rule": "common aperture semi-major radius must be <= orientation-independent inscribed radius from fitted r-band center minus 2 pixels",
+      "cutout_side_arcsec": 268.288,
+      "cutout_size_pix": 1024,
+      "dec": 4.331431974127958,
+      "distance_mpc": 160.6810652625029,
+      "dr10_tractor_count_r0p02deg": 166,
+      "ell_maj_beams_30arcsec": 2.47296981481,
+      "error": "curl failed rc=28: curl: (28) Connection timeout after 20000 ms\ncurl: (28) Connection timeout after 20000 ms\ncurl: (28) Connection timeout after 20001 ms\ncurl: (28) Connection timeout after 20000 ms\n",
+      "full_stellar": null,
+      "log_m_hi_corr": 10.120281733307257,
+      "qflag": 0.0,
+      "ra": 195.4601475254844,
+      "retry_policy": {
+        "attempts": 4,
+        "connect_timeout_seconds": 20,
+        "delay_seconds": 5,
+        "max_time_seconds": 180
+      },
+      "scope": "source-only cross-field optical canary v2; no validation kinematics queried",
+      "source_name": "WALLABY J130150+041953",
+      "team_release": "NGC 4808 TR1"
+    },
+    {
+      "classification_status": "unresolved_network_after_retries",
+      "containment_rule": "common aperture semi-major radius must be <= orientation-independent inscribed radius from fitted r-band center minus 2 pixels",
+      "cutout_side_arcsec": 268.288,
+      "cutout_size_pix": 1024,
+      "dec": -24.85919147539857,
+      "distance_mpc": 111.1705063244808,
+      "dr10_tractor_count_r0p02deg": 146,
+      "ell_maj_beams_30arcsec": 2.49099527163,
+      "error": "curl failed rc=28: curl: (28) Connection timeout after 20001 ms\ncurl: (28) Connection timeout after 20002 ms\ncurl: (28) Connection timeout after 20001 ms\ncurl: (28) Connection timeout after 20002 ms\n",
+      "full_stellar": null,
+      "log_m_hi_corr": 10.146316199737248,
+      "qflag": 0.0,
+      "ra": 203.0381327500109,
+      "retry_policy": {
+        "attempts": 4,
+        "connect_timeout_seconds": 20,
+        "delay_seconds": 5,
+        "max_time_seconds": 180
+      },
+      "scope": "source-only cross-field optical canary v2; no validation kinematics queried",
+      "source_name": "WALLABY J133209-245132",
+      "team_release": "NGC 5044 TR3"
+    },
+    {
+      "classification_status": "no_dr10_catalog_coverage",
+      "containment_rule": "common aperture semi-major radius must be <= orientation-independent inscribed radius from fitted r-band center minus 2 pixels",
+      "cutout_side_arcsec": 268.288,
+      "cutout_size_pix": 1024,
+      "dec": -47.69657413263839,
+      "distance_mpc": 57.75438664935244,
+      "dr10_tractor_count_r0p02deg": 0,
+      "ell_maj_beams_30arcsec": 2.49135126252,
+      "full_stellar": false,
+      "log_m_hi_corr": 9.431349418290937,
+      "qflag": 0.0,
+      "ra": 151.6909691134493,
+      "retry_policy": {
+        "attempts": 4,
+        "connect_timeout_seconds": 20,
+        "delay_seconds": 5,
+        "max_time_seconds": 180
+      },
+      "scope": "source-only cross-field optical canary v2; no validation kinematics queried",
+      "source_name": "WALLABY J100645-474147",
+      "team_release": "Vela TR1"
+    }
+  ],
+  "scope": "source-only deterministic three-field 1024-pixel canary v2; no validation kinematics queried",
+  "selection_rule": "within each frozen final release: qflag==0 and ell_maj_beams>=2; choose source closest to 2.5 beams, tie by source name",
+  "v1_to_v2_comparisons": {}
+}

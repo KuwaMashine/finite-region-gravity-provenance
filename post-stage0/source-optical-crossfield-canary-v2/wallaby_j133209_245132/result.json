@@ -1,0 +1,24 @@
+{
+  "classification_status": "unresolved_network_after_retries",
+  "containment_rule": "common aperture semi-major radius must be <= orientation-independent inscribed radius from fitted r-band center minus 2 pixels",
+  "cutout_side_arcsec": 268.288,
+  "cutout_size_pix": 1024,
+  "dec": -24.85919147539857,
+  "distance_mpc": 111.1705063244808,
+  "dr10_tractor_count_r0p02deg": 146,
+  "ell_maj_beams_30arcsec": 2.49099527163,
+  "error": "curl failed rc=28: curl: (28) Connection timeout after 20001 ms\ncurl: (28) Connection timeout after 20002 ms\ncurl: (28) Connection timeout after 20001 ms\ncurl: (28) Connection timeout after 20002 ms\n",
+  "full_stellar": null,
+  "log_m_hi_corr": 10.146316199737248,
+  "qflag": 0.0,
+  "ra": 203.0381327500109,
+  "retry_policy": {
+    "attempts": 4,
+    "connect_timeout_seconds": 20,
+    "delay_seconds": 5,
+    "max_time_seconds": 180
+  },
+  "scope": "source-only cross-field optical canary v2; no validation kinematics queried",
+  "source_name": "WALLABY J133209-245132",
+  "team_release": "NGC 5044 TR3"
+}
