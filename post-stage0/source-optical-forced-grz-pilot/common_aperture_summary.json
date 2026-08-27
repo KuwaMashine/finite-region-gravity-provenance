@@ -1,0 +1,26 @@
+{
+  "autoprof_version": "1.3.4",
+  "first_bad_SB_e": {
+    "g": 0.4348799698618697,
+    "r": 0.08974587261491875,
+    "z": 0.2633777931553119
+  },
+  "first_bad_radius_arcsec": 59.93552934624482,
+  "forcing_profile": "pilot_r.prof",
+  "last_retained_SB_e": {
+    "g": 0.19900082542342565,
+    "r": 0.0324136593215166,
+    "z": 0.12408632619385009
+  },
+  "last_retained_radius_arcsec": 54.48684486022256,
+  "n_common_profile_rows": 63,
+  "n_retained_strictly_before_first_crossing": 57,
+  "observed_totmag_at_last_retained_radius": {
+    "g": 15.976672016245335,
+    "r": 15.694211832655036,
+    "z": 15.41358597058101
+  },
+  "rule": "retain radii strictly interior to first radius where any g/r/z SB_e >= 0.22; non-finite counts as failure",
+  "scope": "source-only forced grz common-aperture pilot; no validation kinematics queried",
+  "threshold_mag_arcsec2": 0.22
+}
