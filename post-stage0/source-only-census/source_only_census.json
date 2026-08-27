@@ -354,45 +354,47 @@
   },
   "input_sha256": "82fc4c21999da1fbd7b9055c3569757054b843235eb0df59c385fc8754dd418e",
   "n_all_dr2_source_rows": 3454,
-  "n_phase2_validation_rows": 203,
+  "n_phase2_validation_rows": 1760,
+  "phase2_superseded_releases_excluded": [
+    "NGC 5044 TR1",
+    "NGC 5044 TR2"
+  ],
   "phase2_validation": {
     "distance_mpc": {
-      "max": 354.44785906005467,
-      "median": 173.1042936742638,
-      "min": 12.618986431650834,
-      "n": 203,
-      "q25": 58.16119958195613,
-      "q75": 249.4622763003087
+      "max": 376.38645736300066,
+      "median": 114.459455282731,
+      "min": 8.845517427747259,
+      "n": 1760,
+      "q25": 71.89279541190619,
+      "q75": 195.37475740903636
     },
     "ell_maj_beams_30arcsec": {
-      "max": 10.773679231702223,
-      "median": 1.4512872850128358,
-      "min": 0.7241031304777642,
-      "n": 203,
-      "q25": 1.180564737190541,
-      "q75": 1.913896038828071
+      "max": 17.341426631620642,
+      "median": 1.3398593118745539,
+      "min": 0.596983615682562,
+      "n": 1760,
+      "q25": 1.1388348160714736,
+      "q75": 1.682128426052202
     },
     "logMHI": {
-      "max": 10.513835520928183,
-      "median": 9.814794938114666,
-      "min": 8.521672836713119,
-      "n": 203,
-      "q25": 9.426306907201326,
-      "q75": 10.093808972803632
+      "max": 10.698838347893275,
+      "median": 9.59908100644489,
+      "min": 7.1300555345454795,
+      "n": 1760,
+      "q25": 9.185183522489165,
+      "q75": 9.91794552380124
     },
     "qflag_counts": {
-      "0.0": 190,
-      "4.0": 13
+      "0.0": 1525,
+      "4.0": 235
     },
     "team_release_counts": {
+      "NGC 4808 TR1": 231,
+      "NGC 5044 TR3": 1326,
       "Vela TR1": 203
     }
   },
-  "phase2_validation_rule": "team_release contains Vela, NGC5044, or NGC4808",
-  "qflag_counts_all": {
-    "0.0": 2977,
-    "4.0": 477
-  },
+  "phase2_validation_rule": "exact final source releases only: NGC 4808 TR1; NGC 5044 TR3; Vela TR1",
   "scope": "source-only; no kinematic columns read",
   "team_release_counts": {
     "Hydra TR1": 148,
