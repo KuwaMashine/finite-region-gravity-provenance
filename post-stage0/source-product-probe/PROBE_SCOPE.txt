@@ -1,5 +1,4 @@
-Post-Stage-0 metadata-only CADC CAOM2 probe.
-Queries are constrained to collection=WALLABY and the source_data_Vela_TR1 plane only.
-The known source observation is taken from CADC's public source-data CAOM2 example.
+Post-Stage-0 metadata-only CADC CAOM2 diagnostic.
+Queries are built incrementally: Observation only, then source-data Plane, then source-data Artifact.
 No kinematic plane or kinematic catalogue is queried.
-Purpose: recover source-product artifact URI/filename conventions for moment-map acquisition.
+Error bodies and HTTP status are retained so archive syntax failures cannot masquerade as empty data.
