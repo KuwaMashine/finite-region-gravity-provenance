@@ -1,0 +1,112 @@
+name: WALLABY source moment-0 structural probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_moment0_structural_probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download one source-only moment-0 and mask product
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/wallaby_source_probe post-stage0/source-moment0-structural-probe
+          base='https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/data/pub/WALLABY'
+          obj='WALLABY_J094821-452603_Vela_TR1'
+          curl -fSsL "$base/${obj}_mom0.fits" -o /tmp/wallaby_source_probe/mom0.fits
+          curl -fSsL "$base/${obj}_mask.fits" -o /tmp/wallaby_source_probe/mask.fits
+          printf '%s  %s\n' '8d788ec1ef7e347c441c58aaeff2ba53' '/tmp/wallaby_source_probe/mom0.fits' | md5sum -c -
+          printf '%s  %s\n' 'd870b6a2045cac18b7b30561c2e8c9c6' '/tmp/wallaby_source_probe/mask.fits' | md5sum -c -
+      - name: Inspect source-only FITS structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip -q install astropy
+          python - <<'PY'
+          import json, math, hashlib
+          from pathlib import Path
+          import numpy as np
+          from astropy.io import fits
+          from astropy.wcs import WCS
+
+          mp=Path('/tmp/wallaby_source_probe/mom0.fits')
+          kp=Path('/tmp/wallaby_source_probe/mask.fits')
+          out=Path('post-stage0/source-moment0-structural-probe')
+          out.mkdir(parents=True,exist_ok=True)
+
+          with fits.open(mp,memmap=False) as h:
+              m=np.asarray(h[0].data).squeeze()
+              mh=h[0].header.copy()
+          with fits.open(kp,memmap=False) as h:
+              k=np.asarray(h[0].data).squeeze()
+              kh=h[0].header.copy()
+
+          if m.shape != k.shape:
+              raise SystemExit(f'moment0/mask shape mismatch {m.shape} != {k.shape}')
+          finite=np.isfinite(m)
+          maskpos=k>0
+          labels,counts=np.unique(k[np.isfinite(k)],return_counts=True)
+          label_counts={str(float(a) if np.issubdtype(labels.dtype,np.floating) else int(a)):int(b) for a,b in zip(labels,counts)}
+          inside=finite & maskpos
+          outside=finite & ~maskpos
+
+          # Pixel scales from WCS/header, source-only geometry metadata.
+          try:
+              wc=WCS(mh).celestial
+              scales=np.abs(np.asarray(__import__('astropy.wcs.utils',fromlist=['proj_plane_pixel_scales']).proj_plane_pixel_scales(wc))) * 3600.0
+              pixscale=[float(x) for x in scales]
+          except Exception:
+              pixscale=[]
+
+          def finite_stats(a):
+              a=np.asarray(a,dtype=float); a=a[np.isfinite(a)]
+              if not a.size: return {'n':0}
+              return {'n':int(a.size),'min':float(a.min()),'max':float(a.max()),'sum':float(a.sum()),'negative_n':int((a<0).sum()),'zero_n':int((a==0).sum()),'positive_n':int((a>0).sum())}
+
+          report={
+              'scope':'post-Stage-0 source-only structural probe; no kinematic product queried',
+              'object':'WALLABY_J094821-452603',
+              'source_release':'Vela TR1',
+              'shape':list(m.shape),
+              'moment0_dtype':str(m.dtype),
+              'mask_dtype':str(k.dtype),
+              'moment0_all_finite_stats':finite_stats(m[finite]),
+              'moment0_inside_positive_mask_stats':finite_stats(m[inside]),
+              'moment0_outside_positive_mask_stats':finite_stats(m[outside]),
+              'finite_moment0_pixels':int(finite.sum()),
+              'positive_mask_pixels':int(maskpos.sum()),
+              'finite_inside_positive_mask_pixels':int(inside.sum()),
+              'finite_outside_positive_mask_pixels':int(outside.sum()),
+              'mask_label_counts':label_counts,
+              'celestial_pixel_scale_arcsec':pixscale,
+              'mom0_bunit':mh.get('BUNIT'),
+              'mask_bunit':kh.get('BUNIT'),
+              'mom0_md5':hashlib.md5(mp.read_bytes()).hexdigest(),
+              'mask_md5':hashlib.md5(kp.read_bytes()).hexdigest(),
+          }
+          (out/'structural_probe.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          print(json.dumps(report,indent=2,sort_keys=True))
+          PY
+          sha256sum post-stage0/source-moment0-structural-probe/structural_probe.json > post-stage0/source-moment0-structural-probe/SHA256SUMS.txt
+          rm -rf /tmp/wallaby_source_probe
+      - name: Commit source-only structural report
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-moment0-structural-probe
+          if git diff --cached --quiet; then
+            echo 'No structural report changes.'
+          else
+            git commit -m 'Record WALLABY source-only moment-0 mask structure'
+            git push
+          fi
