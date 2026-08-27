@@ -36,6 +36,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          out=post-stage0/source-geometry-convention-probe
+          tmp=/tmp/wallaby_geometry_probe
           python -m pip -q install astropy
           python - <<'PY'
           import csv,json,math
@@ -43,27 +45,22 @@ jobs:
           import numpy as np
           from astropy.io import fits
           from astropy.wcs import WCS
-
           tmp=Path('/tmp/wallaby_geometry_probe'); out=Path('post-stage0/source-geometry-convention-probe')
           rows=list(csv.DictReader((tmp/'catalogue_row.csv').open()))
           if len(rows)!=1: raise SystemExit(f'expected one source row, got {len(rows)}')
           r=rows[0]
           with fits.open(tmp/'mom0.fits',memmap=False) as h: m=np.asarray(h[0].data).squeeze(); hdr=h[0].header.copy()
           with fits.open(tmp/'mask.fits',memmap=False) as h: k=np.asarray(h[0].data).squeeze()
-          mask2=np.any(k>0,axis=0)
-          yy,xx=np.indices(m.shape,dtype=float)
-          # SoFiA ellipse is explicitly described as flux-weighted positive moment-0 pixels.
+          mask2=np.any(k>0,axis=0); yy,xx=np.indices(m.shape,dtype=float)
           use=mask2 & np.isfinite(m) & (m>0)
           w=m[use].astype(float); x=xx[use]; y=yy[use]
           sw=w.sum(); cx=(w*x).sum()/sw; cy=(w*y).sum()/sw
           dx=x-cx; dy=y-cy
           cov=np.array([[(w*dx*dx).sum()/sw,(w*dx*dy).sum()/sw],[(w*dx*dy).sum()/sw,(w*dy*dy).sum()/sw]])
-          eigval,eigvec=np.linalg.eigh(cov); v=eigvec[:,np.argmax(eigval)] # [x,y]
+          eigval,eigvec=np.linalg.eigh(cov); v=eigvec[:,np.argmax(eigval)]
           if v[0]<0: v=-v
           pixel_pa_ccw_from_x=(math.degrees(math.atan2(v[1],v[0]))%180.0)
           pixel_pa_ccw_from_y=(90.0-pixel_pa_ccw_from_x)%180.0
-
-          # WCS transform principal-axis direction to local east-of-north sky PA.
           wc=WCS(hdr).celestial
           p0=np.array([[cx,cy],[cx+v[0],cy+v[1]]],float)
           sky=wc.pixel_to_world_values(p0[:,0],p0[:,1])
@@ -72,19 +69,17 @@ jobs:
           sky_pa_east_of_north=(math.degrees(math.atan2(dra,ddec))%180.0)
           cat_pa=float(r['ell_pa'])%180.0
           def axial_diff(a,b): return abs(((a-b+90.0)%180.0)-90.0)
+          dsky=axial_diff(cat_pa,sky_pa_east_of_north)
+          if dsky > 5.0: raise SystemExit(f'catalogue ell_pa does not match source-map sky PA: {dsky:.3f} deg')
           report={
             'scope':'source-only moment-map geometry convention probe; no kinematic values/products',
             'object':r['name'],'catalogue_ell_maj_pix':float(r['ell_maj']),'catalogue_ell_min_pix':float(r['ell_min']),
-            'catalogue_ell_pa_deg':cat_pa,'catalogue_centroid_x_pix':float(r['x']),'catalogue_centroid_y_pix':float(r['y']),
-            'positive_masked_moment0_centroid_local_x_pix':float(cx),'positive_masked_moment0_centroid_local_y_pix':float(cy),
-            'principal_axis_pixel_ccw_from_x_deg':pixel_pa_ccw_from_x,
-            'principal_axis_pixel_ccw_from_y_deg':pixel_pa_ccw_from_y,
-            'principal_axis_sky_east_of_north_deg':sky_pa_east_of_north,
+            'catalogue_ell_pa_deg':cat_pa,'principal_axis_pixel_ccw_from_x_deg':pixel_pa_ccw_from_x,
+            'principal_axis_pixel_ccw_from_y_deg':pixel_pa_ccw_from_y,'principal_axis_sky_east_of_north_deg':sky_pa_east_of_north,
             'axial_difference_cat_vs_pixel_x_deg':axial_diff(cat_pa,pixel_pa_ccw_from_x),
             'axial_difference_cat_vs_pixel_y_deg':axial_diff(cat_pa,pixel_pa_ccw_from_y),
-            'axial_difference_cat_vs_sky_deg':axial_diff(cat_pa,sky_pa_east_of_north),
-            'wcs_cdelt_deg':[hdr.get('CDELT1'),hdr.get('CDELT2')],
-            'note':'Use the convention giving the direct moment-map second-moment match; sky PA is then obtained by WCS transformation rather than assuming catalogue ell_pa is already east-of-north.'
+            'axial_difference_cat_vs_sky_deg':dsky,'wcs_cdelt_deg':[hdr.get('CDELT1'),hdr.get('CDELT2')],
+            'adapter_lock':'Treat source-catalogue ell_pa as sky-plane major-axis PA, north through east, modulo 180 deg. No kinematic PA is used.',
           }
           (out/'geometry_convention_probe.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
           print(json.dumps(report,indent=2,sort_keys=True))
@@ -98,4 +93,4 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add post-stage0/source-geometry-convention-probe
-          if git diff --cached --quiet; then echo 'No convention changes.'; else git commit -m 'Resolve WALLABY source ellipse orientation convention'; git push; fi
+          if git diff --cached --quiet; then echo 'No convention changes.'; else git commit -m 'Freeze WALLABY source ellipse sky-PA convention'; git push; fi
