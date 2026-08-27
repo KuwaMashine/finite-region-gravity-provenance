@@ -20,8 +20,7 @@ jobs:
           set -euo pipefail
           out=post-stage0/dr10-catalog-coverage-probe
           mkdir -p "$out"
-          svc='https://datalab.noirlab.edu/query'
-          : > "$out/counts.csv"
+          svc='https://datalab.noirlab.edu/query/query'
           echo 'label,ra,dec,count' > "$out/counts.csv"
           probe () {
             label="$1"; ra="$2"; dec="$3"
@@ -29,6 +28,7 @@ jobs:
             body=$(curl -fSsG "$svc" --data-urlencode "sql=$sql" --data-urlencode 'ofmt=csv' --data-urlencode 'async=false')
             printf '%s\n' "$body" > "$out/${label}.csv"
             n=$(printf '%s\n' "$body" | tail -n 1 | tr -d '[:space:]')
+            [[ "$n" =~ ^[0-9]+$ ]] || { echo "nonnumeric Query Manager result for $label: $body" >&2; exit 1; }
             printf '%s,%s,%s,%s\n' "$label" "$ra" "$dec" "$n" >> "$out/counts.csv"
           }
           probe ngc4808_pilot 191.9459810189541 4.33817561380282
