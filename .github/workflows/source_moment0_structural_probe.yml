@@ -31,66 +31,57 @@ jobs:
           set -euo pipefail
           python -m pip -q install astropy
           python - <<'PY'
-          import json, math, hashlib
+          import json, hashlib
           from pathlib import Path
           import numpy as np
           from astropy.io import fits
           from astropy.wcs import WCS
+          from astropy.wcs.utils import proj_plane_pixel_scales
 
           mp=Path('/tmp/wallaby_source_probe/mom0.fits')
           kp=Path('/tmp/wallaby_source_probe/mask.fits')
           out=Path('post-stage0/source-moment0-structural-probe')
           out.mkdir(parents=True,exist_ok=True)
-
           with fits.open(mp,memmap=False) as h:
-              m=np.asarray(h[0].data).squeeze()
-              mh=h[0].header.copy()
+              m=np.asarray(h[0].data).squeeze(); mh=h[0].header.copy()
           with fits.open(kp,memmap=False) as h:
-              k=np.asarray(h[0].data).squeeze()
-              kh=h[0].header.copy()
+              k=np.asarray(h[0].data).squeeze(); kh=h[0].header.copy()
+          if m.ndim != 2 or k.ndim != 3 or tuple(k.shape[-2:]) != tuple(m.shape):
+              raise SystemExit(f'unexpected moment0/mask geometry {m.shape} vs {k.shape}')
 
-          if m.shape != k.shape:
-              raise SystemExit(f'moment0/mask shape mismatch {m.shape} != {k.shape}')
-          finite=np.isfinite(m)
-          maskpos=k>0
           labels,counts=np.unique(k[np.isfinite(k)],return_counts=True)
-          label_counts={str(float(a) if np.issubdtype(labels.dtype,np.floating) else int(a)):int(b) for a,b in zip(labels,counts)}
-          inside=finite & maskpos
-          outside=finite & ~maskpos
-
-          # Pixel scales from WCS/header, source-only geometry metadata.
-          try:
-              wc=WCS(mh).celestial
-              scales=np.abs(np.asarray(__import__('astropy.wcs.utils',fromlist=['proj_plane_pixel_scales']).proj_plane_pixel_scales(wc))) * 3600.0
-              pixscale=[float(x) for x in scales]
-          except Exception:
-              pixscale=[]
+          label_counts={str(int(a) if float(a).is_integer() else float(a)):int(b) for a,b in zip(labels,counts)}
+          # The 3-D source mask is projected spectrally onto the 2-D moment-0 footprint.
+          mask2=np.any(k>0,axis=0)
+          finite=np.isfinite(m); inside=finite&mask2; outside=finite&~mask2
 
           def finite_stats(a):
               a=np.asarray(a,dtype=float); a=a[np.isfinite(a)]
               if not a.size: return {'n':0}
               return {'n':int(a.size),'min':float(a.min()),'max':float(a.max()),'sum':float(a.sum()),'negative_n':int((a<0).sum()),'zero_n':int((a==0).sum()),'positive_n':int((a>0).sum())}
+          try:
+              scales=np.abs(np.asarray(proj_plane_pixel_scales(WCS(mh).celestial),float))*3600.0
+              pixscale=[float(x) for x in scales]
+          except Exception:
+              pixscale=[]
 
           report={
               'scope':'post-Stage-0 source-only structural probe; no kinematic product queried',
-              'object':'WALLABY_J094821-452603',
-              'source_release':'Vela TR1',
-              'shape':list(m.shape),
-              'moment0_dtype':str(m.dtype),
-              'mask_dtype':str(k.dtype),
-              'moment0_all_finite_stats':finite_stats(m[finite]),
-              'moment0_inside_positive_mask_stats':finite_stats(m[inside]),
-              'moment0_outside_positive_mask_stats':finite_stats(m[outside]),
+              'object':'WALLABY_J094821-452603','source_release':'Vela TR1',
+              'moment0_shape':list(m.shape),'mask_cube_shape':list(k.shape),
+              'mask_projection_rule':'2-D source footprint = any(mask_cube > 0, spectral axis)',
+              'moment0_dtype':str(m.dtype),'mask_dtype':str(k.dtype),
+              'mask_label_counts_3d':label_counts,
+              'projected_mask_pixels':int(mask2.sum()),
               'finite_moment0_pixels':int(finite.sum()),
-              'positive_mask_pixels':int(maskpos.sum()),
-              'finite_inside_positive_mask_pixels':int(inside.sum()),
-              'finite_outside_positive_mask_pixels':int(outside.sum()),
-              'mask_label_counts':label_counts,
+              'finite_inside_projected_mask_pixels':int(inside.sum()),
+              'finite_outside_projected_mask_pixels':int(outside.sum()),
+              'moment0_all_finite_stats':finite_stats(m[finite]),
+              'moment0_inside_projected_mask_stats':finite_stats(m[inside]),
+              'moment0_outside_projected_mask_stats':finite_stats(m[outside]),
               'celestial_pixel_scale_arcsec':pixscale,
-              'mom0_bunit':mh.get('BUNIT'),
-              'mask_bunit':kh.get('BUNIT'),
-              'mom0_md5':hashlib.md5(mp.read_bytes()).hexdigest(),
-              'mask_md5':hashlib.md5(kp.read_bytes()).hexdigest(),
+              'mom0_bunit':mh.get('BUNIT'),'mask_bunit':kh.get('BUNIT'),
+              'mom0_md5':hashlib.md5(mp.read_bytes()).hexdigest(),'mask_md5':hashlib.md5(kp.read_bytes()).hexdigest(),
           }
           (out/'structural_probe.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n',encoding='utf-8')
           print(json.dumps(report,indent=2,sort_keys=True))
@@ -107,6 +98,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No structural report changes.'
           else
-            git commit -m 'Record WALLABY source-only moment-0 mask structure'
+            git commit -m 'Record WALLABY source-only moment-0 mask projection'
             git push
           fi
