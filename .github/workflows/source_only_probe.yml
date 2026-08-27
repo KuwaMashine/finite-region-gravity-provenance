@@ -1,4 +1,4 @@
-name: WALLABY source-only schema probe
+name: WALLABY source-only catalogue export
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  probe-source-catalogue:
+  export-source-catalogue:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,6 +20,7 @@ jobs:
           set -euo pipefail
           out=post-stage0/source-only-probe
           mkdir -p "$out"
+          rm -f "$out/source_catalogue_sample.csv"
           tap='https://ws-uv.canfar.net/youcat/sync'
           curl -fSsG "$tap" \
             --data-urlencode 'REQUEST=doQuery' \
@@ -31,29 +32,31 @@ jobs:
             --data-urlencode 'REQUEST=doQuery' \
             --data-urlencode 'LANG=ADQL' \
             --data-urlencode 'FORMAT=csv' \
-            --data-urlencode 'QUERY=SELECT TOP 5 * FROM cirada.Wallaby_dr2_source_catalogue' \
-            -o "$out/source_catalogue_sample.csv"
-          if head -n 1 "$out/source_catalogue_sample.csv" | grep -Eqi 'Vrot_model|QFlag_model|gobs|gbar|rar_residual'; then
+            --data-urlencode 'QUERY=SELECT name,ra,dec,dist_h,ell_maj,ell_min,ell_pa,log_m_hi,log_m_hi_corr,rel,rms,team_release,qflag FROM cirada.Wallaby_dr2_source_catalogue' \
+            -o "$out/source_catalogue_safe.csv"
+          header=$(head -n 1 "$out/source_catalogue_safe.csv")
+          if printf '%s\n' "$header" | grep -Eqi 'Vrot_model|QFlag_model|kin_pa|kflag|gobs|gbar|rar_residual|Vmax|Vflat'; then
             echo 'Source-only firewall violation in returned table header' >&2
             exit 1
           fi
-          sha256sum "$out/source_catalogue_schema.csv" "$out/source_catalogue_sample.csv" > "$out/SHA256SUMS.txt"
+          sha256sum "$out/source_catalogue_schema.csv" "$out/source_catalogue_safe.csv" > "$out/SHA256SUMS.txt"
           cat > "$out/PROBE_SCOPE.txt" <<'EOF'
-          Post-Stage-0 acquisition probe.
+          Post-Stage-0 source-only export.
           Queried table: cirada.Wallaby_dr2_source_catalogue only.
+          The value export uses an explicit source-safe allow-list and excludes kflag and kin_pa even though those response-derived fields are embedded in the nominal source catalogue.
           No kinematic catalogue query is present in this workflow.
-          Purpose: freeze the public source-catalogue schema before constructing normalized validation exports.
+          The earlier TOP-5 '*' probe was quarantined without inspecting its row values after the schema revealed kflag/kin_pa.
           EOF
-      - name: Commit source-only probe outputs
+      - name: Commit source-only outputs
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add post-stage0/source-only-probe
+          git add -A post-stage0/source-only-probe
           if git diff --cached --quiet; then
-            echo 'No probe changes to commit.'
+            echo 'No source-only changes to commit.'
           else
-            git commit -m 'Record WALLABY source-only catalogue schema probe'
+            git commit -m 'Record WALLABY source-safe catalogue export'
             git push
           fi
