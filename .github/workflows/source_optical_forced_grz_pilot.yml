@@ -1,0 +1,137 @@
+name: WALLABY source-only forced grz optical pilot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_forced_grz_pilot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  forced-grz-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Acquire same source-only DR10 grz pilot cube
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp=/tmp/wallaby_forced_grz_pilot
+          out=post-stage0/source-optical-forced-grz-pilot
+          rm -rf "$tmp"; mkdir -p "$tmp/run" "$out"
+          ra=192.4493316830977
+          dec=3.84520595750993
+          cut="https://www.legacysurvey.org/viewer/cutout.fits?ra=${ra}&dec=${dec}&layer=ls-dr10&pixscale=0.262&bands=grz&size=512"
+          code=$(curl -SsL "$cut" -o "$tmp/dr10_grz.fits" -w '%{http_code}')
+          test "$code" = 200 || { echo "DR10 cutout HTTP $code"; head -c 1000 "$tmp/dr10_grz.fits" || true; exit 1; }
+      - name: Extract bands and run pinned forced photometry
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp=/tmp/wallaby_forced_grz_pilot
+          out="$GITHUB_WORKSPACE/post-stage0/source-optical-forced-grz-pilot"
+          python -m pip -q install 'autoprof==1.3.4' astropy
+          cp post-stage0/source-optical-autoprof-pilot/pilot_r.prof "$tmp/run/pilot_r.prof"
+          cp post-stage0/source-optical-autoprof-pilot/pilot_r.aux "$tmp/run/pilot_r.aux"
+          python - <<'PY'
+          from pathlib import Path
+          from astropy.io import fits
+          import numpy as np
+          tmp=Path('/tmp/wallaby_forced_grz_pilot')
+          with fits.open(tmp/'dr10_grz.fits',memmap=False) as h:
+              d=np.asarray(h[0].data)
+              bands=str(h[0].header.get('BANDS',''))
+          if d.shape[0] != 3 or bands != 'grz': raise SystemExit(f'unexpected cube {d.shape} bands={bands!r}')
+          for i,b in enumerate('grz'):
+              a=d[i].astype('float32')
+              if not np.isfinite(a).all(): raise SystemExit(f'nonfinite {b} pixels')
+              fits.PrimaryHDU(a).writeto(tmp/'run'/f'pilot_{b}.fits',overwrite=True)
+          PY
+          cd "$tmp/run"
+          for b in g z; do
+            cat > "forced_${b}.py" <<PY
+          ap_process_mode = 'forced image'
+          ap_image_file = 'pilot_${b}.fits'
+          ap_name = 'pilot_${b}'
+          ap_pixscale = 0.262
+          ap_zeropoint = 22.5
+          ap_doplot = False
+          ap_isoclip = True
+          ap_forcing_profile = 'pilot_r.prof'
+          PY
+            autoprof "forced_${b}.py"
+          done
+          test -s pilot_g.prof
+          test -s pilot_z.prof
+          cp pilot_g.prof pilot_g.aux pilot_z.prof pilot_z.aux "$out/"
+          if test -s pilot_g.log; then cp pilot_g.log "$out/"; fi
+          if test -s pilot_z.log; then cp pilot_z.log "$out/"; fi
+      - name: Construct frozen common uncertainty aperture
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv,json,math
+          from pathlib import Path
+          root=Path('post-stage0')
+          paths={
+            'r':root/'source-optical-autoprof-pilot/pilot_r.prof',
+            'g':root/'source-optical-forced-grz-pilot/pilot_g.prof',
+            'z':root/'source-optical-forced-grz-pilot/pilot_z.prof',
+          }
+          def readprof(p):
+              with p.open() as f:
+                  f.readline() # units
+                  rr=list(csv.DictReader(f))
+              return rr
+          P={b:readprof(p) for b,p in paths.items()}
+          n=min(map(len,P.values()))
+          if n < 5: raise SystemExit(f'fewer than five common profile rows: {n}')
+          # Forced photometry should reproduce the r forcing radii exactly.
+          for i in range(n):
+              rs=[float(P[b][i]['R']) for b in 'grz']
+              if max(rs)-min(rs) > 1e-8:
+                  raise SystemExit(f'forced-radius mismatch at row {i}: {rs}')
+          first_bad=None
+          bad_detail=None
+          for i in range(n):
+              errs={b:float(P[b][i]['SB_e']) for b in 'grz'}
+              if any((not math.isfinite(v)) or v >= 0.22 for v in errs.values()):
+                  first_bad=i; bad_detail=errs; break
+          if first_bad is None:
+              retained=n
+              first_bad_radius=None
+          else:
+              retained=first_bad
+              first_bad_radius=float(P['r'][first_bad]['R'])
+          if retained < 5:
+              raise SystemExit(f'common aperture retains only {retained} rows')
+          last=retained-1
+          last_radius=float(P['r'][last]['R'])
+          last_err={b:float(P[b][last]['SB_e']) for b in 'grz'}
+          observed_totmag={b:float(P[b][last]['totmag']) for b in 'grz'}
+          report={
+            'scope':'source-only forced grz common-aperture pilot; no validation kinematics queried',
+            'autoprof_version':'1.3.4','threshold_mag_arcsec2':0.22,
+            'n_common_profile_rows':n,'n_retained_strictly_before_first_crossing':retained,
+            'last_retained_radius_arcsec':last_radius,'last_retained_SB_e':last_err,
+            'first_bad_radius_arcsec':first_bad_radius,'first_bad_SB_e':bad_detail,
+            'observed_totmag_at_last_retained_radius':observed_totmag,
+            'forcing_profile':'pilot_r.prof',
+            'rule':'retain radii strictly interior to first radius where any g/r/z SB_e >= 0.22; non-finite counts as failure'
+          }
+          out=root/'source-optical-forced-grz-pilot/common_aperture_summary.json'
+          out.write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(report,indent=2,sort_keys=True))
+          PY
+          sha256sum post-stage0/source-optical-forced-grz-pilot/pilot_g.prof post-stage0/source-optical-forced-grz-pilot/pilot_g.aux post-stage0/source-optical-forced-grz-pilot/pilot_z.prof post-stage0/source-optical-forced-grz-pilot/pilot_z.aux post-stage0/source-optical-forced-grz-pilot/common_aperture_summary.json > post-stage0/source-optical-forced-grz-pilot/SHA256SUMS.txt
+      - name: Commit forced-photometry pilot outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-forced-grz-pilot
+          if git diff --cached --quiet; then echo 'No forced grz pilot changes.'; else git commit -m 'Record source-only forced grz common-aperture pilot'; git pull --rebase origin main; git push; fi
