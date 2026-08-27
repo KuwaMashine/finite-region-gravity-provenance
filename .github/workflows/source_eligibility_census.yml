@@ -1,0 +1,51 @@
+name: WALLABY source-only eligibility census
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_eligibility_census.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Count frozen source-quality and beam lanes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv,json
+          from collections import defaultdict
+          from pathlib import Path
+          src=Path('post-stage0/source-only-census/phase2_source_ids.csv')
+          out=Path('post-stage0/source-eligibility-census'); out.mkdir(parents=True,exist_ok=True)
+          rows=list(csv.DictReader(src.open()))
+          groups=defaultdict(lambda:{'all':0,'q0':0,'q0_diag_or_primary_ge1p3':0,'q0_primary_ge2':0})
+          for r in rows:
+              rel=r['team_release']; g=groups[rel]; g['all']+=1
+              q0=float(r['qflag'])==0.0
+              b=float(r['ell_maj_beams_30arcsec'])
+              if q0:
+                  g['q0']+=1
+                  if b>=1.3: g['q0_diag_or_primary_ge1p3']+=1
+                  if b>=2.0: g['q0_primary_ge2']+=1
+          total={k:sum(g[k] for g in groups.values()) for k in next(iter(groups.values()))}
+          report={'scope':'source-only frozen Phase-2 final releases; no kinematics','by_release':dict(groups),'total':total,
+                  'note':'These are pre-optical counts. full_stellar is applied later and can only reduce them.'}
+          (out/'eligibility_counts.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(report,indent=2,sort_keys=True))
+          PY
+          sha256sum post-stage0/source-eligibility-census/eligibility_counts.json > post-stage0/source-eligibility-census/SHA256SUMS.txt
+      - name: Commit eligibility census
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-eligibility-census
+          if git diff --cached --quiet; then echo 'No eligibility changes.'; else git commit -m 'Record WALLABY source-only Phase-2 eligibility census'; git push; fi
