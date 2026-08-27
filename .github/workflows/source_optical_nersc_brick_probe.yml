@@ -1,0 +1,89 @@
+name: WALLABY source-only NERSC DR10 brick probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_nersc_brick_probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  nersc-brick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve DR10 bricks and fetch direct coadds
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=post-stage0/source-optical-nersc-brick-probe
+          tmp=/tmp/wallaby_nersc_brick_probe
+          rm -rf "$tmp"; mkdir -p "$tmp" "$out"
+          python -m pip -q install astropy --upgrade astro-datalab
+          python - <<'PY'
+          import csv,json,math,subprocess,hashlib
+          from pathlib import Path
+          import numpy as np
+          from astropy.io import fits
+          from astropy.wcs import WCS
+          from astropy.nddata import Cutout2D
+          from astropy.coordinates import SkyCoord
+          import astropy.units as u
+          from dl import authClient as ac
+          from dl import queryClient as qc
+
+          out=Path('post-stage0/source-optical-nersc-brick-probe'); tmp=Path('/tmp/wallaby_nersc_brick_probe')
+          probes=[
+            ('WALLABY J130150+041953','NGC 4808 TR1',195.4601475254844,4.331431974127958),
+            ('WALLABY J133209-245132','NGC 5044 TR3',203.0381327500109,-24.85919147539857),
+          ]
+          token=ac.login('anonymous')
+          report={'scope':'source-only direct NERSC DR10 coadd brick probe; no validation kinematics queried','crop_size_pix':1024,'pixscale_arcsec':0.262,'probes':[]}
+          def shasum(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          for name,release,ra,dec in probes:
+              sql=f"SELECT brickname,ra,dec,ra1,ra2,dec1,dec2 FROM ls_dr10.bricks WHERE {ra}>=ra1 AND {ra}<ra2 AND {dec}>=dec1 AND {dec}<dec2"
+              body=qc.query(token=token,sql=sql,fmt='csv')
+              rr=list(csv.DictReader(body.splitlines()))
+              if len(rr)!=1: raise SystemExit(f'{name}: expected one containing brick, got {len(rr)} :: {body[:500]!r}')
+              brick=rr[0]['brickname'].strip(); sub=brick[:3]
+              rec={'source_name':name,'team_release':release,'ra':ra,'dec':dec,'brick':rr[0],'bands':{}}
+              source_dir=tmp/name.replace(' ','_').replace('+','p').replace('-','m'); source_dir.mkdir(parents=True,exist_ok=True)
+              coord=SkyCoord(ra*u.deg,dec*u.deg)
+              for b in 'grz':
+                  url=f'https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/{sub}/{brick}/legacysurvey-{brick}-image-{b}.fits.fz'
+                  p=source_dir/f'{b}.fits.fz'
+                  cp=subprocess.run(['curl','-fSsL','--retry','3','--retry-all-errors','--connect-timeout','20','--max-time','180','-o',str(p),url],text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                  if cp.returncode!=0: raise SystemExit(f'{name} {b}: NERSC curl failed rc={cp.returncode}: {cp.stderr[-1000:]}')
+                  with fits.open(p,memmap=False) as h:
+                      data=np.asarray(h[1].data if len(h)>1 and h[1].data is not None else h[0].data)
+                      hdr=(h[1].header if len(h)>1 and h[1].data is not None else h[0].header).copy()
+                  w=WCS(hdr).celestial; x,y=w.world_to_pixel(coord)
+                  margins=[x,(data.shape[1]-1)-x,y,(data.shape[0]-1)-y]
+                  single=min(margins)>=512
+                  bandrec={'url':url,'sha256':shasum(p),'shape':list(data.shape),'source_pixel_xy':[float(x),float(y)],'edge_margins_pix':[float(v) for v in margins],'single_brick_1024_possible':bool(single),'finite_fraction_full_brick':float(np.isfinite(data).mean())}
+                  if single:
+                      cut=Cutout2D(data,(x,y),(1024,1024),mode='strict')
+                      bandrec['crop_shape']=list(cut.data.shape); bandrec['crop_finite_fraction']=float(np.isfinite(cut.data).mean()); bandrec['crop_min']=float(np.nanmin(cut.data)); bandrec['crop_max']=float(np.nanmax(cut.data))
+                  rec['bands'][b]=bandrec
+              rec['all_grz_single_brick_1024_possible']=all(rec['bands'][b]['single_brick_1024_possible'] for b in 'grz')
+              report['probes'].append(rec)
+              print(name,brick,'single-brick 1024',rec['all_grz_single_brick_1024_possible'])
+          (out/'nersc_brick_probe.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          PY
+          sha256sum "$out/nersc_brick_probe.json" > "$out/SHA256SUMS.txt"
+      - name: Commit NERSC brick probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-nersc-brick-probe
+          if git diff --cached --quiet; then
+            echo 'No NERSC brick-probe changes.'
+          else
+            git commit -m 'Record direct NERSC DR10 brick probe'
+            git pull --rebase origin main
+            git push
+          fi
