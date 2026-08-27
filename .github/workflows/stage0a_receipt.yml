@@ -1,0 +1,62 @@
+name: WALLABY Stage-0A source-optical receipt
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/STAGE0A_SOURCE_OPTICAL_IMPLEMENTATION_LOCK.md'
+      - 'post-stage0/STAGE0A_MLCR_COEFFICIENTS.csv'
+      - 'post-stage0/STAGE0A_SOURCE_QUALITY_LOCK.json'
+      - '.github/workflows/stage0a_receipt.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  receipt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Stage-0A receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=post-stage0/STAGE0A_RECEIPT.json
+          lock=post-stage0/STAGE0A_SOURCE_OPTICAL_IMPLEMENTATION_LOCK.md
+          coeff=post-stage0/STAGE0A_MLCR_COEFFICIENTS.csv
+          quality=post-stage0/STAGE0A_SOURCE_QUALITY_LOCK.json
+          lock_sha=$(sha256sum "$lock" | awk '{print $1}')
+          coeff_sha=$(sha256sum "$coeff" | awk '{print $1}')
+          quality_sha=$(sha256sum "$quality" | awk '{print $1}')
+          created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          python - "$out" "$created" "$GITHUB_SHA" "$lock_sha" "$coeff_sha" "$quality_sha" <<'PY'
+          import json,sys
+          out,created,input_commit,lock_sha,coeff_sha,quality_sha=sys.argv[1:]
+          receipt={
+            'schema':'WALLABY_STAGE0A_SOURCE_OPTICAL_RECEIPT_v1',
+            'created_utc':created,
+            'original_stage0_commit':'15abeac9b6d285ce42caf26498115c0686d9bcd3',
+            'stage0a_input_commit':input_commit,
+            'files':{
+              'STAGE0A_SOURCE_OPTICAL_IMPLEMENTATION_LOCK.md':lock_sha,
+              'STAGE0A_MLCR_COEFFICIENTS.csv':coeff_sha,
+              'STAGE0A_SOURCE_QUALITY_LOCK.json':quality_sha,
+            },
+            'firewall':'receipt contains no validation optical values and no validation kinematic values'
+          }
+          open(out,'w',encoding='utf-8').write(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+          PY
+          cat "$out"
+      - name: Commit Stage-0A receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/STAGE0A_RECEIPT.json
+          if git diff --cached --quiet; then
+            echo 'No receipt changes.'
+          else
+            git commit -m 'Record WALLABY Stage-0A source-optical receipt'
+            git push
+          fi
