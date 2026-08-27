@@ -1,0 +1,45 @@
+column_name,datatype,description,unit
+comments,char,Comments on individual sources,
+dec,double,Declination (J2000) of centroid position,deg
+dist_h,double,"Local Hubble distance derived from the barycentric source
+     frequency",Mpc
+ell3s_maj,double,Same as ell maj but &gt; 3 sigma pixels only and equal weight,pix
+ell3s_min,double,Same as ell min but &gt; 3 sigma pixels only and equal weight,pix
+ell3s_pa,double,Same as ell pa but &gt; 3 sigma pixels only and equal weight,deg
+ell_maj,double,Major axis size of ellipse fitted to moment 0 map,pix
+ell_min,double,Minor axis size of ellipse fitted to moment 0 map,pix
+ell_pa,double,Position angle of ellipse fitted to moment 0 map,deg
+err_f_sum,double,Statistical uncertainty of integrated flux,Hz.Jy
+err_f_sum_corr,double,"Statistical uncertainty of the single dish corrected integrated
+     flux",Hz.Jy
+err_x,double,Statistical uncertainty of centroid position,pix
+err_y,double,Statistical uncertainty of centroid position,pix
+err_z,double,Statistical uncertainty of centroid position,pix
+f_max,double,Highest flux density value within 3D source mask,Jy.beam-1
+f_min,double,Lowest flux density value within 3D source mask,Jy.beam-1
+f_sum,double,Integrated flux within 3D source mask,Hz.Jy
+f_sum_corr,double,"The integrated flux within 3D source mask statistically corrected
+     to match single dish observations",Hz.Jy
+freq,double,Barycentric frequency of centroid position,deg
+kflag,double,Kinematic model flag,
+kin_pa,double,Position angle of kinematic major axis,deg
+log_m_hi,double,The estimated log10 mass of the cube using f_sum and freq,log10.Msol
+log_m_hi_corr,double,The estimated log10 mass of the cube using f_sum_corr and freq,log10.Msol
+n_pix,double,Number of pixels in 3D source mask,
+name,char,WALLABY source name (WALLABY Jhhmmss+/-ddmmss),
+qflag,double,Quality flag,
+ra,double,Right ascension (J2000) of centroid position,deg
+rel,double,Statistical reliability of detection from 0 to 1,
+rms,double,Local RMS noise level near source,Jy.beam-1
+team_release,char,Internal team release identifier,
+w20,double,Spectral line width at 20% of the peak (w20),Hz
+w50,double,Spectral line width at 50% of the peak (w50),Hz
+x,double,Centroid position in x,pix
+x_max,double,Upper end of bounding box in x,pix
+x_min,double,Lower end of bounding box in x,pix
+y,double,Centroid position in y,pix
+y_max,double,Upper end of bounding box in y,pix
+y_min,double,Lower end of bounding box in y,pix
+z,double,Centroid position in z,pix
+z_max,double,Upper end of bounding box in z,pix
+z_min,double,Lower end of bounding box in z,pix

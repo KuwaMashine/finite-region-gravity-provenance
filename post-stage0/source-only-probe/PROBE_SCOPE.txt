@@ -1,0 +1,4 @@
+Post-Stage-0 acquisition probe.
+Queried table: cirada.Wallaby_dr2_source_catalogue only.
+No kinematic catalogue query is present in this workflow.
+Purpose: freeze the public source-catalogue schema before constructing normalized validation exports.
