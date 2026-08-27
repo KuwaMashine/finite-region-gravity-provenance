@@ -1,0 +1,4 @@
+Post-Stage-0 metadata-only probe for one source-safe Vela object already exposed by the allow-listed source catalogue.
+CAOM2 query is constrained to collection=WALLABY and productID LIKE source_data_%.
+No kinematic plane is queried.
+Purpose: recover public source-product artifact URI/filename conventions for moment-map acquisition.
