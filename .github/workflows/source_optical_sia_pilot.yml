@@ -1,0 +1,69 @@
+name: WALLABY source-only DR10 SIA pilot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_sia_pilot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sia-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Query source coordinate and DR10 SIA metadata only
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp=/tmp/wallaby_sia_pilot
+          out=post-stage0/source-optical-sia-pilot
+          mkdir -p "$tmp" "$out"
+          tap='https://ws-uv.canfar.net/youcat/sync'
+          curl -fSsG "$tap" \
+            --data-urlencode 'REQUEST=doQuery' \
+            --data-urlencode 'LANG=ADQL' \
+            --data-urlencode 'FORMAT=csv' \
+            --data-urlencode "QUERY=SELECT name,ra,dec,qflag FROM cirada.Wallaby_dr2_source_catalogue WHERE name='WALLABY J094821-452603' AND team_release='Vela TR1'" \
+            -o "$tmp/source.csv"
+          python -m pip -q install pyvo astropy
+          python - <<'PY'
+          import csv,json
+          from pathlib import Path
+          import pyvo
+          tmp=Path('/tmp/wallaby_sia_pilot'); out=Path('post-stage0/source-optical-sia-pilot')
+          row=list(csv.DictReader((tmp/'source.csv').open()))[0]
+          if float(row['qflag']) != 0: raise SystemExit('pilot source qflag != 0')
+          ra=float(row['ra']); dec=float(row['dec'])
+          svc=pyvo.dal.SIAService('https://datalab.noirlab.edu/sia/ls_dr10')
+          tab=svc.search((ra,dec),(0.04,0.04),verbosity=2).to_table()
+          cols=[str(c) for c in tab.colnames]
+          rows=[]
+          for r in tab:
+              d={}
+              for c in cols:
+                  try:
+                      v=r[c]
+                      if hasattr(v,'item'): v=v.item()
+                      if isinstance(v,bytes): v=v.decode('utf-8','replace')
+                      d[c]=None if getattr(v,'mask',False) else str(v)
+                  except Exception as e: d[c]=f'<ERR:{e}>'
+              rows.append(d)
+          report={'scope':'source-only DR10 SIA metadata pilot; no kinematics queried','source':row,'n_rows':len(rows),'columns':cols,'rows':rows[:100]}
+          (out/'sia_metadata.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print('SIA rows',len(rows))
+          print('columns',cols)
+          for d in rows[:20]:
+              print({k:d.get(k) for k in ['obs_bandpass','proctype','prodtype','access_url','title','instrument_name'] if k in d})
+          PY
+          sha256sum "$out/sia_metadata.json" > "$out/SHA256SUMS.txt"
+      - name: Commit SIA metadata report
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-sia-pilot
+          if git diff --cached --quiet; then echo 'No SIA metadata changes.'; else git commit -m 'Record WALLABY source-only DR10 SIA metadata pilot'; git push; fi
