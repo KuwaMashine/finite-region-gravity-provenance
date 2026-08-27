@@ -1,3 +1,3 @@
-observations 400
-vela_planes 400
-known_source_artifacts 400
+observations 200
+vela_planes 200
+known_source_artifacts 200

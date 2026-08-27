@@ -1,4 +1,5 @@
-Post-Stage-0 metadata-only CADC CAOM2 diagnostic.
+Post-Stage-0 metadata-only CADC CAOM2 probe.
 Queries are built incrementally: Observation only, then source-data Plane, then source-data Artifact.
 No kinematic plane or kinematic catalogue is queried.
-Error bodies and HTTP status are retained so archive syntax failures cannot masquerade as empty data.
+curl does not force POST across the CADC sync-result redirect; HTTP and zero-byte failures fail closed.
+Purpose: recover public source-product artifact URI/filename conventions for moment-map acquisition.
