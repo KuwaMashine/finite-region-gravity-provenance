@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Diagnose CADC CAOM2 source-data metadata route
+      - name: Query CADC CAOM2 source-data metadata only
         shell: bash
         run: |
           set -euo pipefail
@@ -23,34 +23,43 @@ jobs:
           tap='https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/argus/sync'
           q0="SELECT TOP 5 o.observationID FROM caom2.Observation AS o WHERE o.collection='WALLABY'"
           q1="SELECT TOP 20 o.observationID,p.productID FROM caom2.Observation AS o JOIN caom2.Plane AS p ON o.obsID=p.obsID WHERE o.collection='WALLABY' AND p.productID='source_data_Vela_TR1'"
-          q2="SELECT TOP 20 o.observationID,p.productID,a.uri FROM caom2.Observation AS o JOIN caom2.Plane AS p ON o.obsID=p.obsID JOIN caom2.Artifact AS a ON p.planeID=a.planeID WHERE o.collection='WALLABY' AND o.observationID='WALLABY_J094821-452603' AND p.productID='source_data_Vela_TR1'"
+          q2="SELECT TOP 20 o.observationID,p.productID,a.uri,a.productType,a.contentType,a.contentLength,a.contentChecksum FROM caom2.Observation AS o JOIN caom2.Plane AS p ON o.obsID=p.obsID JOIN caom2.Artifact AS a ON p.planeID=a.planeID WHERE o.collection='WALLABY' AND o.observationID='WALLABY_J094821-452603' AND p.productID='source_data_Vela_TR1'"
           : > "$out/http_status.txt"
           for spec in "observations:$q0" "vela_planes:$q1" "known_source_artifacts:$q2"; do
             name=${spec%%:*}; query=${spec#*:}
-            code=$(curl -SsL -X POST "$tap" \
+            code=$(curl -SsL "$tap" \
               --data-urlencode 'REQUEST=doQuery' \
               --data-urlencode 'LANG=ADQL' \
               --data-urlencode 'FORMAT=csv' \
               --data-urlencode "QUERY=$query" \
-              -o "$out/${name}.response" -w '%{http_code}')
+              -o "$out/${name}.csv" -w '%{http_code}')
             printf '%s %s\n' "$name" "$code" >> "$out/http_status.txt"
+            test "$code" = 200 || { cat "$out/${name}.csv" >&2; exit 1; }
+            test -s "$out/${name}.csv" || { echo "empty TAP response: $name" >&2; exit 1; }
           done
+          if grep -Eqi 'kinematic|kinmodel|rotcur|model_data|Vrot' "$out/known_source_artifacts.csv"; then
+            echo 'Source-data artifact firewall violation' >&2
+            exit 1
+          fi
+          rm -f "$out"/*.response
+          sha256sum "$out/observations.csv" "$out/vela_planes.csv" "$out/known_source_artifacts.csv" > "$out/SHA256SUMS.txt"
           cat > "$out/PROBE_SCOPE.txt" <<'EOF'
-          Post-Stage-0 metadata-only CADC CAOM2 diagnostic.
+          Post-Stage-0 metadata-only CADC CAOM2 probe.
           Queries are built incrementally: Observation only, then source-data Plane, then source-data Artifact.
           No kinematic plane or kinematic catalogue is queried.
-          Error bodies and HTTP status are retained so archive syntax failures cannot masquerade as empty data.
+          curl does not force POST across the CADC sync-result redirect; HTTP and zero-byte failures fail closed.
+          Purpose: recover public source-product artifact URI/filename conventions for moment-map acquisition.
           EOF
-      - name: Commit diagnostic
+      - name: Commit probe
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add post-stage0/source-product-probe
+          git add -A post-stage0/source-product-probe
           if git diff --cached --quiet; then
-            echo 'No diagnostic changes.'
+            echo 'No probe changes.'
           else
-            git commit -m 'Diagnose CADC CAOM2 source-data route'
+            git commit -m 'Record working CADC source-data artifact route'
             git push
           fi
