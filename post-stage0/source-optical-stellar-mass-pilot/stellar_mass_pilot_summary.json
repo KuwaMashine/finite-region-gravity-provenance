@@ -1,0 +1,52 @@
+{
+  "A_mag": {
+    "g": 0.133381,
+    "r": 0.08984750000000001,
+    "z": 0.0502565
+  },
+  "R50_r_arcsec": 16.240643691175038,
+  "R50_r_kpc": 0.78223126733024,
+  "Rd_star_arcsec": 9.67657092828809,
+  "Rd_star_kpc": 0.46607243435546963,
+  "SFD_EBV": 0.0415,
+  "colours_mag": {
+    "g-r": 0.23892668359029834,
+    "g-z": 0.4799615456643238,
+    "r-z": 0.24103486207402547
+  },
+  "common_aperture_n_retained": 57,
+  "common_aperture_radius_arcsec": 54.48684486022256,
+  "distance_modulus_mag": 29.985785332103397,
+  "distance_mpc": 9.934752825343148,
+  "foreground_corrected_absolute_mag": {
+    "g": -14.142494315858062,
+    "r": -14.38142099944836,
+    "z": -14.622455861522386
+  },
+  "foreground_corrected_common_aperture_mag": {
+    "g": 15.843291016245335,
+    "r": 15.604364332655036,
+    "z": 15.36332947058101
+  },
+  "full_stellar_pilot": true,
+  "log10_L_Lsun": {
+    "g": 7.676997726343226,
+    "r": 7.596568399779345,
+    "z": 7.648982344608955
+  },
+  "log10_Mstar_adopted_median": 7.335103247025148,
+  "log10_Mstar_method_population_sd": 0.14448334779592806,
+  "max_log10_Mstar": 7.557909923836898,
+  "method_sd_ddof": 0,
+  "min_log10_Mstar": 7.025680676079112,
+  "n_mlcr_estimates": 45,
+  "observed_common_aperture_mag": {
+    "g": 15.976672016245335,
+    "r": 15.694211832655036,
+    "z": 15.41358597058101
+  },
+  "r50_method": "linear interpolation in cumulative r-band flux fraction between bracketing retained AutoProf curve-of-growth samples",
+  "scope": "source-only common-aperture stellar-mass pilot; no validation kinematics queried",
+  "source_name": "WALLABY J124947+035042",
+  "team_release": "NGC 4808 TR1"
+}
