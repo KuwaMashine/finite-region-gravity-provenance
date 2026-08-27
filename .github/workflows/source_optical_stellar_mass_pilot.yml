@@ -1,0 +1,152 @@
+name: WALLABY source-only stellar-mass optical pilot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_stellar_mass_pilot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  stellar-mass-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Acquire foreground reddening for the source-only pilot
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=post-stage0/source-optical-stellar-mass-pilot
+          tmp=/tmp/wallaby_stellar_mass_pilot
+          rm -rf "$tmp"; mkdir -p "$tmp" "$out"
+          ra=192.4493316830977
+          dec=3.84520595750993
+          dust='https://irsa.ipac.caltech.edu/cgi-bin/DUST/nph-dust'
+          code=$(curl -SsG "$dust" --data-urlencode "locstr=${ra} ${dec}" -o "$tmp/dust.xml" -w '%{http_code}')
+          test "$code" = 200 || { echo "IRSA dust HTTP $code"; head -c 1000 "$tmp/dust.xml" || true; exit 1; }
+      - name: Compute frozen common-aperture R50 and 45 MLCR masses
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv,json,math,re,statistics,xml.etree.ElementTree as ET,hashlib
+          from pathlib import Path
+
+          root=Path('post-stage0')
+          out=root/'source-optical-stellar-mass-pilot'
+          name='WALLABY J124947+035042'; release='NGC 4808 TR1'
+          # Read the already frozen source-only census row, not a kinematic table.
+          src=[r for r in csv.DictReader((root/'source-only-census/phase2_source_ids.csv').open())
+               if r['name']==name and r['team_release']==release]
+          if len(src)!=1: raise SystemExit(f'expected one frozen source row, got {len(src)}')
+          src=src[0]
+          D=float(src['dist_h'])
+          if not math.isfinite(D) or D<=0: raise SystemExit('invalid source-only distance')
+
+          def readprof(path):
+              with path.open() as f:
+                  f.readline()
+                  return list(csv.DictReader(f))
+          P={
+              'r':readprof(root/'source-optical-autoprof-pilot/pilot_r.prof'),
+              'g':readprof(root/'source-optical-forced-grz-pilot/pilot_g.prof'),
+              'z':readprof(root/'source-optical-forced-grz-pilot/pilot_z.prof'),
+          }
+          n=min(map(len,P.values()))
+          first_bad=None
+          for i in range(n):
+              rs=[float(P[b][i]['R']) for b in 'grz']
+              if max(rs)-min(rs)>1e-8: raise SystemExit(f'R-grid mismatch at {i}: {rs}')
+              errs=[float(P[b][i]['SB_e']) for b in 'grz']
+              if any((not math.isfinite(e)) or e>=0.22 for e in errs):
+                  first_bad=i; break
+          retained=n if first_bad is None else first_bad
+          if retained<5: raise SystemExit(f'only {retained} common-aperture rows')
+          j=retained-1
+          Rcut=float(P['r'][j]['R'])
+
+          # Cumulative r-band light from AutoProf's profile-integrated curve of growth.
+          # Flux normalization cancels for the half-light fraction.
+          rvals=[]
+          for i in range(retained):
+              R=float(P['r'][i]['R']); m=float(P['r'][i]['totmag'])
+              if not (math.isfinite(R) and math.isfinite(m) and m<99):
+                  raise SystemExit(f'invalid retained r cumulative row {i}')
+              rvals.append((R,10**(-0.4*m)))
+          Ftot=rvals[-1][1]; target=0.5*Ftot
+          k=next((i for i,(_,F) in enumerate(rvals) if F>=target),None)
+          if k is None: raise SystemExit('half-light crossing absent')
+          if k==0:
+              R50=rvals[0][0]
+          else:
+              R0,F0=rvals[k-1]; R1,F1=rvals[k]
+              if not F1>F0: raise SystemExit(f'non-increasing cumulative light at half-light bracket: {F0},{F1}')
+              t=(target-F0)/(F1-F0)
+              R50=R0+t*(R1-R0)
+          Rd_arcsec=R50/1.6783469900166605
+          arcsec_to_kpc=D*1000.0*math.pi/(180.0*3600.0)
+          R50_kpc=R50*arcsec_to_kpc; Rd_kpc=Rd_arcsec*arcsec_to_kpc
+
+          # Foreground reddening, using the same prospective Stage-0A coefficients.
+          doc=ET.parse('/tmp/wallaby_stellar_mass_pilot/dust.xml').getroot()
+          vals=[]
+          for elem in doc.iter():
+              if elem.tag.endswith('refPixelValueSFD') and elem.text:
+                  m=re.search(r'[-+0-9.eE]+',elem.text.strip())
+                  if m: vals.append(float(m.group(0)))
+          if not vals: raise SystemExit('no SFD E(B-V)')
+          ebv=vals[0]
+          extcoeff={'g':3.214,'r':2.165,'z':1.211}
+          A={b:extcoeff[b]*ebv for b in extcoeff}
+
+          mobs={b:float(P[b][j]['totmag']) for b in 'grz'}
+          mcorr={b:mobs[b]-A[b] for b in 'grz'}
+          DM=5.0*math.log10(D)+25.0
+          Mabs={b:mcorr[b]-DM for b in 'grz'}
+          Msun={'g':5.05,'r':4.61,'z':4.50}
+          logL={b:-0.4*(Mabs[b]-Msun[b]) for b in 'grz'}
+          colours={'g-r':mcorr['g']-mcorr['r'],'g-z':mcorr['g']-mcorr['z'],'r-z':mcorr['r']-mcorr['z']}
+
+          coeff=list(csv.DictReader((root/'STAGE0A_MLCR_COEFFICIENTS.csv').open()))
+          if len(coeff)!=45: raise SystemExit(f'expected 45 MLCR rows, got {len(coeff)}')
+          est=[]
+          for row in coeff:
+              c=row['color']; b=row['luminosity_band']; a=float(row['intercept_a']); slope=float(row['slope_b'])
+              lm=logL[b]+a+slope*colours[c]
+              if not math.isfinite(lm): raise SystemExit('nonfinite MLCR estimate')
+              est.append({**row,'color_value_mag':colours[c],'log10_L_band_Lsun':logL[b],'log10_Mstar_Msun':lm})
+          masses=[x['log10_Mstar_Msun'] for x in est]
+          med=statistics.median(masses)
+          # The 45 frozen methods are the complete deterministic method ensemble, so use population SD (ddof=0).
+          sd=statistics.pstdev(masses)
+
+          with (out/'pilot_45_mlcr_masses.csv').open('w',newline='') as f:
+              fields=list(est[0].keys()); w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(est)
+          report={
+              'scope':'source-only common-aperture stellar-mass pilot; no validation kinematics queried',
+              'source_name':name,'team_release':release,'distance_mpc':D,'distance_modulus_mag':DM,
+              'common_aperture_n_retained':retained,'common_aperture_radius_arcsec':Rcut,
+              'R50_r_arcsec':R50,'R50_r_kpc':R50_kpc,'Rd_star_arcsec':Rd_arcsec,'Rd_star_kpc':Rd_kpc,
+              'SFD_EBV':ebv,'A_mag':A,
+              'observed_common_aperture_mag':mobs,'foreground_corrected_common_aperture_mag':mcorr,
+              'foreground_corrected_absolute_mag':Mabs,'colours_mag':colours,'log10_L_Lsun':logL,
+              'n_mlcr_estimates':len(masses),'log10_Mstar_adopted_median':med,
+              'log10_Mstar_method_population_sd':sd,'method_sd_ddof':0,
+              'min_log10_Mstar':min(masses),'max_log10_Mstar':max(masses),
+              'full_stellar_pilot':len(masses)==45 and retained>=5 and math.isfinite(R50),
+              'r50_method':'linear interpolation in cumulative r-band flux fraction between bracketing retained AutoProf curve-of-growth samples',
+          }
+          (out/'stellar_mass_pilot_summary.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(report,indent=2,sort_keys=True))
+          PY
+          sha256sum post-stage0/source-optical-stellar-mass-pilot/stellar_mass_pilot_summary.json post-stage0/source-optical-stellar-mass-pilot/pilot_45_mlcr_masses.csv > post-stage0/source-optical-stellar-mass-pilot/SHA256SUMS.txt
+      - name: Commit one-object stellar-mass pilot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-stellar-mass-pilot
+          if git diff --cached --quiet; then echo 'No stellar-mass pilot changes.'; else git commit -m 'Record source-only R50 and 45-MLCR stellar-mass pilot'; git pull --rebase origin main; git push; fi
