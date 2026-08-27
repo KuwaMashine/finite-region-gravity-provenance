@@ -1,0 +1,68 @@
+name: WALLABY source-only DR10 SIA covered-canary probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_sia_covered_probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sia-covered:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Query NOIRLab DR10 SIA for covered canaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=post-stage0/source-optical-sia-covered-probe
+          mkdir -p "$out"
+          python -m pip -q install pyvo astropy
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pyvo
+          out=Path('post-stage0/source-optical-sia-covered-probe')
+          probes=[
+            ('WALLABY J130150+041953','NGC 4808 TR1',195.4601475254844,4.331431974127958),
+            ('WALLABY J133209-245132','NGC 5044 TR3',203.0381327500109,-24.85919147539857),
+          ]
+          svc=pyvo.dal.SIAService('https://datalab.noirlab.edu/sia/ls_dr10')
+          report={'scope':'source-only DR10 SIA metadata probe on covered canaries; no validation kinematics queried','service':'https://datalab.noirlab.edu/sia/ls_dr10','probes':[]}
+          for name,release,ra,dec in probes:
+              tab=svc.search((ra,dec),(0.08,0.08),verbosity=2).to_table()
+              cols=[str(c) for c in tab.colnames]
+              rows=[]
+              for r in tab[:100]:
+                  d={}
+                  for c in cols:
+                      try:
+                          v=r[c]
+                          if hasattr(v,'item'): v=v.item()
+                          if isinstance(v,bytes): v=v.decode('utf-8','replace')
+                          d[c]=None if getattr(v,'mask',False) else str(v)
+                      except Exception as e: d[c]=f'<ERR:{e}>'
+                  rows.append(d)
+              report['probes'].append({'source_name':name,'team_release':release,'ra':ra,'dec':dec,'n_rows':len(tab),'columns':cols,'rows':rows})
+              print(name,'SIA rows',len(tab))
+              for d in rows[:10]: print({k:d.get(k) for k in ['obs_bandpass','prodtype','proctype','access_url','obs_title','instrument_name'] if k in d})
+          (out/'sia_covered_metadata.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          PY
+          sha256sum "$out/sia_covered_metadata.json" > "$out/SHA256SUMS.txt"
+      - name: Commit SIA covered-canary probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-sia-covered-probe
+          if git diff --cached --quiet; then
+            echo 'No SIA covered-probe changes.'
+          else
+            git commit -m 'Record DR10 SIA covered-canary metadata probe'
+            git pull --rebase origin main
+            git push
+          fi
