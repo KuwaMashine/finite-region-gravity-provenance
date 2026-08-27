@@ -1,0 +1,72 @@
+{
+  "A_mag": {
+    "g": 0.094813,
+    "r": 0.0638675,
+    "z": 0.0357245
+  },
+  "R50_r_arcsec": 7.184503555493645,
+  "R50_r_kpc": 5.5967554799242905,
+  "Rd_star_arcsec": 4.280702142184749,
+  "Rd_star_kpc": 3.334683181258443,
+  "SFD_EBV": 0.0295,
+  "autoprof_checkfit": {
+    "g": {},
+    "r": {
+      "FFT coefficients": false,
+      "Light symmetry": false,
+      "initial fit compare": true,
+      "isophote variability": false
+    },
+    "z": {}
+  },
+  "classification_status": "processed_full_stellar_true",
+  "colours_mag": {
+    "g-r": 0.6425921859690291,
+    "g-z": 1.1204547638453768,
+    "r-z": 0.47786257787634767
+  },
+  "common_aperture_radius_arcsec": 45.03045029770459,
+  "dec": 4.331431974127958,
+  "distance_mpc": 160.6810652625029,
+  "dr10_fits_sha256": "da2c81f5be8b1ad3eaeb51ad3e64d18ad1f6ea7ff3a68689cf6ec690d50052f1",
+  "dr10_tractor_count_r0p02deg": 166,
+  "dust_xml_sha256": "d83b75a5119186037c27100a5484b86be33eb2e2a790f5ff6cf57bef00ee9987",
+  "ell_maj_beams_30arcsec": 2.47296981481,
+  "first_bad_SB_e": {
+    "g": 0.2266808001764481,
+    "r": 0.1543970330161982,
+    "z": 0.12952859507081585
+  },
+  "first_bad_radius_arcsec": 49.53349532747505,
+  "foreground_corrected_common_aperture_mag": {
+    "g": 15.15158522209952,
+    "r": 14.50899303613049,
+    "z": 14.031130458254143
+  },
+  "full_stellar": true,
+  "log10_Mstar_adopted_median": 10.673950534445666,
+  "log10_Mstar_method_population_sd": 0.1392916941414426,
+  "log_m_hi_corr": 10.120281733307257,
+  "max_log10_Mstar": 10.779292692540343,
+  "min_log10_Mstar": 10.269892221585973,
+  "n_common_profile_rows": 60,
+  "n_mlcr_estimates": 45,
+  "n_retained": 55,
+  "observed_common_aperture_mag": {
+    "g": 15.24639822209952,
+    "r": 14.572860536130491,
+    "z": 14.066854958254144
+  },
+  "qflag": 0.0,
+  "ra": 195.4601475254844,
+  "retry_policy": {
+    "attempts": 4,
+    "connect_timeout_seconds": 20,
+    "delay_seconds": 5,
+    "max_time_seconds": 180
+  },
+  "scope": "source-only cross-field optical canary; no validation kinematics queried",
+  "selection_rule": "within release: qflag==0 and ell_maj_beams>=2; minimize abs(ell_maj_beams-2.5), tie by source name",
+  "source_name": "WALLABY J130150+041953",
+  "team_release": "NGC 4808 TR1"
+}

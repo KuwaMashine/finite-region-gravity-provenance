@@ -1,0 +1,21 @@
+{
+  "classification_status": "no_dr10_catalog_coverage",
+  "dec": -47.69657413263839,
+  "distance_mpc": 57.75438664935244,
+  "dr10_tractor_count_r0p02deg": 0,
+  "ell_maj_beams_30arcsec": 2.49135126252,
+  "full_stellar": false,
+  "log_m_hi_corr": 9.431349418290937,
+  "qflag": 0.0,
+  "ra": 151.6909691134493,
+  "retry_policy": {
+    "attempts": 4,
+    "connect_timeout_seconds": 20,
+    "delay_seconds": 5,
+    "max_time_seconds": 180
+  },
+  "scope": "source-only cross-field optical canary; no validation kinematics queried",
+  "selection_rule": "within release: qflag==0 and ell_maj_beams>=2; minimize abs(ell_maj_beams-2.5), tie by source name",
+  "source_name": "WALLABY J100645-474147",
+  "team_release": "Vela TR1"
+}

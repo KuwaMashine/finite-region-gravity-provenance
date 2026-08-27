@@ -1,0 +1,68 @@
+{
+  "A_mag": {
+    "g": 0.2333364,
+    "r": 0.15717899999999999,
+    "z": 0.0879186
+  },
+  "R50_r_arcsec": 16.29641001240356,
+  "R50_r_kpc": 8.783273236540058,
+  "Rd_star_arcsec": 9.709797860239728,
+  "Rd_star_kpc": 5.233288044001478,
+  "SFD_EBV": 0.0726,
+  "autoprof_checkfit": {
+    "g": {},
+    "r": {
+      "FFT coefficients": true,
+      "Light symmetry": true,
+      "initial fit compare": true,
+      "isophote variability": true
+    },
+    "z": {}
+  },
+  "classification_status": "processed_full_stellar_true",
+  "colours_mag": {
+    "g-r": 0.7806295557335776,
+    "g-z": 1.4450119320429415,
+    "r-z": 0.6643823763093639
+  },
+  "common_aperture_radius_arcsec": 96.5267693674208,
+  "dec": -24.85919147539857,
+  "distance_mpc": 111.1705063244808,
+  "dr10_fits_sha256": "d9ec31d0da1c69a423d4901f67475f22f468c17b5797b887ba0bb71f62aa71ae",
+  "dr10_tractor_count_r0p02deg": 146,
+  "dust_xml_sha256": "a81272cc7cc97a1c0582c67335ff7293c52c0ea68f0242ee9f2dde7715e1fb4c",
+  "ell_maj_beams_30arcsec": 2.49099527163,
+  "first_bad_SB_e": null,
+  "first_bad_radius_arcsec": null,
+  "foreground_corrected_common_aperture_mag": {
+    "g": 14.577140758498816,
+    "r": 13.796511202765238,
+    "z": 13.132128826455874
+  },
+  "full_stellar": true,
+  "log10_Mstar_adopted_median": 10.874324103891878,
+  "log10_Mstar_method_population_sd": 0.12314478939519645,
+  "log_m_hi_corr": 10.146316199737248,
+  "max_log10_Mstar": 11.075195649606728,
+  "min_log10_Mstar": 10.483313359826779,
+  "n_common_profile_rows": 63,
+  "n_mlcr_estimates": 45,
+  "n_retained": 63,
+  "observed_common_aperture_mag": {
+    "g": 14.810477158498816,
+    "r": 13.953690202765237,
+    "z": 13.220047426455874
+  },
+  "qflag": 0.0,
+  "ra": 203.0381327500109,
+  "retry_policy": {
+    "attempts": 4,
+    "connect_timeout_seconds": 20,
+    "delay_seconds": 5,
+    "max_time_seconds": 180
+  },
+  "scope": "source-only cross-field optical canary; no validation kinematics queried",
+  "selection_rule": "within release: qflag==0 and ell_maj_beams>=2; minimize abs(ell_maj_beams-2.5), tie by source name",
+  "source_name": "WALLABY J133209-245132",
+  "team_release": "NGC 5044 TR3"
+}
