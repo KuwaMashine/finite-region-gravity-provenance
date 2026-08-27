@@ -1,0 +1,18 @@
+{
+  "adapter_lock": "Treat source-catalogue ell_pa as sky-plane major-axis PA, north through east, modulo 180 deg. No kinematic PA is used.",
+  "axial_difference_cat_vs_pixel_x_deg": 89.91967545205395,
+  "axial_difference_cat_vs_pixel_y_deg": 54.40511420315252,
+  "axial_difference_cat_vs_sky_deg": 1.6287986048074004,
+  "catalogue_ell_maj_pix": 5.394596473747551,
+  "catalogue_ell_min_pix": 3.705658521483721,
+  "catalogue_ell_pa_deg": 152.83760517239676,
+  "object": "WALLABY J094821-452603",
+  "principal_axis_pixel_ccw_from_x_deg": 62.757280624450715,
+  "principal_axis_pixel_ccw_from_y_deg": 27.242719375549285,
+  "principal_axis_sky_east_of_north_deg": 154.46640377720416,
+  "scope": "source-only moment-map geometry convention probe; no kinematic values/products",
+  "wcs_cdelt_deg": [
+    -0.00166666666667,
+    0.00166666666667
+  ]
+}
