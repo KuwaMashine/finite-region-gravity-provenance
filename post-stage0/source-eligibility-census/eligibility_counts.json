@@ -1,0 +1,30 @@
+{
+  "by_release": {
+    "NGC 4808 TR1": {
+      "all": 231,
+      "q0": 207,
+      "q0_diag_or_primary_ge1p3": 114,
+      "q0_primary_ge2": 33
+    },
+    "NGC 5044 TR3": {
+      "all": 1326,
+      "q0": 1128,
+      "q0_diag_or_primary_ge1p3": 581,
+      "q0_primary_ge2": 134
+    },
+    "Vela TR1": {
+      "all": 203,
+      "q0": 190,
+      "q0_diag_or_primary_ge1p3": 117,
+      "q0_primary_ge2": 40
+    }
+  },
+  "note": "These are pre-optical counts. full_stellar is applied later and can only reduce them.",
+  "scope": "source-only frozen Phase-2 final releases; no kinematics",
+  "total": {
+    "all": 1760,
+    "q0": 1525,
+    "q0_diag_or_primary_ge1p3": 812,
+    "q0_primary_ge2": 207
+  }
+}
