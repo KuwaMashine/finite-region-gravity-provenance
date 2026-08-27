@@ -1,0 +1,62 @@
+{
+  "A_mag": {
+    "g": 0.098027,
+    "r": 0.0660325,
+    "z": 0.0369355
+  },
+  "SFD_EBV_at_source": 0.0305,
+  "dr10_fits_sha256": "4b6cd99b637d8fea434b0e01c68a1a8fc84c55927a8f8f06631576b71fff7ad7",
+  "dust_xml_sha256": "c4bead62804c600f223e9f878b7d711dd7ae128d293e33efd47257c3153aa70e",
+  "fits_hdus": [
+    {
+      "bands": "grz",
+      "bunit": null,
+      "extname": null,
+      "index": 0,
+      "name": "PRIMARY",
+      "shape": [
+        3,
+        512,
+        512
+      ]
+    }
+  ],
+  "http_status": "legacy_cutout http=200 curl_rc=0\nirsa_dust http=200 curl_rc=0",
+  "legacy_decam_A_over_EBV": {
+    "g": 3.214,
+    "r": 2.165,
+    "z": 1.211
+  },
+  "legacy_layer": "ls-dr10-south",
+  "mw_transmission": {
+    "g": 0.9136696523360281,
+    "r": 0.9409943157518792,
+    "z": 0.9665532823451205
+  },
+  "pixscale_arcsec": 0.262,
+  "primary_dtype": ">f4",
+  "primary_finite_fraction": 1.0,
+  "primary_max": 6.34190559387207,
+  "primary_min": -0.04293150454759598,
+  "primary_shape": [
+    3,
+    512,
+    512
+  ],
+  "requested_bands": "grz",
+  "requested_size_pix": 512,
+  "scope": "post-Stage-0A source-only optical structural pilot; no validation kinematics queried",
+  "source": {
+    "dec": "4.33817561380282",
+    "dist_h": "14.096033774125186",
+    "ell_maj": "24.95156353375521",
+    "ell_min": "20.83869060017235",
+    "ell_pa": "12.78744047614501",
+    "log_m_hi_corr": "9.142746534547376",
+    "name": "WALLABY J124747+042017",
+    "qflag": "0.0",
+    "ra": "191.9459810189541",
+    "rel": "1.0",
+    "team_release": "NGC 4808 TR1"
+  }
+}
