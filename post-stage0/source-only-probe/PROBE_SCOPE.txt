@@ -1,4 +1,5 @@
-Post-Stage-0 acquisition probe.
+Post-Stage-0 source-only export.
 Queried table: cirada.Wallaby_dr2_source_catalogue only.
+The value export uses an explicit source-safe allow-list and excludes kflag and kin_pa even though those response-derived fields are embedded in the nominal source catalogue.
 No kinematic catalogue query is present in this workflow.
-Purpose: freeze the public source-catalogue schema before constructing normalized validation exports.
+The earlier TOP-5 '*' probe was quarantined without inspecting its row values after the schema revealed kflag/kin_pa.
