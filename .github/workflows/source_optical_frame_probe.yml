@@ -1,0 +1,41 @@
+name: WALLABY source-only optical frame-containment probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_frame_probe.yml'
+      - '.github/scripts/source_optical_frame_probe.py'
+
+permissions:
+  contents: write
+
+jobs:
+  frame-probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned source-only optical dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip -q install 'autoprof==1.3.4' astropy --upgrade astro-datalab
+      - name: Run 1024-pixel NGC5044 frame probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/source_optical_frame_probe.py
+      - name: Commit frame-containment probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-frame-probe
+          if git diff --cached --quiet; then
+            echo 'No frame-probe changes.'
+          else
+            git commit -m 'Record source-only 1024-pixel frame-containment probe'
+            git pull --rebase origin main
+            git push
+          fi
