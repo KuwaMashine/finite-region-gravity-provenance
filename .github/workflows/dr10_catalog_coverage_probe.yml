@@ -1,0 +1,45 @@
+name: WALLABY DR10 catalog coverage probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/dr10_catalog_coverage_probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Query anonymous DR10 tractor counts at source-only coordinates
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=post-stage0/dr10-catalog-coverage-probe
+          mkdir -p "$out"
+          svc='https://datalab.noirlab.edu/query'
+          : > "$out/counts.csv"
+          echo 'label,ra,dec,count' > "$out/counts.csv"
+          probe () {
+            label="$1"; ra="$2"; dec="$3"
+            sql="SELECT COUNT(*) AS n FROM ls_dr10.tractor_s WHERE q3c_radial_query(ra,dec,${ra},${dec},0.02)"
+            body=$(curl -fSsG "$svc" --data-urlencode "sql=$sql" --data-urlencode 'ofmt=csv' --data-urlencode 'async=false')
+            printf '%s\n' "$body" > "$out/${label}.csv"
+            n=$(printf '%s\n' "$body" | tail -n 1 | tr -d '[:space:]')
+            printf '%s,%s,%s,%s\n' "$label" "$ra" "$dec" "$n" >> "$out/counts.csv"
+          }
+          probe ngc4808_pilot 191.9459810189541 4.33817561380282
+          probe vela_pilot 147.0903045344817 -45.4341811258285
+          cat "$out/counts.csv"
+          sha256sum "$out"/*.csv > "$out/SHA256SUMS.txt"
+      - name: Commit coverage probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/dr10-catalog-coverage-probe
+          if git diff --cached --quiet; then echo 'No coverage changes.'; else git commit -m 'Record WALLABY DR10 catalog coverage probe'; git pull --rebase origin main; git push; fi
