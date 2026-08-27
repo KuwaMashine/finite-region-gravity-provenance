@@ -1,0 +1,14 @@
+INFO:root:wallaby_j124947_035042_r: head background at: 0.0 sec
+INFO:root:wallaby_j124947_035042_r: head psf at: 0.0 sec
+INFO:root:wallaby_j124947_035042_r: PSF assumed to be: 4.0000e+00 pix
+INFO:root:wallaby_j124947_035042_r: head center at: 0.0 sec
+INFO:root:wallaby_j124947_035042_r: head isophoteinit at: 0.7 sec
+INFO:root:wallaby_j124947_035042_r: init scale: 164.844662 pix
+INFO:root:wallaby_j124947_035042_r: head isophotefit at: 2.7 sec
+INFO:root:wallaby_j124947_035042_r: Completed isohpote fit in 455 itterations
+INFO:root:wallaby_j124947_035042_r: head isophoteextract at: 12.8 sec
+INFO:root:wallaby_j124947_035042_r: R complete in range [1.0,368.4]
+INFO:root:wallaby_j124947_035042_r: head checkfit at: 13.3 sec
+WARNING:root:wallaby_j124947_035042_r: Possible failed fit! possible failed center or lopsided galaxy
+INFO:root:wallaby_j124947_035042_r: head writeprof at: 13.4 sec
+INFO:root:wallaby_j124947_035042_r: Processing Complete! (at 13.4 sec)

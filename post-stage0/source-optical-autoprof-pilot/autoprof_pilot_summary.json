@@ -1,0 +1,10 @@
+{
+  "autoprof_version": "1.3.4",
+  "aux_file": "pilot_r.aux",
+  "band": "r",
+  "n_profile_lines": 65,
+  "pixscale_arcsec": 0.262,
+  "profile_file": "pilot_r.prof",
+  "scope": "source-only DR10 r-band AutoProf structural pilot; no validation kinematics queried",
+  "zeropoint_nanomaggies": 22.5
+}
