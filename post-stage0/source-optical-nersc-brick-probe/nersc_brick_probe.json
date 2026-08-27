@@ -1,0 +1,184 @@
+{
+  "crop_size_pix": 1024,
+  "pixscale_arcsec": 0.262,
+  "probes": [
+    {
+      "all_grz_single_brick_1024_possible": true,
+      "bands": {
+        "g": {
+          "crop_finite_fraction": 1.0,
+          "crop_max": 25.38410186767578,
+          "crop_min": -0.02618621289730072,
+          "crop_shape": [
+            1024,
+            1024
+          ],
+          "edge_margins_pix": [
+            925.7783444792171,
+            2673.221655520783,
+            2918.4368681482924,
+            680.5631318517076
+          ],
+          "finite_fraction_full_brick": 1.0,
+          "sha256": "ace0047bd58822a0b595c944ae5b5e1926f1077596910043efe0fc6119a3dc74",
+          "shape": [
+            3600,
+            3600
+          ],
+          "single_brick_1024_possible": true,
+          "source_pixel_xy": [
+            925.7783444792171,
+            2918.4368681482924
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/195/1953p042/legacysurvey-1953p042-image-g.fits.fz"
+        },
+        "r": {
+          "crop_finite_fraction": 1.0,
+          "crop_max": 54.414024353027344,
+          "crop_min": -0.033121507614851,
+          "crop_shape": [
+            1024,
+            1024
+          ],
+          "edge_margins_pix": [
+            925.7783444792171,
+            2673.221655520783,
+            2918.4368681482924,
+            680.5631318517076
+          ],
+          "finite_fraction_full_brick": 1.0,
+          "sha256": "f00b1c74656355ca73f8b916f3efb6d3649db4e2e9a713b2b5d31107083e10d2",
+          "shape": [
+            3600,
+            3600
+          ],
+          "single_brick_1024_possible": true,
+          "source_pixel_xy": [
+            925.7783444792171,
+            2918.4368681482924
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/195/1953p042/legacysurvey-1953p042-image-r.fits.fz"
+        },
+        "z": {
+          "crop_finite_fraction": 1.0,
+          "crop_max": 43.02302932739258,
+          "crop_min": -0.06535636633634567,
+          "crop_shape": [
+            1024,
+            1024
+          ],
+          "edge_margins_pix": [
+            925.7783444792171,
+            2673.221655520783,
+            2918.4368681482924,
+            680.5631318517076
+          ],
+          "finite_fraction_full_brick": 1.0,
+          "sha256": "e5566d6b9a9ffff619fc567957253637e17a3e0e45bcc2c9a6289fc04c8f1d79",
+          "shape": [
+            3600,
+            3600
+          ],
+          "single_brick_1024_possible": true,
+          "source_pixel_xy": [
+            925.7783444792171,
+            2918.4368681482924
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/195/1953p042/legacysurvey-1953p042-image-z.fits.fz"
+        }
+      },
+      "brick": {
+        "brickname": "1953p042",
+        "dec": "4.25",
+        "dec1": "4.125",
+        "dec2": "4.375",
+        "ra": "195.39638386648122",
+        "ra1": "195.27121001390822",
+        "ra2": "195.52155771905427"
+      },
+      "dec": 4.331431974127958,
+      "ra": 195.4601475254844,
+      "source_name": "WALLABY J130150+041953",
+      "team_release": "NGC 4808 TR1"
+    },
+    {
+      "all_grz_single_brick_1024_possible": false,
+      "bands": {
+        "g": {
+          "edge_margins_pix": [
+            657.7771671025182,
+            2941.2228328974816,
+            298.7714891990033,
+            3300.2285108009964
+          ],
+          "finite_fraction_full_brick": 1.0,
+          "sha256": "937a8bc4725fa75fe71db6cd1bbeffa5d21b482f2009384e68025ef4223ac25f",
+          "shape": [
+            3600,
+            3600
+          ],
+          "single_brick_1024_possible": false,
+          "source_pixel_xy": [
+            657.7771671025182,
+            298.7714891990033
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m247/legacysurvey-2029m247-image-g.fits.fz"
+        },
+        "r": {
+          "edge_margins_pix": [
+            657.7771671025182,
+            2941.2228328974816,
+            298.7714891990033,
+            3300.2285108009964
+          ],
+          "finite_fraction_full_brick": 1.0,
+          "sha256": "7bde32aaccd121f8e0c3557fdadd1adddc9e40fa5a810f855378f3430795b1be",
+          "shape": [
+            3600,
+            3600
+          ],
+          "single_brick_1024_possible": false,
+          "source_pixel_xy": [
+            657.7771671025182,
+            298.7714891990033
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m247/legacysurvey-2029m247-image-r.fits.fz"
+        },
+        "z": {
+          "edge_margins_pix": [
+            657.7771671025182,
+            2941.2228328974816,
+            298.7714891990033,
+            3300.2285108009964
+          ],
+          "finite_fraction_full_brick": 1.0,
+          "sha256": "1c4f72d84773f5773e30b302d1a7dde5e70193ed9cdb02baa435a29e251ac0f4",
+          "shape": [
+            3600,
+            3600
+          ],
+          "single_brick_1024_possible": false,
+          "source_pixel_xy": [
+            657.7771671025182,
+            298.7714891990033
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m247/legacysurvey-2029m247-image-z.fits.fz"
+        }
+      },
+      "brick": {
+        "brickname": "2029m247",
+        "dec": "-24.75",
+        "dec1": "-24.875",
+        "dec2": "-24.625",
+        "ra": "202.94656488549617",
+        "ra1": "202.80916030534354",
+        "ra2": "203.0839694656488"
+      },
+      "dec": -24.85919147539857,
+      "ra": 203.0381327500109,
+      "source_name": "WALLABY J133209-245132",
+      "team_release": "NGC 5044 TR3"
+    }
+  ],
+  "scope": "source-only direct NERSC DR10 coadd brick probe; no validation kinematics queried"
+}
