@@ -25,12 +25,13 @@ jobs:
           q2="SELECT o.observationID,p.productID,p.planeURI,a.uri,a.productType,a.contentType,a.contentLength,a.contentChecksum FROM caom2.Observation AS o JOIN caom2.Plane AS p ON o.obsID=p.obsID JOIN caom2.Artifact AS a ON p.planeID=a.planeID WHERE o.collection='WALLABY' AND o.observationID='WALLABY_J094821-452603' AND p.productID='source_data_Vela_TR1'"
           for spec in "vela_planes:$q1" "known_source_artifacts:$q2"; do
             name=${spec%%:*}; query=${spec#*:}
-            curl -fSs -X POST "$tap" \
+            curl -fSsL -X POST "$tap" \
               --data-urlencode 'REQUEST=doQuery' \
               --data-urlencode 'LANG=ADQL' \
-              --data-urlencode 'FORMAT=csv' \
+              --data-urlencode 'RESPONSEFORMAT=csv' \
               --data-urlencode "QUERY=$query" \
               -o "$out/${name}.csv"
+            test -s "$out/${name}.csv" || { echo "empty TAP response: $name" >&2; exit 1; }
           done
           if grep -Eqi 'kinematic|kinmodel|rotcur|model_data|Vrot' "$out/known_source_artifacts.csv"; then
             echo 'Source-data artifact firewall violation' >&2
@@ -42,6 +43,7 @@ jobs:
           Queries are constrained to collection=WALLABY and the source_data_Vela_TR1 plane only.
           The known source observation is taken from CADC's public source-data CAOM2 example.
           No kinematic plane or kinematic catalogue is queried.
+          CADC TAP redirects are followed and zero-byte responses fail closed.
           Purpose: recover source-product artifact URI/filename conventions for moment-map acquisition.
           EOF
       - name: Commit probe
@@ -54,6 +56,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No probe changes.'
           else
-            git commit -m 'Resolve WALLABY source-data artifact metadata route'
+            git commit -m 'Resolve CADC source-data TAP transport'
             git push
           fi
