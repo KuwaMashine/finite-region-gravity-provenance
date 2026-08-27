@@ -35,14 +35,14 @@ jobs:
           if len(rr)!=1: raise SystemExit(f'expected one row, got {len(rr)}')
           r=rr[0]
           if float(r['qflag']) != 0: raise SystemExit(f'pilot source qflag is not zero: {r["qflag"]}')
-          # WALLABY source-catalogue ell_maj is in degrees; one ASKAP beam here is 30 arcsec.
-          nbeam=float(r['ell_maj'])*3600.0/30.0
+          # WALLABY source-catalogue ell_maj is in 6-arcsec source-map pixels.
+          # A 30-arcsec ASKAP beam is therefore 5 source-map pixels.
+          nbeam=float(r['ell_maj'])/5.0
           if nbeam < 2.0: raise SystemExit(f'pilot is not in the >=2-beam primary source lane: {nbeam}')
           open(sys.argv[2],'w').write(f"{r['ra']} {r['dec']}\n")
           print(f'source-only pilot nbeam={nbeam:.6f}')
           PY
           read ra dec < "$tmp/coords.txt"
-          # Canonical DR10 route documented by the Legacy Surveys/Data Lab pages.
           cut="https://www.legacysurvey.org/viewer/cutout.fits?ra=${ra}&dec=${dec}&layer=ls-dr10&pixscale=0.262&bands=grz&size=512"
           dust='https://irsa.ipac.caltech.edu/cgi-bin/DUST/nph-dust'
           set +e
@@ -90,7 +90,8 @@ jobs:
           report={
             'scope':'post-Stage-0A source-only optical structural pilot; no validation kinematics queried',
             'source':row,
-            'source_ell_maj_beams_30arcsec':float(row['ell_maj'])*120.0,
+            'source_ell_maj_unit':'6-arcsec source-map pixels',
+            'source_ell_maj_beams_30arcsec':float(row['ell_maj'])/5.0,
             'legacy_layer':'ls-dr10','legacy_endpoint':'viewer/cutout.fits',
             'pixscale_arcsec':0.262,'requested_bands':'grz','requested_size_pix':512,
             'fits_hdus':hdus,'primary_shape':list(data.shape),'primary_dtype':str(data.dtype),
