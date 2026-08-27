@@ -1,0 +1,101 @@
+name: WALLABY source-only DR10 optical pilot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_pilot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  optical-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Acquire one source-only pilot and DR10 grz cutout
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=post-stage0/source-optical-pilot
+          tmp=/tmp/wallaby_optical_pilot
+          mkdir -p "$out" "$tmp"
+          tap='https://ws-uv.canfar.net/youcat/sync'
+          curl -fSsG "$tap" \
+            --data-urlencode 'REQUEST=doQuery' \
+            --data-urlencode 'LANG=ADQL' \
+            --data-urlencode 'FORMAT=csv' \
+            --data-urlencode "QUERY=SELECT name,ra,dec,dist_h,ell_maj,ell_min,ell_pa,log_m_hi_corr,rel,qflag,team_release FROM cirada.Wallaby_dr2_source_catalogue WHERE name='WALLABY J094821-452603' AND team_release='Vela TR1'" \
+            -o "$tmp/source.csv"
+          python - "$tmp/source.csv" "$tmp/coords.txt" <<'PY'
+          import csv,sys
+          rr=list(csv.DictReader(open(sys.argv[1],encoding='utf-8')))
+          if len(rr)!=1: raise SystemExit(f'expected one row, got {len(rr)}')
+          r=rr[0]
+          if float(r['qflag']) != 0: raise SystemExit(f'pilot source qflag is not zero: {r["qflag"]}')
+          open(sys.argv[2],'w').write(f"{r['ra']} {r['dec']}\n")
+          PY
+          read ra dec < "$tmp/coords.txt"
+          cut="https://www.legacysurvey.org/viewer/fits-cutout?ra=${ra}&dec=${dec}&layer=ls-dr10-south&pixscale=0.262&bands=grz&size=1024"
+          curl -fSsL "$cut" -o "$tmp/dr10_grz.fits"
+          dust='https://irsa.ipac.caltech.edu/cgi-bin/DUST/nph-dust'
+          curl -fSsG "$dust" --data-urlencode "locstr=${ra} ${dec}" -o "$tmp/dust.xml"
+          test -s "$tmp/dr10_grz.fits"
+          test -s "$tmp/dust.xml"
+      - name: Inspect photometric structure and foreground transmission
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip -q install astropy
+          python - <<'PY'
+          import csv,json,math,hashlib,re,xml.etree.ElementTree as ET
+          from pathlib import Path
+          import numpy as np
+          from astropy.io import fits
+          from astropy.wcs import WCS
+          tmp=Path('/tmp/wallaby_optical_pilot'); out=Path('post-stage0/source-optical-pilot')
+          row=list(csv.DictReader((tmp/'source.csv').open()))[0]
+          hdus=[]
+          with fits.open(tmp/'dr10_grz.fits',memmap=False) as h:
+              for i,x in enumerate(h):
+                  shape=None if x.data is None else list(np.asarray(x.data).shape)
+                  hdus.append({'index':i,'name':x.name,'shape':shape,'bunit':x.header.get('BUNIT'),'bands':x.header.get('BANDS'),'extname':x.header.get('EXTNAME')})
+              data=np.asarray(h[0].data) if h[0].data is not None else None
+              header=h[0].header.copy()
+          if data is None: raise SystemExit('no primary image data')
+          root=ET.parse(tmp/'dust.xml').getroot()
+          vals=[]
+          for elem in root.iter():
+              if elem.tag.endswith('refPixelValueSFD') and elem.text:
+                  m=re.search(r'[-+0-9.eE]+',elem.text.strip())
+                  if m: vals.append(float(m.group(0)))
+          if not vals: raise SystemExit('no SFD reference-pixel E(B-V) in IRSA dust response')
+          ebv=vals[0]
+          # Legacy Survey DR10 DECam extinction coefficients, documented for MW_TRANSMISSION.
+          coeff={'g':3.214,'r':2.165,'z':1.211}
+          A={b:coeff[b]*ebv for b in coeff}
+          trans={b:10**(-0.4*A[b]) for b in coeff}
+          report={
+            'scope':'post-Stage-0A source-only optical structural pilot; no validation kinematics queried',
+            'source':row,
+            'legacy_layer':'ls-dr10-south','pixscale_arcsec':0.262,'requested_bands':'grz','requested_size_pix':1024,
+            'fits_hdus':hdus,'primary_shape':list(data.shape),'primary_dtype':str(data.dtype),
+            'primary_finite_fraction':float(np.isfinite(data).mean()),
+            'primary_min':float(np.nanmin(data)),'primary_max':float(np.nanmax(data)),
+            'SFD_EBV_at_source':ebv,'legacy_decam_A_over_EBV':coeff,'A_mag':A,'mw_transmission':trans,
+            'dr10_fits_sha256':hashlib.sha256((tmp/'dr10_grz.fits').read_bytes()).hexdigest(),
+            'dust_xml_sha256':hashlib.sha256((tmp/'dust.xml').read_bytes()).hexdigest()
+          }
+          (out/'optical_structural_report.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(report,indent=2,sort_keys=True))
+          PY
+          sha256sum post-stage0/source-optical-pilot/optical_structural_report.json > post-stage0/source-optical-pilot/SHA256SUMS.txt
+      - name: Commit source-only optical pilot report
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-pilot
+          if git diff --cached --quiet; then echo 'No optical pilot changes.'; else git commit -m 'Record WALLABY source-only DR10 optical structural pilot'; git push; fi
