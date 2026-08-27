@@ -1,0 +1,12 @@
+{
+  "created_utc": "2026-08-27T22:40:21Z",
+  "files": {
+    "STAGE0A_MLCR_COEFFICIENTS.csv": "93aa2e7d1cdc4e619fd6942fffad199ff42218d376b23839ccd5bfb9dbb9cae5",
+    "STAGE0A_SOURCE_OPTICAL_IMPLEMENTATION_LOCK.md": "56247ddfb2a849de47a41312c32248899339dc4c866dde7d6d33e499d16259bf",
+    "STAGE0A_SOURCE_QUALITY_LOCK.json": "f86549a599dad5e7951c8d5ec066a0a29e76ee7f22d3e2520d4caa0bcc7517f6"
+  },
+  "firewall": "receipt contains no validation optical values and no validation kinematic values",
+  "original_stage0_commit": "15abeac9b6d285ce42caf26498115c0686d9bcd3",
+  "schema": "WALLABY_STAGE0A_SOURCE_OPTICAL_RECEIPT_v1",
+  "stage0a_input_commit": "2ba4bef3fc21071aa1d7388c1a4587bb24e5fd99"
+}
