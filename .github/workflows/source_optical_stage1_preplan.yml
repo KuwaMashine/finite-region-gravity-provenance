@@ -1,5 +1,6 @@
 name: WALLABY Stage-1 source-only optical spatial preplan
 
+# Explicit user-authored trigger after the committed H I Stage-1 receipt.
 on:
   push:
     branches: [main]
