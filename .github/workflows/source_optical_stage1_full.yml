@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'post-stage0/source-optical-stage1-preplan/OPTICAL_STAGE1_PREPLAN_REPORT.json'
+      - 'post-stage0/source-optical-production-preflight/PRODUCTION_PREFLIGHT_PASS.json'
 
 permissions:
   contents: write
