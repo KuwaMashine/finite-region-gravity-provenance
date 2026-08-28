@@ -49,7 +49,9 @@ with `meta.csv`, `optical_profile.csv`, `optical_status.csv`, `frame_audit.csv`,
 
 ## Armed next step
 
-Workflow `source_stage1_target_full.yml` was added at commit `0da31db9d97071f303b91b68db285e69fea06ec0` but has **not** been triggered.
+Workflow `source_stage1_target_full.yml` was added at commit `0da31db9d97071f303b91b68db285e69fea06ec0` and mechanically repaired at commit `0f364c6521b992897afcb9ff51b2b55b062a1cdf`; it has **not** been triggered.
+
+The frozen source-engine blobs are deliberately retained byte-for-byte and therefore appear in Git as ordinary mode `100644`. The frozen `run_source_stage.py` launches helper scripts directly. The wrapper now restores execute bits at runtime with `chmod +x post-stage0/frozen-v4.99-source-engine/*.py`; this changes no frozen bytes or Stage-0 hashes. The exact v4.99 source runner was smoke-tested on synthetic source-only inputs after this runtime-mode restoration and produced predictors, H I fold, proxy strata, beam report and Stage-1 timestamp payload successfully.
 
 After the optical population is successfully committed:
 
