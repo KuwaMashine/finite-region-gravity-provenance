@@ -1,0 +1,34 @@
+name: WALLABY source-only Vela DR10 field coverage audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_vela_dr10_field_coverage.yml'
+      - '.github/scripts/source_vela_dr10_field_coverage.py'
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Data Lab client
+        run: python -m pip -q install --upgrade astro-datalab
+      - name: Audit final Vela DR10 footprint
+        run: python .github/scripts/source_vela_dr10_field_coverage.py
+      - name: Commit Vela source-only coverage receipt
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-vela-dr10-field-coverage
+          if git diff --cached --quiet; then
+            echo 'No Vela coverage changes.'
+          else
+            git commit -m 'Record final Vela DR10 field coverage audit'
+            git pull --rebase origin main
+            git push
+          fi
