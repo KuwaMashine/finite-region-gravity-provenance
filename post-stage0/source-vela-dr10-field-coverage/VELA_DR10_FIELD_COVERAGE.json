@@ -1,0 +1,17 @@
+{
+  "all_vela_positions_outside_dr10_catalog_footprint": true,
+  "bounds_deg": {
+    "dec_max": -42.769315895487885,
+    "dec_min": -49.110543115505216,
+    "ra_max": 154.31443777643082,
+    "ra_min": 145.3618883554378
+  },
+  "dr10_tractor_count_in_full_padded_bounding_rectangle": 0,
+  "interpretation": "The complete padded bounding rectangle containing all final Vela TR1 source positions has zero DR10 Tractor objects. Under the frozen DR10 all-three-band optical gate, Vela has no production optical catalogue footprint; no substitute survey is permitted.",
+  "n_sources_with_local_dr10_catalog_coverage": 0,
+  "n_vela_final_release_sources": 203,
+  "query": "SELECT COUNT(*) AS n FROM ls_dr10.tractor_s WHERE ra>=145.3618883554378 AND ra<=154.31443777643082 AND dec>=-49.110543115505216 AND dec<=-42.769315895487885",
+  "response_products_used": false,
+  "schema": "WALLABY_VELA_DR10_FIELD_COVERAGE_v1",
+  "scope": "source-only final Vela TR1 sky positions; no WALLABY kinematic product or response column queried"
+}
