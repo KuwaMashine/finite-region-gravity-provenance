@@ -1,0 +1,166 @@
+{
+  "decision_note": "This audit measures whether the prospective negative-annulus/no-clipping rule is operationally viable. It does not authorize changing that rule.",
+  "field_summary": {
+    "NGC4808": {
+      "n_sampled": 10,
+      "pass_fraction": 0.5,
+      "status_counts": {
+        "pass": 5,
+        "profile_rejected": 5
+      }
+    },
+    "NGC5044": {
+      "n_sampled": 10,
+      "pass_fraction": 0.4,
+      "status_counts": {
+        "pass": 4,
+        "profile_rejected": 6
+      }
+    },
+    "Vela": {
+      "n_sampled": 10,
+      "pass_fraction": 0.6,
+      "status_counts": {
+        "pass": 6,
+        "profile_rejected": 4
+      }
+    }
+  },
+  "frozen_profiler_sha256": "eb290a85d5d4600a03602d5ab3a4c7c8ae1a7e40d18c74cfdee70f2b10804306",
+  "n_pass": 15,
+  "n_total": 30,
+  "overall_pass_fraction": 0.5,
+  "response_products_used": false,
+  "sample_per_field": 10,
+  "schema": "WALLABY_SOURCE_HI_FEASIBILITY_AUDIT_v1",
+  "scope": "deterministic source-only qflag=0 sample; exact frozen v4.99 one_profile; no response products queried",
+  "selection_rule": "within each final validation release, qflag=0 finite source rows sorted by SHA256(name), first 10",
+  "selections": {
+    "NGC4808": [
+      {
+        "name": "WALLABY J131122+032431",
+        "selection_hash": "00ac521a6f16834713191fbfdedd8955fe7109fe5c16d8b2fb1eb049c65b5087"
+      },
+      {
+        "name": "WALLABY J130055+070243",
+        "selection_hash": "027f600dceeb39c74f94de2e01f5ec5210c206d79c1a10d3353fb06d2b4ba912"
+      },
+      {
+        "name": "WALLABY J130358+054204",
+        "selection_hash": "052bcd24a5887451b0f911aca4a5b3f73bc0771a60d2c636aeb5db2e483ac05c"
+      },
+      {
+        "name": "WALLABY J130338+075404",
+        "selection_hash": "0569b6ae8087032821f5608de35033db8f343246927068e289d2ac04690361ff"
+      },
+      {
+        "name": "WALLABY J130438+034245",
+        "selection_hash": "05b9477009826cef5b8e74d70abbbaaddd47f3a24a13c7b1d5f07ebb6f6f3cb4"
+      },
+      {
+        "name": "WALLABY J130555+033208",
+        "selection_hash": "05e2f7824ec221c711baf861e7a0b97f55bb502939e26fae03dd08ff5cdb7390"
+      },
+      {
+        "name": "WALLABY J130844+044424",
+        "selection_hash": "06a8a8b7b1941fb5e0276df37f699ffaa7ec540dc0220429d532feb155488dc3"
+      },
+      {
+        "name": "WALLABY J130331+075810",
+        "selection_hash": "07d502320b99f7ee16bae39669e633035fffca17fdbce1c87a99f42842b77484"
+      },
+      {
+        "name": "WALLABY J130214+055401",
+        "selection_hash": "09a3c86652cc001f20bc5609d276706c4a18668b71c145b45a5f36da3c20f8a8"
+      },
+      {
+        "name": "WALLABY J130312+080017",
+        "selection_hash": "0a940f9c79580762370ff9456053fd3664e83d27dfe5f465fdeae9eaf9da8bdf"
+      }
+    ],
+    "NGC5044": [
+      {
+        "name": "WALLABY J132110-154938",
+        "selection_hash": "00124a443d19bd36e46ab177e15237bb727f3551a60b4079758969e5a3d5a8fb"
+      },
+      {
+        "name": "WALLABY J130414-191227",
+        "selection_hash": "00700742e6df0033548d1f9332de7a9a77ecb7d1efe5a3a0be4285572ad9a720"
+      },
+      {
+        "name": "WALLABY J130004-154055",
+        "selection_hash": "007de72f8583d9cf4c801888039221b716ac6ef36f5c5d52b07113943f9d1f85"
+      },
+      {
+        "name": "WALLABY J133643-201220",
+        "selection_hash": "00859e77e1330d7e5fd0972ddccc4ddd9ac8390e821edc9df904485fd670d7e1"
+      },
+      {
+        "name": "WALLABY J133017-214446",
+        "selection_hash": "009df8867f642b5a94a09fe835e8528d1cadf92b9badbd49482c2a954b162814"
+      },
+      {
+        "name": "WALLABY J132311-171200",
+        "selection_hash": "00ab07f170704b8a1af3f8992cb6751913e172be5721cab7e1766c08b068a586"
+      },
+      {
+        "name": "WALLABY J130733-120657",
+        "selection_hash": "00eec2836937184b83b672a207b73c0cb6dfee1005f2b30cc6810b7a3a7d9f8b"
+      },
+      {
+        "name": "WALLABY J131204-131632",
+        "selection_hash": "00fc33f9b3933c6864514a397f5442b27fef68e5767438cc3ef496d5e9cbcd32"
+      },
+      {
+        "name": "WALLABY J130321-134144",
+        "selection_hash": "011e0d539ffb5fd54a91c560c4b85214d7caa54321d94e78eeb5f3beb97a371f"
+      },
+      {
+        "name": "WALLABY J130912-121116",
+        "selection_hash": "0136c49d8bff9b2e9e4fc4f80212e7e22ed934a7e4af73552610454a1929223a"
+      }
+    ],
+    "Vela": [
+      {
+        "name": "WALLABY J100916-431959",
+        "selection_hash": "01271a1ca7c1aec4ae6282f7832313b093022dd30e40c130a3934dc938336abc"
+      },
+      {
+        "name": "WALLABY J095824-433328",
+        "selection_hash": "01e81a02d29219b42b8f6dc2562b27a24268985627a97a0d3da5eb9ac03aef8b"
+      },
+      {
+        "name": "WALLABY J094254-463705",
+        "selection_hash": "0504d4d33094df8bef7fb6a0fe04b886b7e91e9ff2d547bf6f67e5e12e5220fc"
+      },
+      {
+        "name": "WALLABY J100645-474147",
+        "selection_hash": "0ae63c82a27d231c8fbf06cc7b91cdee00505ce2cdafc50cb5f9214ee7ad1505"
+      },
+      {
+        "name": "WALLABY J094333-452200",
+        "selection_hash": "0ce355fbede3e9114eb98aed9efd2c6c41df5cdcf71dfa7722922c9ac72c3ecf"
+      },
+      {
+        "name": "WALLABY J095917-440347",
+        "selection_hash": "0f7bc78435c80dfa7991d275c4fdb374ec9f980416d84836dbdd468096cc701a"
+      },
+      {
+        "name": "WALLABY J100229-433859",
+        "selection_hash": "102bc0772a4d5d7f81cbab7ff0bd72e5fdc6293ff53fe5738b8fd519b56fc040"
+      },
+      {
+        "name": "WALLABY J101703-442447",
+        "selection_hash": "108d57051fa061d06c6d2de11f84e1a769df2d6371093abafc29b63ad56f8766"
+      },
+      {
+        "name": "WALLABY J100732-471911",
+        "selection_hash": "112bbfb7ead7702b9a35fef2b4e6f27c9c2de4b513cb320e4edf7cc9397f4fd9"
+      },
+      {
+        "name": "WALLABY J094402-445751",
+        "selection_hash": "1198c5f3bbb7bcc68dcaf9ae31ae48c0747bf3aa030fdd967e74bd85527809a7"
+      }
+    ]
+  }
+}
