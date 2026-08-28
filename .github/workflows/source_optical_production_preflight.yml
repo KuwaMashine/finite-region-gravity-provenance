@@ -1,0 +1,78 @@
+name: WALLABY Stage-1 production optical preflight
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_production_preflight.yml'
+      - '.github/scripts/source_optical_stage1_shard.py'
+      - 'post-stage0/source-optical-stage1-preplan/OPTICAL_STAGE1_PREPLAN_REPORT.json'
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned optical stack
+        run: python -m pip -q install 'autoprof==1.3.4' astropy reproject --upgrade astro-datalab requests
+      - name: Restrict local runner copy of the frozen plan to the H I-surviving optical pilot source
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+          p=Path('post-stage0/source-optical-stage1-preplan/optical_stage1_plan.csv')
+          rows=list(csv.DictReader(p.open()))
+          target=[r for r in rows if r['galaxy_id']=='WALLABY J124947+035042']
+          if len(target)!=1: raise SystemExit(f'expected one preflight target, got {len(target)}')
+          r=target[0]
+          if r['hi_status']!='pass' or r['dr10_optical_field_status']!='candidate' or r['spatial_shard']!='12' or r['primary_brick']!='1923p037':
+              raise SystemExit(f'preflight target state changed: {r}')
+          with p.open('w',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=list(r.keys()));w.writeheader();w.writerow(r)
+          PY
+      - name: Run exact production optical processor on one real H I survivor
+        run: |
+          set -euo pipefail
+          python .github/scripts/source_optical_stage1_shard.py --shard-index 12 --out-dir /tmp/production-optical-preflight
+      - name: Require full Stage-1 optical success and freeze receipt
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv,hashlib,json,shutil
+          from pathlib import Path
+          src=Path('/tmp/production-optical-preflight'); out=Path('post-stage0/source-optical-production-preflight'); out.mkdir(parents=True,exist_ok=True)
+          st=list(csv.DictReader((src/'status.csv').open()))
+          if len(st)!=1: raise SystemExit(f'expected one preflight status, got {len(st)}')
+          r=st[0]
+          if r['galaxy_id']!='WALLABY J124947+035042' or r['status']!='pass' or r['full_stellar'].lower()!='true':
+              raise SystemExit(f'production preflight did not produce full_stellar pass: {r}')
+          prof=list(csv.DictReader((src/'optical_profile.csv').open()))
+          if len(prof)<5 or any(z['galaxy_id']!=r['galaxy_id'] for z in prof): raise SystemExit('invalid preflight normalized optical profile')
+          for fn in ('status.csv','optical_profile.csv','frame_audit.csv','summary.json'): shutil.copy2(src/fn,out/fn)
+          legacy=json.loads(Path('post-stage0/source-optical-stellar-mass-pilot/stellar_mass_pilot_summary.json').read_text())
+          report={'schema':'WALLABY_STAGE1_PRODUCTION_OPTICAL_PREFLIGHT_PASS_v1','scope':'one committed H I survivor through exact production DR10 native-primary-grid frame-ladder processor; no response products',
+                  'galaxy_id':r['galaxy_id'],'team_release':r['team_release'],'primary_brick':'1923p037','spatial_shard':12,'status':'pass','full_stellar':True,
+                  'selected_size_pix':int(float(r['selected_size_pix'])),'stage1_R50_arcsec':float(r['stage1_R50_arcsec']),'logMstar':float(r['logMstar']),
+                  'n_optical_profile_rows':len(prof),'legacy_pilot_logMstar_diagnostic':legacy['log10_Mstar_adopted_median'],
+                  'delta_logMstar_production_minus_legacy_pilot':float(r['logMstar'])-legacy['log10_Mstar_adopted_median'],
+                  'frame_lock_sha256':hashlib.sha256(Path('post-stage0/SOURCE_OPTICAL_PRODUCTION_FRAME_LOCK.json').read_bytes()).hexdigest(),
+                  'processor_sha256':hashlib.sha256(Path('.github/scripts/source_optical_stage1_shard.py').read_bytes()).hexdigest(),'response_products_used':False,
+                  'decision':'Exact production processor produced a converged full-stellar Stage-1 optical input for a real H I survivor. Full spatial matrix may be explicitly triggered.'}
+          (out/'PRODUCTION_PREFLIGHT_PASS.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          files=sorted(p for p in out.iterdir() if p.is_file() and p.name!='SHA256SUMS.txt')
+          with (out/'SHA256SUMS.txt').open('w') as f:
+              for p in files:f.write(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p}\n')
+          print(json.dumps(report,indent=2,sort_keys=True))
+          PY
+      - name: Commit production optical preflight receipt
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-production-preflight
+          git commit -m 'Pass Stage-1 production optical preflight'
+          git pull --rebase origin main
+          git push
