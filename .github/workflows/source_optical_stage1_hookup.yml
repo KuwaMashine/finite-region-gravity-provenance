@@ -1,0 +1,36 @@
+name: WALLABY source-only Stage-1 optical estimator hookup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_stage1_hookup.yml'
+      - '.github/scripts/source_optical_stage1_hookup.py'
+
+permissions:
+  contents: write
+
+jobs:
+  hookup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recompute frozen Stage-1 optical estimator from existing source-only receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/source_optical_stage1_hookup.py
+      - name: Commit Stage-1 optical hookup receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-stage1-hookup
+          if git diff --cached --quiet; then
+            echo 'No Stage-1 optical hookup changes.'
+          else
+            git commit -m 'Validate frozen Stage-1 optical estimator hookup'
+            git pull --rebase origin main
+            git push
+          fi
