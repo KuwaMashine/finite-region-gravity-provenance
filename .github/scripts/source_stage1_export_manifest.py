@@ -67,7 +67,7 @@ def main():
           'field_id':'team_release -> frozen validation field id',
           'release_phase':'constant 2 for final validation releases',
           'distance_mpc':'dist_h',
-          'logMstar':'median of frozen 45 MLCR log-mass estimates from DR10 common-aperture g/r/z photometry',
+          'logMstar':'median of frozen 45 MLCR log-mass estimates from foreground-corrected DR10 common-aperture g/r/z photometry',
           'logMHI':'log_m_hi_corr',
           'ell_maj_beams':'ell_maj / 5.0 for 6 arcsec source-catalogue pixels and 30 arcsec beam',
           'robust_sample':'qflag==0 + finite source metadata + successful exact frozen source-moment0 profile construction',
@@ -81,7 +81,7 @@ def main():
         'optical_profile':{
           'galaxy_id':'source catalogue name',
           'radius_arcsec':'AutoProf forced-profile R within registered common uncertainty aperture',
-          'mu_r':'foreground-corrected r-band surface brightness profile input convention used by frozen Stage-1 estimator',
+          'mu_r':'retained observed r-band surface-brightness profile; the radius-independent Galactic extinction correction enters stellar-mass photometry and does not alter the frozen profile-shape scale estimator',
           'muerr_r':'r-band surface-brightness uncertainty',
           'ellipticity':'r-band AutoProf geometric ellipticity'
         }
