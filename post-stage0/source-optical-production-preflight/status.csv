@@ -1,0 +1,2 @@
+galaxy_id,field_id,team_release,spatial_shard,status,full_stellar,reason,logMstar,logMstar_method_sd,selected_size_pix,stage1_R50_arcsec,stage1_Rd_arcsec,common_aperture_arcsec,n_optical_profile_rows,SFD_EBV,response_products_used
+WALLABY J124947+035042,NGC4808,NGC 4808 TR1,12,pass,True,,7.369973808876182,0.1460902568535107,2560,15.324938826705253,9.130971675024798,59.93552934624482,58,0.0415,False

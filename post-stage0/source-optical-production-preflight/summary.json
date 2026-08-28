@@ -1,0 +1,12 @@
+{
+  "frame_lock_sha256": "0a0d028d771d799cb71c933acbd4604befb728a6c187ae7d39a8444845d15c56",
+  "n_candidates": 1,
+  "n_full_stellar": 1,
+  "n_unresolved_network": 0,
+  "response_products_used": false,
+  "shard_index": 12,
+  "status_counts": {
+    "pass": 1
+  },
+  "unresolved_network_ids": []
+}

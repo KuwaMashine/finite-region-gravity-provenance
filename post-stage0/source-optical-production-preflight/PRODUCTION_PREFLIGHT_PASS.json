@@ -1,0 +1,20 @@
+{
+  "decision": "Exact production processor produced a converged full-stellar Stage-1 optical input for a real H I survivor. Full spatial matrix may be explicitly triggered.",
+  "delta_logMstar_production_minus_legacy_pilot": 0.03487056185103388,
+  "frame_lock_sha256": "0a0d028d771d799cb71c933acbd4604befb728a6c187ae7d39a8444845d15c56",
+  "full_stellar": true,
+  "galaxy_id": "WALLABY J124947+035042",
+  "legacy_pilot_logMstar_diagnostic": 7.335103247025148,
+  "logMstar": 7.369973808876182,
+  "n_optical_profile_rows": 58,
+  "primary_brick": "1923p037",
+  "processor_sha256": "d6daa26e69ff27306e49ee78ec4ebb2a2622fcae194a59cc76f10dd48d21e58d",
+  "response_products_used": false,
+  "schema": "WALLABY_STAGE1_PRODUCTION_OPTICAL_PREFLIGHT_PASS_v1",
+  "scope": "one committed H I survivor through exact production DR10 native-primary-grid frame-ladder processor; no response products",
+  "selected_size_pix": 2560,
+  "spatial_shard": 12,
+  "stage1_R50_arcsec": 15.324938826705253,
+  "status": "pass",
+  "team_release": "NGC 4808 TR1"
+}
