@@ -1,0 +1,72 @@
+name: WALLABY exact-v4.99 Stage-1 TARGET source stage
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/source-stage1-target-trigger/RUN.json'
+
+permissions:
+  contents: write
+
+jobs:
+  source-stage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install frozen source-engine dependencies
+        run: python -m pip -q install numpy pandas scipy astropy
+      - name: Verify frozen source engine remains Stage-0 bound
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('post-stage0/frozen-v4.99-source-engine/VERIFICATION.json')
+          x=json.loads(p.read_text())
+          assert x['status']=='pass'
+          assert x['source_engine_manifest_matches'] is True
+          assert x['stage0_receipt_verified'] is True
+          assert x['response_products_used'] is False
+          print('frozen v4.99 source engine verification: PASS')
+          PY
+      - name: Build exact SOURCE_ONLY export manifest
+        run: python .github/scripts/source_stage1_export_manifest.py
+      - name: Run byte-verified v4.99 TARGET source stage
+        run: |
+          set -euo pipefail
+          rm -rf post-stage0/source-stage1-target
+          python post-stage0/frozen-v4.99-source-engine/run_source_stage.py \
+            --mode TARGET \
+            --meta post-stage0/source-optical-stage1/meta.csv \
+            --hi-profile post-stage0/source-hi-stage1/hi_profile.csv \
+            --optical-profile post-stage0/source-optical-stage1/optical_profile.csv \
+            --initial-receipt post-stage0/STAGE0_EXTERNAL_TIMESTAMP_RECEIPT.json \
+            --export-manifest post-stage0/SOURCE_EXPORT_MANIFEST.json \
+            --out-dir post-stage0/source-stage1-target
+      - name: Record source-only production hashes
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path.cwd(); out=root/'post-stage0/source-stage1-target'
+          files=sorted(p for p in out.iterdir() if p.is_file() and p.name!='SHA256SUMS.txt')
+          def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          with (out/'SHA256SUMS.txt').open('w') as f:
+              for p in files: f.write(f'{sha(p)}  {p.relative_to(root)}\n')
+          payload=json.loads((out/'STAGE1_TIMESTAMP_PAYLOAD.json').read_text())
+          assert payload['response_products_used'] is False
+          print(json.dumps({'status':'STAGE1_TARGET_SOURCE_READY_FOR_EXTERNAL_TIMESTAMP','n_files':len(files),'payload_sha256':sha(out/'STAGE1_TIMESTAMP_PAYLOAD.json')},sort_keys=True))
+          PY
+      - name: Commit Stage-1 source-only TARGET payload
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/SOURCE_EXPORT_MANIFEST.json post-stage0/source-stage1-target
+          if git diff --cached --quiet; then
+            echo 'No Stage-1 TARGET source changes.'
+          else
+            git commit -m 'Freeze exact-v4.99 Stage-1 source-only TARGET payload'
+            git pull --rebase origin main
+            git push
+          fi
