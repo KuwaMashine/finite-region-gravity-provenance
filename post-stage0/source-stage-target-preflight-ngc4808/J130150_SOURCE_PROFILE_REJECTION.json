@@ -1,0 +1,11 @@
+{
+  "galaxy_id": "WALLABY J130150+041953",
+  "source_release": "NGC 4808 TR1",
+  "status": "source_profile_rejected",
+  "reason": "negative source annular moment-0 weight; no clipping is allowed",
+  "rule_basis": "STAGE0A source-quality lock and exact v4.99 source_moment0_profile.py",
+  "workflow_run": "https://github.com/KuwaMashine/finite-region-gravity-provenance/actions/runs/33136355291",
+  "workflow_head_commit": "a837794e7b1edfa36ba932b2cec602084c8cc446",
+  "response_products_used": false,
+  "interpretation": "Prospective source-side attrition. Do not rescue by clipping negative annuli or by using later response information. Because two preflight sources have now failed the same source-only rule, audit its population pass fraction before bulk optical production."
+}
