@@ -70,6 +70,9 @@ jobs:
       - name: Commit production optical preflight receipt
         run: |
           set -euo pipefail
+          # The preflight intentionally narrows the tracked plan in the runner only.
+          # Restore it before rebasing so that only receipt artifacts enter history.
+          git restore post-stage0/source-optical-stage1-preplan/optical_stage1_plan.csv
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add post-stage0/source-optical-production-preflight
