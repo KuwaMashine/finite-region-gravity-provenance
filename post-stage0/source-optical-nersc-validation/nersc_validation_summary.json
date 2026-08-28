@@ -1,0 +1,130 @@
+{
+  "backend": "portal.nersc.gov DR10 south coadd image-g/r/z",
+  "brick": "1953p042",
+  "delta_nersc1024_minus_nersc512": {
+    "R50_r_arcsec": 0.7654483994079602,
+    "log10_Mstar": 0.027440059725476473
+  },
+  "delta_nersc512_minus_viewer512": {
+    "R50_r_arcsec": 0.12952119494349468,
+    "log10_Mstar": -0.014953639676722474
+  },
+  "nersc_1024": {
+    "A_mag": {
+      "g": 0.094813,
+      "r": 0.0638675,
+      "z": 0.0357245
+    },
+    "R50_r_arcsec": 8.0794731498451,
+    "R50_r_kpc": 6.293940183482832,
+    "Rd_star_arcsec": 4.813946816662088,
+    "Rd_star_kpc": 3.7500828022579245,
+    "SFD_EBV": 0.0295,
+    "autoprof_checkfit": {
+      "g": {},
+      "r": {
+        "FFT coefficients": false,
+        "Light symmetry": false,
+        "initial fit compare": true,
+        "isophote variability": true
+      },
+      "z": {}
+    },
+    "colours_mag": {
+      "g-r": 0.6173796107820859,
+      "g-z": 1.103101852550731,
+      "r-z": 0.4857222417686451
+    },
+    "common_aperture_fully_contained": true,
+    "common_aperture_radius_arcsec": 72.52199050895625,
+    "first_bad_SB_e": null,
+    "first_bad_radius_arcsec": null,
+    "fitted_center_pix": {
+      "x": 526.32,
+      "y": 542.37
+    },
+    "foreground_corrected_common_aperture_mag": {
+      "g": 15.041535988013175,
+      "r": 14.424156377231089,
+      "z": 13.938434135462444
+    },
+    "log10_Mstar_adopted_median": 10.68643695449442,
+    "log10_Mstar_method_population_sd": 0.12725201825529503,
+    "max_log10_Mstar": 10.824017884886603,
+    "min_log10_Mstar": 10.332162054778427,
+    "n_common_profile_rows": 60,
+    "n_mlcr_estimates": 45,
+    "n_retained": 60,
+    "observed_common_aperture_mag": {
+      "g": 15.136348988013175,
+      "r": 14.48802387723109,
+      "z": 13.974158635462445
+    },
+    "orientation_independent_safe_radius_arcsec": 125.40106
+  },
+  "nersc_512": {
+    "A_mag": {
+      "g": 0.094813,
+      "r": 0.0638675,
+      "z": 0.0357245
+    },
+    "R50_r_arcsec": 7.31402475043714,
+    "R50_r_kpc": 5.697652981326743,
+    "Rd_star_arcsec": 4.357874023633537,
+    "Rd_star_kpc": 3.3948003691835997,
+    "SFD_EBV": 0.0295,
+    "autoprof_checkfit": {
+      "g": {},
+      "r": {
+        "FFT coefficients": false,
+        "Light symmetry": false,
+        "initial fit compare": true,
+        "isophote variability": true
+      },
+      "z": {}
+    },
+    "colours_mag": {
+      "g-r": 0.6236001226132437,
+      "g-z": 1.1036156172989209,
+      "r-z": 0.48001549468567717
+    },
+    "common_aperture_fully_contained": true,
+    "common_aperture_radius_arcsec": 49.53349532747505,
+    "first_bad_SB_e": {
+      "g": 0.15938818818479122,
+      "r": 0.41093530142048684,
+      "z": 0.7421041264847041
+    },
+    "first_bad_radius_arcsec": 54.48684486022256,
+    "fitted_center_pix": {
+      "x": 270.32,
+      "y": 286.37
+    },
+    "foreground_corrected_common_aperture_mag": {
+      "g": 15.131675769927398,
+      "r": 14.508075647314154,
+      "z": 14.028060152628477
+    },
+    "log10_Mstar_adopted_median": 10.658996894768944,
+    "log10_Mstar_method_population_sd": 0.1315181861094785,
+    "max_log10_Mstar": 10.77565251866295,
+    "min_log10_Mstar": 10.282855075286086,
+    "n_common_profile_rows": 60,
+    "n_mlcr_estimates": 45,
+    "n_retained": 56,
+    "observed_common_aperture_mag": {
+      "g": 15.226488769927398,
+      "r": 14.571943147314155,
+      "z": 14.063784652628478
+    },
+    "orientation_independent_safe_radius_arcsec": 58.32906
+  },
+  "scope": "source-only direct NERSC DR10 photometry validation; no validation kinematics queried",
+  "source_name": "WALLABY J130150+041953",
+  "team_release": "NGC 4808 TR1",
+  "viewer_512_reference": {
+    "R50_r_arcsec": 7.184503555493645,
+    "common_aperture_radius_arcsec": 45.03045029770459,
+    "log10_Mstar_adopted_median": 10.673950534445666
+  }
+}
