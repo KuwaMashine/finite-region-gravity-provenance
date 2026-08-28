@@ -1,0 +1,66 @@
+name: Verify frozen v4.99 source engine
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify_frozen_v499_source_engine.yml'
+      - 'post-stage0/frozen-v4.99-source-engine/**'
+      - 'post-stage0/STAGE0_EXTERNAL_TIMESTAMP_RECEIPT.json'
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact v4.99 source-engine bytes and Stage-0 receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          eng=post-stage0/frozen-v4.99-source-engine
+          (cd "$eng" && sha256sum -c SOURCE_ENGINE_SHA256SUMS.txt)
+          python - <<'PY'
+          import hashlib, importlib.util, json
+          from pathlib import Path
+          root=Path.cwd(); eng=root/'post-stage0/frozen-v4.99-source-engine'
+          spec=importlib.util.spec_from_file_location('holdout_integrity',eng/'holdout_integrity.py')
+          hi=importlib.util.module_from_spec(spec); spec.loader.exec_module(hi)
+          receipt=root/'post-stage0/STAGE0_EXTERNAL_TIMESTAMP_RECEIPT.json'
+          r=hi.verify_initial_receipt(receipt,eng/'PRETARGET_MANIFEST_SHA256.txt')
+          expected={}
+          for line in (eng/'SOURCE_ENGINE_SHA256SUMS.txt').read_text().splitlines():
+              h,name=line.split(None,1); expected[name.strip()]=h
+          actual={name:hi.sha256(eng/name) for name in sorted(expected)}
+          report={
+            'schema':'WALLABY_V499_SOURCE_ENGINE_VERIFICATION_v1',
+            'status':'pass',
+            'source_engine_exact_hashes':actual,
+            'source_engine_manifest_matches':all(actual[k]==expected[k] for k in expected),
+            'stage0_receipt_verified':True,
+            'stage0_timestamp_service':r['timestamp_service'],
+            'stage0_timestamp_utc':r['timestamp_utc'],
+            'stage0_proof_reference':r['proof_reference'],
+            'frozen_manifest_file_sha256':actual['PRETARGET_MANIFEST_SHA256.txt'],
+            'response_products_used':False,
+          }
+          out=root/'post-stage0/frozen-v4.99-source-engine/VERIFICATION.json'
+          out.write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(report,indent=2,sort_keys=True))
+          PY
+      - name: Commit verification receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/frozen-v4.99-source-engine/VERIFICATION.json
+          if git diff --cached --quiet; then
+            echo 'No verification changes.'
+          else
+            git commit -m 'Verify exact v4.99 source engine and Stage-0 receipt'
+            git pull --rebase origin main
+            git push
+          fi
