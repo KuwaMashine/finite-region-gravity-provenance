@@ -34,9 +34,11 @@ with fits.open(pr,memmap=False) as h:
     hh=h[1] if len(h)>1 and h[1].data is not None else h[0]
     pdata_r=np.asarray(hh.data).copy(); pw=WCS(hh.header).celestial
 sx,sy=pw.world_to_pixel(coord)
+sx=float(np.asarray(sx).reshape(-1)[0]); sy=float(np.asarray(sy).reshape(-1)[0])
 x0=int(round(sx))-SIZE//2; y0=int(round(sy))-SIZE//2
 tw=copy.deepcopy(pw); tw.wcs.crpix[0]-=x0; tw.wcs.crpix[1]-=y0
 target_source_x,target_source_y=tw.world_to_pixel(coord)
+target_source_x=float(np.asarray(target_source_x).reshape(-1)[0]); target_source_y=float(np.asarray(target_source_y).reshape(-1)[0])
 
 # Determine all bricks intersecting the actual native-grid target footprint.
 yy,xx=np.indices((SIZE,SIZE),dtype=float); tra,tdec=tw.pixel_to_world_values(xx,yy)
@@ -117,8 +119,8 @@ bilinear=json.loads((ROOT/'post-stage0/source-optical-nersc-multibrick-probe/ner
 report={
  'scope':'source-only direct NERSC DR10 native-primary-grid multi-brick 1024 validation; no validation kinematics queried',
  'source_name':NAME,'team_release':RELEASE,'size_pix':SIZE,'pixscale_arcsec':PIX,
- 'primary_brick':primary,'primary_source_pixel_xy':[float(sx),float(sy)],'target_integer_origin_in_primary_xy':[x0,y0],
- 'source_pixel_in_target_xy':[float(target_source_x),float(target_source_y)],'n_intersecting_bricks':len(bricks),'bricks':bricks,
+ 'primary_brick':primary,'primary_source_pixel_xy':[sx,sy],'target_integer_origin_in_primary_xy':[x0,y0],
+ 'source_pixel_in_target_xy':[target_source_x,target_source_y],'n_intersecting_bricks':len(bricks),'bricks':bricks,
  'target_wcs_header':dict(tw.to_header()),'owner_count_unique':True,'mosaics':mosaics,'details_native_multibrick':details,
  'legacy_viewer_1024_reference':{'R50_r_arcsec':legacy['R50_r_arcsec'],'Rd_star_kpc':legacy['Rd_star_kpc'],'log10_Mstar_adopted_median':legacy['log10_Mstar_adopted_median'],'common_aperture_radius_arcsec':legacy['common_aperture_radius_arcsec']},
  'source_centered_bilinear_nersc_reference':{'R50_r_arcsec':bilinear['R50_r_arcsec'],'Rd_star_kpc':bilinear['Rd_star_kpc'],'log10_Mstar_adopted_median':bilinear['log10_Mstar_adopted_median'],'common_aperture_radius_arcsec':bilinear['common_aperture_radius_arcsec']},
