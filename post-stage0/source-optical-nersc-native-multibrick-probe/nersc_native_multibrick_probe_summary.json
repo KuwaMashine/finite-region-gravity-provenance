@@ -1,0 +1,219 @@
+{
+  "bricks": [
+    {
+      "brickname": "2029m247",
+      "dec": -24.75,
+      "dec1": -24.875,
+      "dec2": -24.625,
+      "ra": 202.94656488549617,
+      "ra1": 202.80916030534354,
+      "ra2": 203.0839694656488
+    },
+    {
+      "brickname": "2029m250",
+      "dec": -25.0,
+      "dec1": -25.125,
+      "dec2": -24.875,
+      "ra": 202.9816513761468,
+      "ra1": 202.8440366972477,
+      "ra2": 203.11926605504584
+    }
+  ],
+  "delta_native_minus_bilinear_nersc": {
+    "R50_r_arcsec": 0.04256965872613172,
+    "Rd_star_kpc": 0.013670451705568354,
+    "log10_Mstar": 0.006198027408581552
+  },
+  "delta_native_minus_legacy": {
+    "R50_r_arcsec": -0.8374694898541346,
+    "Rd_star_kpc": -0.2689377025451538,
+    "common_aperture_radius_arcsec": -20.270621567158372,
+    "log10_Mstar": -0.00021182681095233136
+  },
+  "details_native_multibrick": {
+    "A_mag": {
+      "g": 0.2333364,
+      "r": 0.15717899999999999,
+      "z": 0.0879186
+    },
+    "R50_r_arcsec": 15.346847190182684,
+    "R50_r_kpc": 8.271487529351905,
+    "Rd_star_arcsec": 9.144025211395851,
+    "Rd_star_kpc": 4.928353659018864,
+    "SFD_EBV": 0.0726,
+    "autoprof_checkfit": {
+      "g": {},
+      "r": {
+        "FFT coefficients": true,
+        "Light symmetry": true,
+        "initial fit compare": true,
+        "isophote variability": true
+      },
+      "z": {}
+    },
+    "colours_mag": {
+      "g-r": 0.7829759965116185,
+      "g-z": 1.4558431881988927,
+      "r-z": 0.6728671916872742
+    },
+    "common_aperture_fully_contained": true,
+    "common_aperture_radius_arcsec": 96.5267693674208,
+    "first_bad_SB_e": {
+      "g": 0.13068767031015643,
+      "r": 0.07426146493960711,
+      "z": 0.34559064357723546
+    },
+    "first_bad_radius_arcsec": 106.17944630416288,
+    "fitted_center_pix": {
+      "x": 524.43,
+      "y": 497.09
+    },
+    "foreground_corrected_common_aperture_mag": {
+      "g": 14.623588805673617,
+      "r": 13.840612809161998,
+      "z": 13.167745617474724
+    },
+    "log10_Mstar_adopted_median": 10.865947928320866,
+    "log10_Mstar_method_population_sd": 0.12206688555243615,
+    "max_log10_Mstar": 11.07491817750696,
+    "min_log10_Mstar": 10.473931680826514,
+    "n_common_profile_rows": 71,
+    "n_mlcr_estimates": 45,
+    "n_retained": 63,
+    "observed_common_aperture_mag": {
+      "g": 14.856925205673617,
+      "r": 13.997791809161997,
+      "z": 13.255664217474724
+    },
+    "orientation_independent_safe_radius_arcsec": 129.71358
+  },
+  "legacy_viewer_1024_reference": {
+    "R50_r_arcsec": 16.18431668003682,
+    "Rd_star_kpc": 5.197291361564018,
+    "common_aperture_radius_arcsec": 116.79739093457917,
+    "log10_Mstar_adopted_median": 10.866159755131818
+  },
+  "mosaic_rule": "Target WCS is an exact integer-pixel extension of the containing DR10 brick WCS. Pixels geometrically owned by the containing brick are copied without interpolation; only neighboring-brick owned pixels are bilinearly reprojected. No overlap averaging.",
+  "mosaics": {
+    "g": {
+      "bricks": [
+        {
+          "brickname": "2029m247",
+          "mode": "exact_native_integer_pixels",
+          "owned_target_pixels": 746496,
+          "sha256": "937a8bc4725fa75fe71db6cd1bbeffa5d21b482f2009384e68025ef4223ac25f",
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m247/legacysurvey-2029m247-image-g.fits.fz"
+        },
+        {
+          "brickname": "2029m250",
+          "mode": "bilinear_neighbor_only",
+          "owned_target_pixels": 302080,
+          "sha256": "ec60f28503f05debdc5467cf855d5cc43c2efa1804cf6a9c839dc910214e0ff6",
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m250/legacysurvey-2029m250-image-g.fits.fz"
+        }
+      ],
+      "finite_fraction": 1.0,
+      "max": 102.55503845214844,
+      "min": -0.03417669236660004,
+      "mosaic_sha256": "a381ad789f2f2cd4f758726f6740eda43a0dcc4130bcbd41cf77aaf832dc58bf"
+    },
+    "r": {
+      "bricks": [
+        {
+          "brickname": "2029m247",
+          "mode": "exact_native_integer_pixels",
+          "owned_target_pixels": 746496,
+          "sha256": "7bde32aaccd121f8e0c3557fdadd1adddc9e40fa5a810f855378f3430795b1be",
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m247/legacysurvey-2029m247-image-r.fits.fz"
+        },
+        {
+          "brickname": "2029m250",
+          "mode": "bilinear_neighbor_only",
+          "owned_target_pixels": 302080,
+          "sha256": "16b5454eb7a6f4f99d9e6d9eaf2c133775e9e251802a6596e1c3dbdd86b4cd2c",
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m250/legacysurvey-2029m250-image-r.fits.fz"
+        }
+      ],
+      "finite_fraction": 1.0,
+      "max": 16.689729690551758,
+      "min": -0.02196512371301651,
+      "mosaic_sha256": "ed322b6629f39bd8349d5dc8d1929b6aca220bde8b1f09e9116d10329c0f8140"
+    },
+    "z": {
+      "bricks": [
+        {
+          "brickname": "2029m247",
+          "mode": "exact_native_integer_pixels",
+          "owned_target_pixels": 746496,
+          "sha256": "1c4f72d84773f5773e30b302d1a7dde5e70193ed9cdb02baa435a29e251ac0f4",
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m247/legacysurvey-2029m247-image-z.fits.fz"
+        },
+        {
+          "brickname": "2029m250",
+          "mode": "bilinear_neighbor_only",
+          "owned_target_pixels": 302080,
+          "sha256": "595a090fed44a67d31b2f3ad98c8bde8c1293793aded6844b95d68a2a3508b16",
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m250/legacysurvey-2029m250-image-z.fits.fz"
+        }
+      ],
+      "finite_fraction": 1.0,
+      "max": 56.695472717285156,
+      "min": -0.09699573367834091,
+      "mosaic_sha256": "b4700dd81ec77c97d4a8746b09ff174d0bf3aeeff7f146c723737e88e9c54f74"
+    }
+  },
+  "n_intersecting_bricks": 2,
+  "owner_count_unique": true,
+  "pixscale_arcsec": 0.262,
+  "primary_brick": {
+    "brickname": "2029m247",
+    "dec": -24.75,
+    "dec1": -24.875,
+    "dec2": -24.625,
+    "ra": 202.94656488549617,
+    "ra1": 202.80916030534354,
+    "ra2": 203.0839694656488
+  },
+  "primary_source_pixel_xy": [
+    657.7771671025182,
+    298.7714891990033
+  ],
+  "scope": "source-only direct NERSC DR10 native-primary-grid multi-brick 1024 validation; no validation kinematics queried",
+  "size_pix": 1024,
+  "source_centered_bilinear_nersc_reference": {
+    "R50_r_arcsec": 15.304277531456552,
+    "Rd_star_kpc": 4.9146832073132956,
+    "common_aperture_radius_arcsec": 116.79739093457917,
+    "log10_Mstar_adopted_median": 10.859749900912284
+  },
+  "source_name": "WALLABY J133209-245132",
+  "source_pixel_in_target_xy": [
+    511.7771671025182,
+    511.7714891990033
+  ],
+  "target_integer_origin_in_primary_xy": [
+    146,
+    -213
+  ],
+  "target_wcs_header": {
+    "CDELT1": 1.0,
+    "CDELT2": 1.0,
+    "CRPIX1": 1654.5,
+    "CRPIX2": 2013.5,
+    "CRVAL1": 202.9465648855,
+    "CRVAL2": -24.75,
+    "CTYPE1": "RA---TAN",
+    "CTYPE2": "DEC--TAN",
+    "CUNIT1": "deg",
+    "CUNIT2": "deg",
+    "EQUINOX": 2000.0,
+    "LATPOLE": -24.75,
+    "LONPOLE": 180.0,
+    "MJDREF": 0.0,
+    "PC1_1": -7.2777777777778e-05,
+    "PC2_2": 7.2777777777778e-05,
+    "RADESYS": "FK5",
+    "WCSAXES": 2
+  },
+  "team_release": "NGC 5044 TR3"
+}
