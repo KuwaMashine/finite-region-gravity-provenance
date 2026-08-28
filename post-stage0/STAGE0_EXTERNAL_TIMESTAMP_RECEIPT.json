@@ -1,0 +1,9 @@
+{
+  "frozen_manifest_file_sha256": "61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c",
+  "proof_reference": "https://github.com/KuwaMashine/finite-region-gravity-provenance/commit/15abeac9b6d285ce42caf26498115c0686d9bcd3",
+  "proof_scope": "The referenced public GitHub commit contains the v4.99 Stage-0 pretarget timestamp payload and explicitly records the PRETARGET_MANIFEST_SHA256.txt file SHA-256 before post-Stage-0 source-only validation work began.",
+  "receipt_created_after_proof": true,
+  "schema": "WALLABY_INITIAL_TIMESTAMP_RECEIPT_v1",
+  "timestamp_service": "GitHub public commit record",
+  "timestamp_utc": "2026-08-27T21:53:51Z"
+}
