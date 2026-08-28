@@ -1,0 +1,41 @@
+name: WALLABY source-only native-grid NERSC DR10 multi-brick probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_nersc_native_multibrick_probe.yml'
+      - '.github/scripts/source_optical_nersc_native_multibrick_probe.py'
+
+permissions:
+  contents: write
+
+jobs:
+  native-multibrick-probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned optical and reprojection dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip -q install 'autoprof==1.3.4' astropy reproject --upgrade astro-datalab
+      - name: Build native-primary-grid NERSC multi-brick mosaic and photometry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/source_optical_nersc_native_multibrick_probe.py
+      - name: Commit native-grid multi-brick probe receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-nersc-native-multibrick-probe
+          if git diff --cached --quiet; then
+            echo 'No native-grid multi-brick probe changes.'
+          else
+            git commit -m 'Record native-grid NERSC DR10 multi-brick optical probe'
+            git pull --rebase origin main
+            git push
+          fi
