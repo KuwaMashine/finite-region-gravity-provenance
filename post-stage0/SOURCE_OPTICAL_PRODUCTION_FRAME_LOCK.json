@@ -1,0 +1,32 @@
+{
+  "schema": "WALLABY_SOURCE_OPTICAL_PRODUCTION_FRAME_LOCK_v1",
+  "status": "prospective_source_only_lock",
+  "scope": "production DR10 optical finite-frame selection before production optical population processing; no validation kinematics or Gate outcomes used",
+  "response_products_used": false,
+  "backend": "DESI Legacy Imaging Surveys DR10 direct NERSC south coadd g/r/z images",
+  "grid_rule": "For each tested size, define the target WCS as an exact integer-pixel extension of the geometrically containing DR10 brick. Pixels owned by that containing brick are copied without interpolation; only pixels geometrically owned by neighbouring bricks are bilinearly reprojected. No overlap averaging.",
+  "sizes_pix": [1024, 1280, 1536, 1792, 2048, 2304, 2560, 2816, 3072],
+  "pixel_scale_arcsec": 0.262,
+  "selection_rule": "Choose the smallest tested frame N for which N and the next larger registered frame are both fully contained and the N->next step satisfies every convergence criterion. If no adjacent pair passes through 3072 pixels, classify the optical processing as frame_nonconverged_after_registered_ladder; do not tune a larger size or alter thresholds after response opening.",
+  "containment_rule": "The common uncertainty aperture semi-major radius must be no larger than the orientation-independent inscribed radius from the fitted r-band centre to the nearest frame edge minus 2 pixels.",
+  "convergence_criteria": {
+    "max_abs_delta_R50_arcsec": 0.5,
+    "max_abs_delta_log10_Mstar_dex": 0.02,
+    "max_abs_delta_common_aperture_arcsec": 0.5,
+    "max_abs_delta_background_over_mean_RMS": 0.01,
+    "both_frames_contained": true
+  },
+  "background_ratio_definition": "abs(background_Next - background_N) / mean(r_band_background_noise_N, r_band_background_noise_Next)",
+  "profile_rule": "r-band AutoProf geometry with forced g/z; retain common profile rows strictly interior to the first row where any band SB_e is non-finite or >=0.22 mag arcsec^-2.",
+  "network_rule": "Network/download failures remain unresolved and must be retried; they are not converted into astrophysical full_stellar=false classifications merely because retries in one workflow run were exhausted.",
+  "coverage_rule": "A confirmed absence of DR10 imaging in one or more required g/r/z bands is a source-side optical completeness failure under the frozen all-three-band full_stellar gate; no substitute survey is permitted.",
+  "qc_rule": "AutoProf checkfit booleans are diagnostic metadata only and are not hard cuts.",
+  "evidence_basis": [
+    "post-stage0/source-optical-nersc-frame-convergence-v2/convergence_decision_v2.json",
+    "post-stage0/source-optical-nersc-native-multibrick-probe/nersc_native_multibrick_probe_summary.json",
+    "post-stage0/source-optical-stage1-hookup/stage1_optical_hookup.json",
+    "post-stage0/STAGE0A_SOURCE_OPTICAL_IMPLEMENTATION_LOCK.md",
+    "post-stage0/STAGE0A_AUTOPROF_QC_INTERPRETATION.md"
+  ],
+  "firewall": "This lock does not authorize opening any validation kinematic catalogue or response product. Stage-1 remains unearned until the complete source-only predictor, baryonic H I fold, optical/stellar metadata, beam/recovery report and hashes are externally timestamped."
+}
