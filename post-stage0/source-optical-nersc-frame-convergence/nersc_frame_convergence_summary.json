@@ -1,0 +1,289 @@
+{
+  "brick": "1953p042",
+  "decision_rule": "choose the smallest tested fully-contained frame for which the next larger tested frame changes log10_Mstar by <=0.02 dex and R50 by <=0.5 arcsec; if no tested frame passes, do not freeze a production size from this ladder.",
+  "results": [
+    {
+      "A_mag": {
+        "g": 0.094813,
+        "r": 0.0638675,
+        "z": 0.0357245
+      },
+      "R50_r_arcsec": 7.319925404983932,
+      "R50_r_kpc": 5.70224961356651,
+      "Rd_star_arcsec": 4.361389777277981,
+      "Rd_star_kpc": 3.397539154587994,
+      "SFD_EBV": 0.0295,
+      "autoprof_checkfit": {
+        "g": {},
+        "r": {
+          "FFT coefficients": false,
+          "Light symmetry": false,
+          "initial fit compare": true,
+          "isophote variability": true
+        },
+        "z": {}
+      },
+      "colours_mag": {
+        "g-r": 0.6232757816372931,
+        "g-z": 1.1002691076119575,
+        "r-z": 0.4769933259746644
+      },
+      "common_aperture_fully_contained": true,
+      "common_aperture_radius_arcsec": 49.53349532747505,
+      "cutout_side_arcsec": 134.144,
+      "cutout_size_pix": 512,
+      "first_bad_SB_e": {
+        "g": 0.16397492995406493,
+        "r": 0.3661054310775678,
+        "z": 0.7424842273039177
+      },
+      "first_bad_radius_arcsec": 54.48684486022256,
+      "foreground_corrected_common_aperture_mag": {
+        "g": 15.12952621833092,
+        "r": 14.506250436693627,
+        "z": 14.029257110718962
+      },
+      "log10_Mstar_adopted_median": 10.6593325803904,
+      "log10_Mstar_method_population_sd": 0.13262877159340544,
+      "max_log10_Mstar": 10.769993521391886,
+      "min_log10_Mstar": 10.276697420177705,
+      "n_common_profile_rows": 60,
+      "n_mlcr_estimates": 45,
+      "n_retained": 56,
+      "observed_common_aperture_mag": {
+        "g": 15.22433921833092,
+        "r": 14.570117936693627,
+        "z": 14.064981610718963
+      },
+      "orientation_independent_safe_radius_arcsec": 58.32906,
+      "r_aux": {
+        "background_flux_per_pix": 0.000615069,
+        "background_noise_flux_per_pix": 0.00569992,
+        "center_x_pix": 270.32,
+        "center_y_pix": 286.37,
+        "fit_limit_semimajor_pix": 92.01,
+        "global_ellipticity": 0.051,
+        "size_pix": 79.496847
+      }
+    },
+    {
+      "A_mag": {
+        "g": 0.094813,
+        "r": 0.0638675,
+        "z": 0.0357245
+      },
+      "R50_r_arcsec": 7.7908946663235,
+      "R50_r_kpc": 6.069136451873184,
+      "Rd_star_arcsec": 4.642004730050585,
+      "Rd_star_kpc": 3.616139265583535,
+      "SFD_EBV": 0.0295,
+      "autoprof_checkfit": {
+        "g": {},
+        "r": {
+          "FFT coefficients": false,
+          "Light symmetry": false,
+          "initial fit compare": true,
+          "isophote variability": false
+        },
+        "z": {}
+      },
+      "colours_mag": {
+        "g-r": 0.6085140508227571,
+        "g-z": 1.0908309855772735,
+        "r-z": 0.4823169347545164
+      },
+      "common_aperture_fully_contained": true,
+      "common_aperture_radius_arcsec": 72.52199050895625,
+      "cutout_side_arcsec": 201.216,
+      "cutout_size_pix": 768,
+      "first_bad_SB_e": null,
+      "first_bad_radius_arcsec": null,
+      "foreground_corrected_common_aperture_mag": {
+        "g": 15.046044923679823,
+        "r": 14.437530872857065,
+        "z": 13.955213938102549
+      },
+      "log10_Mstar_adopted_median": 10.673074223538766,
+      "log10_Mstar_method_population_sd": 0.1257555406341795,
+      "max_log10_Mstar": 10.814869063390466,
+      "min_log10_Mstar": 10.32245135762496,
+      "n_common_profile_rows": 60,
+      "n_mlcr_estimates": 45,
+      "n_retained": 60,
+      "observed_common_aperture_mag": {
+        "g": 15.140857923679823,
+        "r": 14.501398372857066,
+        "z": 13.99093843810255
+      },
+      "orientation_independent_safe_radius_arcsec": 91.86506,
+      "r_aux": {
+        "background_flux_per_pix": 0.000110649,
+        "background_noise_flux_per_pix": 0.00573057,
+        "center_x_pix": 398.32,
+        "center_y_pix": 414.37,
+        "fit_limit_semimajor_pix": 92.01,
+        "global_ellipticity": 0.007,
+        "size_pix": 79.496847
+      }
+    },
+    {
+      "A_mag": {
+        "g": 0.094813,
+        "r": 0.0638675,
+        "z": 0.0357245
+      },
+      "R50_r_arcsec": 8.063584887752912,
+      "R50_r_kpc": 6.2815631671386845,
+      "Rd_star_arcsec": 4.804480203270044,
+      "Rd_star_kpc": 3.7427082745721902,
+      "SFD_EBV": 0.0295,
+      "autoprof_checkfit": {
+        "g": {},
+        "r": {
+          "FFT coefficients": false,
+          "Light symmetry": false,
+          "initial fit compare": true,
+          "isophote variability": true
+        },
+        "z": {}
+      },
+      "colours_mag": {
+        "g-r": 0.6232630707197035,
+        "g-z": 1.1066304928007522,
+        "r-z": 0.48336742208104866
+      },
+      "common_aperture_fully_contained": true,
+      "common_aperture_radius_arcsec": 72.52199050895625,
+      "cutout_side_arcsec": 268.288,
+      "cutout_size_pix": 1024,
+      "first_bad_SB_e": null,
+      "first_bad_radius_arcsec": null,
+      "foreground_corrected_common_aperture_mag": {
+        "g": 15.042803131318996,
+        "r": 14.419540060599292,
+        "z": 13.936172638518244
+      },
+      "log10_Mstar_adopted_median": 10.694001274352344,
+      "log10_Mstar_method_population_sd": 0.1300738615023727,
+      "max_log10_Mstar": 10.818431681498126,
+      "min_log10_Mstar": 10.326187306141499,
+      "n_common_profile_rows": 60,
+      "n_mlcr_estimates": 45,
+      "n_retained": 60,
+      "observed_common_aperture_mag": {
+        "g": 15.137616131318996,
+        "r": 14.483407560599293,
+        "z": 13.971897138518244
+      },
+      "orientation_independent_safe_radius_arcsec": 125.40106,
+      "r_aux": {
+        "background_flux_per_pix": 0.00010189,
+        "background_noise_flux_per_pix": 0.00567938,
+        "center_x_pix": 526.32,
+        "center_y_pix": 542.37,
+        "fit_limit_semimajor_pix": 92.01,
+        "global_ellipticity": 0.051,
+        "size_pix": 79.496847
+      }
+    },
+    {
+      "A_mag": {
+        "g": 0.094813,
+        "r": 0.0638675,
+        "z": 0.0357245
+      },
+      "R50_r_arcsec": 7.832066271659874,
+      "R50_r_kpc": 6.101209288361299,
+      "Rd_star_arcsec": 4.666535774930622,
+      "Rd_star_kpc": 3.6352490424526183,
+      "SFD_EBV": 0.0295,
+      "autoprof_checkfit": {
+        "g": {},
+        "r": {
+          "FFT coefficients": false,
+          "Light symmetry": false,
+          "initial fit compare": true,
+          "isophote variability": false
+        },
+        "z": {}
+      },
+      "colours_mag": {
+        "g-r": 0.6347838973567423,
+        "g-z": 1.1315934034664128,
+        "r-z": 0.49680950610967045
+      },
+      "common_aperture_fully_contained": true,
+      "common_aperture_radius_arcsec": 72.52199050895625,
+      "cutout_side_arcsec": 335.36,
+      "cutout_size_pix": 1280,
+      "first_bad_SB_e": null,
+      "first_bad_radius_arcsec": null,
+      "foreground_corrected_common_aperture_mag": {
+        "g": 15.068849925282036,
+        "r": 14.434066027925294,
+        "z": 13.937256521815623
+      },
+      "log10_Mstar_adopted_median": 10.70635042054945,
+      "log10_Mstar_method_population_sd": 0.12870989463691196,
+      "max_log10_Mstar": 10.837007539162649,
+      "min_log10_Mstar": 10.346981107670743,
+      "n_common_profile_rows": 60,
+      "n_mlcr_estimates": 45,
+      "n_retained": 60,
+      "observed_common_aperture_mag": {
+        "g": 15.163662925282036,
+        "r": 14.497933527925294,
+        "z": 13.972981021815624
+      },
+      "orientation_independent_safe_radius_arcsec": 158.93706,
+      "r_aux": {
+        "background_flux_per_pix": 9.62228e-05,
+        "background_noise_flux_per_pix": 0.00585491,
+        "center_x_pix": 654.32,
+        "center_y_pix": 670.37,
+        "fit_limit_semimajor_pix": 92.01,
+        "global_ellipticity": 0.007,
+        "size_pix": 79.496847
+      }
+    }
+  ],
+  "scope": "source-only direct NERSC DR10 finite-frame convergence ladder; no validation kinematics queried",
+  "sizes_pix": [
+    512,
+    768,
+    1024,
+    1280
+  ],
+  "smallest_converged_size_pix": 512,
+  "source_name": "WALLABY J130150+041953",
+  "successive_deltas": [
+    {
+      "delta_R50_r_arcsec": 0.47096926133956796,
+      "delta_background_flux_per_pix": -0.00050442,
+      "delta_background_noise_flux_per_pix": 3.065000000000012e-05,
+      "delta_common_aperture_radius_arcsec": 22.9884951814812,
+      "delta_log10_Mstar": 0.013741643148366123,
+      "from_size_pix": 512,
+      "to_size_pix": 768
+    },
+    {
+      "delta_R50_r_arcsec": 0.2726902214294116,
+      "delta_background_flux_per_pix": -8.759000000000002e-06,
+      "delta_background_noise_flux_per_pix": -5.118999999999957e-05,
+      "delta_common_aperture_radius_arcsec": 0.0,
+      "delta_log10_Mstar": 0.020927050813577708,
+      "from_size_pix": 768,
+      "to_size_pix": 1024
+    },
+    {
+      "delta_R50_r_arcsec": -0.23151861609303737,
+      "delta_background_flux_per_pix": -5.667199999999999e-06,
+      "delta_background_noise_flux_per_pix": 0.00017552999999999926,
+      "delta_common_aperture_radius_arcsec": 0.0,
+      "delta_log10_Mstar": 0.012349146197106364,
+      "from_size_pix": 1024,
+      "to_size_pix": 1280
+    }
+  ],
+  "team_release": "NGC 4808 TR1"
+}
