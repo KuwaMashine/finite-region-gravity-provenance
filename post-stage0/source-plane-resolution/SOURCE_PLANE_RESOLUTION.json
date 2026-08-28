@@ -1,0 +1,63 @@
+{
+  "fields": {
+    "NGC4808": {
+      "attempts": [
+        {
+          "n_artifacts": 0,
+          "productID": "source_data_NGC4808_TR1"
+        },
+        {
+          "n_artifacts": 9,
+          "productID": "source_data_NGC_4808_TR1"
+        }
+      ],
+      "chosen": {
+        "mask_uri": "cadc:WALLABY/WALLABY_J130150+041953_NGC_4808_TR1_mask.fits",
+        "mom0_uri": "cadc:WALLABY/WALLABY_J130150+041953_NGC_4808_TR1_mom0.fits",
+        "n_artifacts": 9,
+        "observationID": "WALLABY_J130150+041953",
+        "productID": "source_data_NGC_4808_TR1",
+        "query": "SELECT o.observationID,p.productID,a.uri,a.contentType,a.contentLength,a.contentChecksum FROM caom2.Observation AS o JOIN caom2.Plane AS p ON o.obsID=p.obsID JOIN caom2.Artifact AS a ON p.planeID=a.planeID WHERE o.collection='WALLABY' AND o.observationID='WALLABY_J130150+041953' AND p.productID='source_data_NGC_4808_TR1'"
+      }
+    },
+    "NGC5044": {
+      "attempts": [
+        {
+          "n_artifacts": 0,
+          "productID": "source_data_NGC5044_TR3"
+        },
+        {
+          "n_artifacts": 9,
+          "productID": "source_data_NGC_5044_TR3"
+        }
+      ],
+      "chosen": {
+        "mask_uri": "cadc:WALLABY/WALLABY_J133209-245132_NGC_5044_TR3_mask.fits",
+        "mom0_uri": "cadc:WALLABY/WALLABY_J133209-245132_NGC_5044_TR3_mom0.fits",
+        "n_artifacts": 9,
+        "observationID": "WALLABY_J133209-245132",
+        "productID": "source_data_NGC_5044_TR3",
+        "query": "SELECT o.observationID,p.productID,a.uri,a.contentType,a.contentLength,a.contentChecksum FROM caom2.Observation AS o JOIN caom2.Plane AS p ON o.obsID=p.obsID JOIN caom2.Artifact AS a ON p.planeID=a.planeID WHERE o.collection='WALLABY' AND o.observationID='WALLABY_J133209-245132' AND p.productID='source_data_NGC_5044_TR3'"
+      }
+    },
+    "Vela": {
+      "attempts": [
+        {
+          "n_artifacts": 9,
+          "productID": "source_data_Vela_TR1"
+        }
+      ],
+      "chosen": {
+        "mask_uri": "cadc:WALLABY/WALLABY_J094821-452603_Vela_TR1_mask.fits",
+        "mom0_uri": "cadc:WALLABY/WALLABY_J094821-452603_Vela_TR1_mom0.fits",
+        "n_artifacts": 9,
+        "observationID": "WALLABY_J094821-452603",
+        "productID": "source_data_Vela_TR1",
+        "query": "SELECT o.observationID,p.productID,a.uri,a.contentType,a.contentLength,a.contentChecksum FROM caom2.Observation AS o JOIN caom2.Plane AS p ON o.obsID=p.obsID JOIN caom2.Artifact AS a ON p.planeID=a.planeID WHERE o.collection='WALLABY' AND o.observationID='WALLABY_J094821-452603' AND p.productID='source_data_Vela_TR1'"
+      }
+    }
+  },
+  "response_products_used": false,
+  "schema": "WALLABY_SOURCE_PLANE_RESOLUTION_v1",
+  "scope": "closed source_data productID probes only; no validation kinematic plane queried"
+}
