@@ -1,0 +1,43 @@
+name: WALLABY NGC4808 exact-v4.99 TARGET source-stage preflight
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_stage_target_preflight_ngc4808.yml'
+      - '.github/scripts/source_stage_target_preflight_ngc4808.py'
+      - 'post-stage0/frozen-v4.99-source-engine/**'
+      - 'post-stage0/STAGE0_EXTERNAL_TIMESTAMP_RECEIPT.json'
+
+permissions:
+  contents: write
+
+jobs:
+  target-preflight-ngc4808:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install source-only preflight dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip -q install numpy pandas scipy astropy
+      - name: Run NGC4808 one-object TARGET source stage
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/source_stage_target_preflight_ngc4808.py
+      - name: Commit NGC4808 TARGET preflight receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-stage-target-preflight-ngc4808
+          if git diff --cached --quiet; then
+            echo 'No NGC4808 preflight changes.'
+          else
+            git commit -m 'Record NGC4808 exact-v4.99 TARGET source-stage preflight'
+            git pull --rebase origin main
+            git push
+          fi
