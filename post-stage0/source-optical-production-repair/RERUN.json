@@ -1,0 +1,22 @@
+{
+  "schema": "wallaby_stage1_source_optical_mechanical_repair_trigger_v1",
+  "created_utc": "2026-08-28T16:16:00Z",
+  "failed_full_run_id": 33139915501,
+  "failed_full_run_head_sha": "8cf5fda5d79939d1d42379c310158429729bd8fc",
+  "repair_runner_commit": "44cad4b01a9b1ff69c66eb41b9653fd4d0f2d61d",
+  "repair_workflow_commit": "89597c556603b96ee0334583180912f4fe82be88",
+  "repair_scope": [
+    "Treat AutoProf zero-exit with missing expected .prof/.aux outputs as a frame-level QualityFail, matching the already-committed cross-field canary behavior.",
+    "Allow the pre-registered larger-frame ladder to continue after that frame-level failure.",
+    "Rerun the unchanged 24 spatial shards because the prior run also ended with a transient portal.nersc.gov connectivity failure affecting all 31 objects in shard 19."
+  ],
+  "scientific_pipeline_changed": false,
+  "selection_changed": false,
+  "frame_sizes_changed": false,
+  "convergence_thresholds_changed": false,
+  "mlcr_changed": false,
+  "network_retry_policy_changed": false,
+  "response_products_used": false,
+  "validation_kinematics_opened": false,
+  "firewall": "Stage-1 response-data firewall remains closed until the externally timestamped source-only Stage-1 receipt exists."
+}
