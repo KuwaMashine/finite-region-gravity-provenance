@@ -29,6 +29,8 @@ jobs:
           assert x['response_products_used'] is False
           print('frozen v4.99 source engine verification: PASS')
           PY
+      - name: Restore runtime execute bits without changing frozen bytes
+        run: chmod +x post-stage0/frozen-v4.99-source-engine/*.py
       - name: Build exact SOURCE_ONLY export manifest
         run: python .github/scripts/source_stage1_export_manifest.py
       - name: Run byte-verified v4.99 TARGET source stage
