@@ -1,0 +1,13 @@
+{
+  "schema": "WALLABY_STAGE1_OPTICAL_FULL_PASS_TRIGGER_v1",
+  "scope": "orchestration-only trigger after successful source-only production preflight; no response products",
+  "response_products_used": false,
+  "preflight_pass_commit": "c7b19380bb39fc53c555643e724f31b5b87225eb",
+  "preflight_pass_receipt": "post-stage0/source-optical-production-preflight/PRODUCTION_PREFLIGHT_PASS.json",
+  "preflight_pass_receipt_sha256": "f75a9275fa4e32055f3ad09701d4587ff03e2d24427e5cad46e1a9245c90c350",
+  "processor_sha256": "d6daa26e69ff27306e49ee78ec4ebb2a2622fcae194a59cc76f10dd48d21e58d",
+  "frame_lock_sha256": "0a0d028d771d799cb71c933acbd4604befb728a6c187ae7d39a8444845d15c56",
+  "workflow_orchestration_commit": "bbafabf4b2e6261ca9dab172fecbbf5fe1da6fbc",
+  "scientific_pipeline_changed": false,
+  "decision": "Run the already frozen 24-shard source-only optical population workflow. Do not open validation kinematics."
+}
