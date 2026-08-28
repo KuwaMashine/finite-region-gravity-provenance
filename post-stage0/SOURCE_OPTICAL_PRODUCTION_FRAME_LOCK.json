@@ -9,8 +9,9 @@
   "pixel_scale_arcsec": 0.262,
   "selection_rule": "Choose the smallest tested frame N for which N and the next larger registered frame are both fully contained and the N->next step satisfies every convergence criterion. If no adjacent pair passes through 3072 pixels, classify the optical processing as frame_nonconverged_after_registered_ladder; do not tune a larger size or alter thresholds after response opening.",
   "containment_rule": "The common uncertainty aperture semi-major radius must be no larger than the orientation-independent inscribed radius from the fitted r-band centre to the nearest frame edge minus 2 pixels.",
+  "R50_definition": "The R50 used for production frame convergence is the R50 recomputed by the frozen v4.99 Stage-1 optical_exponential_equivalent_scale estimator from the normalized retained r-band radius, surface-brightness, surface-brightness-error and ellipticity profile. AutoProf cumulative totmag R50 is auxiliary diagnostic metadata and is not the production convergence quantity.",
   "convergence_criteria": {
-    "max_abs_delta_R50_arcsec": 0.5,
+    "max_abs_delta_stage1_R50_arcsec": 0.5,
     "max_abs_delta_log10_Mstar_dex": 0.02,
     "max_abs_delta_common_aperture_arcsec": 0.5,
     "max_abs_delta_background_over_mean_RMS": 0.01,
