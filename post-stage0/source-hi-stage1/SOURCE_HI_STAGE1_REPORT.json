@@ -1,0 +1,27 @@
+{
+  "field_status_counts": {
+    "NGC4808": {
+      "pass": 110,
+      "profile_rejected": 97
+    },
+    "NGC5044": {
+      "pass": 539,
+      "profile_rejected": 589
+    },
+    "Vela": {
+      "pass": 98,
+      "profile_rejected": 92
+    }
+  },
+  "frozen_profiler_sha256": "eb290a85d5d4600a03602d5ab3a4c7c8ae1a7e40d18c74cfdee70f2b10804306",
+  "n_fail": 778,
+  "n_final_release_rows": 1760,
+  "n_pass": 747,
+  "n_profile_rows": 10948,
+  "n_q0_finite_candidates": 1525,
+  "next": "run optical/stellar adapter only for robust_sample=true galaxies; do not open validation kinematics",
+  "response_products_used": false,
+  "schema": "WALLABY_STAGE1_SOURCE_HI_FULL_v1",
+  "scope": "all finite qflag=0 rows in frozen final Phase-2 source releases; source_data only; no response products",
+  "source_engine_verification": "post-stage0/frozen-v4.99-source-engine/VERIFICATION.json"
+}
