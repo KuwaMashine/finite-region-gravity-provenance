@@ -1,0 +1,41 @@
+name: WALLABY source-only NERSC DR10 frame convergence
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_nersc_frame_convergence.yml'
+      - '.github/scripts/source_optical_nersc_frame_convergence.py'
+
+permissions:
+  contents: write
+
+jobs:
+  frame-convergence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned optical dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip -q install 'autoprof==1.3.4' astropy --upgrade astro-datalab
+      - name: Run NERSC finite-frame convergence ladder
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/source_optical_nersc_frame_convergence.py
+      - name: Commit frame-convergence receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-nersc-frame-convergence
+          if git diff --cached --quiet; then
+            echo 'No frame-convergence changes.'
+          else
+            git commit -m 'Record NERSC DR10 optical frame-convergence ladder'
+            git pull --rebase origin main
+            git push
+          fi
