@@ -1,0 +1,208 @@
+{
+  "bricks": [
+    {
+      "brickname": "2029m247",
+      "dec": -24.75,
+      "dec1": -24.875,
+      "dec2": -24.625,
+      "ra": 202.94656488549617,
+      "ra1": 202.80916030534354,
+      "ra2": 203.0839694656488
+    },
+    {
+      "brickname": "2029m250",
+      "dec": -25.0,
+      "dec1": -25.125,
+      "dec2": -24.875,
+      "ra": 202.9816513761468,
+      "ra1": 202.8440366972477,
+      "ra2": 203.11926605504584
+    }
+  ],
+  "delta_nersc_minus_legacy": {
+    "R50_r_arcsec": -0.8800391485802663,
+    "Rd_star_kpc": -0.28260815425072217,
+    "common_aperture_radius_arcsec": 0.0,
+    "log10_Mstar": -0.006409854219533884
+  },
+  "details_nersc_multibrick": {
+    "A_mag": {
+      "g": 0.2333364,
+      "r": 0.15717899999999999,
+      "z": 0.0879186
+    },
+    "R50_r_arcsec": 15.304277531456552,
+    "R50_r_kpc": 8.248543767879697,
+    "Rd_star_arcsec": 9.118661172267261,
+    "Rd_star_kpc": 4.9146832073132956,
+    "SFD_EBV": 0.0726,
+    "autoprof_checkfit": {
+      "g": {},
+      "r": {
+        "FFT coefficients": true,
+        "Light symmetry": true,
+        "initial fit compare": true,
+        "isophote variability": true
+      },
+      "z": {}
+    },
+    "colours_mag": {
+      "g-r": 0.7855683581402673,
+      "g-z": 1.4499515003785834,
+      "r-z": 0.6643831422383162
+    },
+    "common_aperture_fully_contained": true,
+    "common_aperture_radius_arcsec": 116.79739093457917,
+    "first_bad_SB_e": {
+      "g": 0.24414800599129718,
+      "r": 0.49452174698677426,
+      "z": 0.46757734345782825
+    },
+    "first_bad_radius_arcsec": 128.4771300280371,
+    "fitted_center_pix": {
+      "x": 524.15,
+      "y": 496.8
+    },
+    "foreground_corrected_common_aperture_mag": {
+      "g": 14.625208949378244,
+      "r": 13.839640591237977,
+      "z": 13.17525744899966
+    },
+    "log10_Mstar_adopted_median": 10.859749900912284,
+    "log10_Mstar_method_population_sd": 0.12454962284757701,
+    "max_log10_Mstar": 11.055970025363706,
+    "min_log10_Mstar": 10.46408691374199,
+    "n_common_profile_rows": 70,
+    "n_mlcr_estimates": 45,
+    "n_retained": 65,
+    "observed_common_aperture_mag": {
+      "g": 14.858545349378245,
+      "r": 13.996819591237976,
+      "z": 13.26317604899966
+    },
+    "orientation_independent_safe_radius_arcsec": 129.63760000000002
+  },
+  "legacy_viewer_1024_reference": {
+    "R50_r_arcsec": 16.18431668003682,
+    "Rd_star_kpc": 5.197291361564018,
+    "common_aperture_radius_arcsec": 116.79739093457917,
+    "log10_Mstar_adopted_median": 10.866159755131818
+  },
+  "mosaic_rule": "Each target pixel is assigned only from the single published ls_dr10.bricks geometric cell containing that target-pixel sky coordinate; neighboring coadds are bilinearly reprojected to a source-centred TAN target grid before assignment; no overlap averaging.",
+  "mosaics": {
+    "g": {
+      "bricks": [
+        {
+          "brickname": "2029m247",
+          "owned_target_pixels": 746496,
+          "sha256": "937a8bc4725fa75fe71db6cd1bbeffa5d21b482f2009384e68025ef4223ac25f",
+          "source_shape": [
+            3600,
+            3600
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m247/legacysurvey-2029m247-image-g.fits.fz"
+        },
+        {
+          "brickname": "2029m250",
+          "owned_target_pixels": 302080,
+          "sha256": "ec60f28503f05debdc5467cf855d5cc43c2efa1804cf6a9c839dc910214e0ff6",
+          "source_shape": [
+            3600,
+            3600
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m250/legacysurvey-2029m250-image-g.fits.fz"
+        }
+      ],
+      "finite_fraction": 1.0,
+      "max": 95.60482025146484,
+      "min": -0.030567901208996773,
+      "mosaic_sha256": "3c7e87ff39527a090869fd63a4031e6144fbc0e86edc6decac3bd21cb953ca88"
+    },
+    "r": {
+      "bricks": [
+        {
+          "brickname": "2029m247",
+          "owned_target_pixels": 746496,
+          "sha256": "7bde32aaccd121f8e0c3557fdadd1adddc9e40fa5a810f855378f3430795b1be",
+          "source_shape": [
+            3600,
+            3600
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m247/legacysurvey-2029m247-image-r.fits.fz"
+        },
+        {
+          "brickname": "2029m250",
+          "owned_target_pixels": 302080,
+          "sha256": "16b5454eb7a6f4f99d9e6d9eaf2c133775e9e251802a6596e1c3dbdd86b4cd2c",
+          "source_shape": [
+            3600,
+            3600
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m250/legacysurvey-2029m250-image-r.fits.fz"
+        }
+      ],
+      "finite_fraction": 1.0,
+      "max": 15.846095085144043,
+      "min": -0.01641731709241867,
+      "mosaic_sha256": "366f02e9e73df00d5a5171ff6f1054ea0760ff92f78613856521f0074d805f16"
+    },
+    "z": {
+      "bricks": [
+        {
+          "brickname": "2029m247",
+          "owned_target_pixels": 746496,
+          "sha256": "1c4f72d84773f5773e30b302d1a7dde5e70193ed9cdb02baa435a29e251ac0f4",
+          "source_shape": [
+            3600,
+            3600
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m247/legacysurvey-2029m247-image-z.fits.fz"
+        },
+        {
+          "brickname": "2029m250",
+          "owned_target_pixels": 302080,
+          "sha256": "595a090fed44a67d31b2f3ad98c8bde8c1293793aded6844b95d68a2a3508b16",
+          "source_shape": [
+            3600,
+            3600
+          ],
+          "url": "https://portal.nersc.gov/cfs/cosmo/data/legacysurvey/dr10/south/coadd/202/2029m250/legacysurvey-2029m250-image-z.fits.fz"
+        }
+      ],
+      "finite_fraction": 1.0,
+      "max": 55.16579055786133,
+      "min": -0.06518829613924026,
+      "mosaic_sha256": "3d7f4b26d3a5fade0ce808397ffe6f2d1983944246bd702b0a1c9a5e3b9d8b8a"
+    }
+  },
+  "n_intersecting_bricks": 2,
+  "owner_count_unique": true,
+  "pixscale_arcsec": 0.262,
+  "scope": "source-only direct NERSC DR10 geometrically-owned multi-brick 1024 validation; no validation kinematics queried",
+  "size_pix": 1024,
+  "source_name": "WALLABY J133209-245132",
+  "target_bounds_deg": {
+    "dec_max": -24.821860053902068,
+    "dec_min": -24.89651730348854,
+    "ra_max": 203.0792723667591,
+    "ra_min": 202.9969931332627
+  },
+  "target_wcs_header": {
+    "CDELT1": -7.2777777777778e-05,
+    "CDELT2": 7.2777777777778e-05,
+    "CRPIX1": 512.5,
+    "CRPIX2": 512.5,
+    "CRVAL1": 203.03813275001,
+    "CRVAL2": -24.859191475399,
+    "CTYPE1": "RA---TAN",
+    "CTYPE2": "DEC--TAN",
+    "CUNIT1": "deg",
+    "CUNIT2": "deg",
+    "LATPOLE": -24.859191475399,
+    "LONPOLE": 180.0,
+    "MJDREF": 0.0,
+    "RADESYS": "ICRS",
+    "WCSAXES": 2
+  },
+  "team_release": "NGC 5044 TR3"
+}
