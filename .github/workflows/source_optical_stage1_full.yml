@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'post-stage0/source-optical-production-preflight/PRODUCTION_PREFLIGHT_PASS.json'
+      - 'post-stage0/source-optical-production-trigger/FULL_PASS_TRIGGER.json'
 
 permissions:
   contents: write
