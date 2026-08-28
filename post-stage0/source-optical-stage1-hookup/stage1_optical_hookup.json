@@ -1,0 +1,60 @@
+{
+  "comparison_tolerance_R50_arcsec": 0.5,
+  "comparisons": {
+    "bilinear_to_native_multibrick": {
+      "a": "bilinear_multibrick",
+      "abs_delta_stage1_R50_arcsec": 0.0731999967851884,
+      "b": "native_multibrick",
+      "passes_0p5_arcsec": true
+    },
+    "frame_1024_to_1280": {
+      "a": "frame_1024",
+      "abs_delta_stage1_R50_arcsec": 0.25252164205257355,
+      "b": "frame_1280",
+      "passes_0p5_arcsec": true
+    }
+  },
+  "decision": "The normalized common-aperture r profile is a stable input to the frozen Stage-1 estimator across the tested frame and resampling perturbations.",
+  "normalization_rule": "retain grz profile rows strictly interior to first row where any band SB_e is nonfinite or >=0.22; export retained r R,SB,SB_e,ellip as normalized optical profile",
+  "results": {
+    "bilinear_multibrick": {
+      "autoprof_totmag_R50_r_arcsec": 15.304277531456552,
+      "common_aperture_radius_arcsec": 116.79739093457917,
+      "directory": "post-stage0/source-optical-nersc-multibrick-probe",
+      "n_common_retained": 65,
+      "stage1_engine_R50_r_arcsec": 15.364485668318618,
+      "stage1_engine_Rd_star_arcsec": 9.154534646119929,
+      "stage1_minus_autoprof_R50_arcsec": 0.06020813686206594
+    },
+    "frame_1024": {
+      "autoprof_totmag_R50_r_arcsec": 8.063584887752912,
+      "common_aperture_radius_arcsec": 72.52199050895625,
+      "directory": "post-stage0/source-optical-nersc-frame-convergence/n1024",
+      "n_common_retained": 60,
+      "stage1_engine_R50_r_arcsec": 8.147022747703899,
+      "stage1_engine_Rd_star_arcsec": 4.854194511721932,
+      "stage1_minus_autoprof_R50_arcsec": 0.08343785995098685
+    },
+    "frame_1280": {
+      "autoprof_totmag_R50_r_arcsec": 7.832066271659874,
+      "common_aperture_radius_arcsec": 72.52199050895625,
+      "directory": "post-stage0/source-optical-nersc-frame-convergence/n1280",
+      "n_common_retained": 60,
+      "stage1_engine_R50_r_arcsec": 7.894501105651325,
+      "stage1_engine_Rd_star_arcsec": 4.703735969147213,
+      "stage1_minus_autoprof_R50_arcsec": 0.06243483399145067
+    },
+    "native_multibrick": {
+      "autoprof_totmag_R50_r_arcsec": 15.346847190182684,
+      "common_aperture_radius_arcsec": 96.5267693674208,
+      "directory": "post-stage0/source-optical-nersc-native-multibrick-probe",
+      "n_common_retained": 63,
+      "stage1_engine_R50_r_arcsec": 15.437685665103807,
+      "stage1_engine_Rd_star_arcsec": 9.198148986432514,
+      "stage1_minus_autoprof_R50_arcsec": 0.09083847492112263
+    }
+  },
+  "scope": "source-only optical-to-Stage-1 estimator hookup; no validation kinematics queried",
+  "stage1_estimator": "frozen v4.99 optical_exponential_equivalent_scale: relative r-band SB integrated over local elliptical annuli; Rd=R50/1.6783469900166605",
+  "status": "pass"
+}
