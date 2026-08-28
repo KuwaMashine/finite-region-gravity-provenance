@@ -1,0 +1,11 @@
+{
+  "galaxy_id": "WALLABY J133209-245132",
+  "source_release": "NGC 5044 TR3",
+  "status": "source_profile_rejected",
+  "reason": "negative source annular moment-0 weight; no clipping is allowed",
+  "rule_basis": "STAGE0A source-quality lock: signed source moment-0 pixels are retained and a galaxy fails source-profile construction if any integrated radial annular source weight used by the frozen predictor is negative or non-finite.",
+  "workflow_run": "https://github.com/KuwaMashine/finite-region-gravity-provenance/actions/runs/33136238712",
+  "workflow_head_commit": "7e857e355c7e77b13bb083d4f754a5f706b2abf5",
+  "response_products_used": false,
+  "interpretation": "This is prospective source-side attrition, not a repair target. The galaxy must not enter the Stage-1 predictor population unless a separate pre-response audit proves the rejection was caused by a mechanical implementation error. No clipping or outcome-dependent rescue is permitted."
+}
