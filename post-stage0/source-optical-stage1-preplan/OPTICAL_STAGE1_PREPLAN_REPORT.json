@@ -1,0 +1,42 @@
+{
+  "by_field": {
+    "NGC4808": 110,
+    "NGC5044": 539,
+    "Vela": 98
+  },
+  "field_brick_queries": {
+    "NGC4808": {
+      "bounds": [
+        191.4459810189541,
+        198.5351325685212,
+        2.150154335472928,
+        9.021928821993091
+      ],
+      "n_bricks": 821,
+      "query": "SELECT brickname,ra,dec,ra1,ra2,dec1,dec2 FROM ls_dr10.bricks WHERE ra2>191.4459810189541 AND ra1<198.5351325685212 AND dec2>2.150154335472928 AND dec1<9.021928821993091 ORDER BY brickname"
+    },
+    "NGC5044": {
+      "bounds": [
+        193.7517977610215,
+        207.4068939061416,
+        -26.09123599388925,
+        -9.82117640611391
+      ],
+      "n_bricks": 3488,
+      "query": "SELECT brickname,ra,dec,ra1,ra2,dec1,dec2 FROM ls_dr10.bricks WHERE ra2>193.7517977610215 AND ra1<207.4068939061416 AND dec2>-26.09123599388925 AND dec1<-9.82117640611391 ORDER BY brickname"
+    }
+  },
+  "frame_lock": "post-stage0/SOURCE_OPTICAL_PRODUCTION_FRAME_LOCK.json",
+  "n_hi_survivors": 747,
+  "n_plan_rows": 747,
+  "n_spatial_shards": 24,
+  "optical_field_status": {
+    "candidate": 649,
+    "no_dr10_field_coverage": 98
+  },
+  "response_products_used": false,
+  "schema": "WALLABY_STAGE1_OPTICAL_PREPLAN_v1",
+  "scope": "committed H I survivors plus public DR10 brick geometry only; no response products",
+  "shard_rule": "SHA256(primary_brick) first 64 bits mod 24; all sources in a primary brick stay together",
+  "vela_coverage_receipt": "post-stage0/source-vela-dr10-field-coverage/VELA_DR10_FIELD_COVERAGE.json"
+}
