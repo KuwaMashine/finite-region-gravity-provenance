@@ -1,0 +1,57 @@
+{
+  "criteria_v2": {
+    "containment_required": true,
+    "max_abs_delta_R50_arcsec": 0.5,
+    "max_abs_delta_background_over_mean_RMS": 0.01,
+    "max_abs_delta_common_aperture_arcsec": 0.5,
+    "max_abs_delta_log10_Mstar_dex": 0.02
+  },
+  "input_summary": "post-stage0/source-optical-nersc-frame-convergence/nersc_frame_convergence_summary.json",
+  "note": "This is a mechanical source-side criterion repair triggered by an internal nuisance-convergence failure. It does not use or inspect validation kinematics or Gate outcomes.",
+  "previous_decision_rule": "choose the smallest tested fully-contained frame for which the next larger tested frame changes log10_Mstar by <=0.02 dex and R50 by <=0.5 arcsec; if no tested frame passes, do not freeze a production size from this ladder.",
+  "previous_smallest_converged_size_pix": 512,
+  "repair_reason": "The previous scalar-only rule admitted 512 pixels even though the fitted background and common uncertainty aperture changed strongly at 768 pixels. Scalar output agreement can therefore occur by cancellation while nuisance/background estimation is not converged. Add explicit aperture and background-RMS stability requirements before response opening.",
+  "scope": "source-only repair of finite-frame convergence decision; no validation kinematics queried",
+  "smallest_converged_size_pix_v2": 1024,
+  "source_name": "WALLABY J130150+041953",
+  "status": "freeze_candidate",
+  "steps": [
+    {
+      "abs_delta_R50_arcsec": 0.47096926133956796,
+      "abs_delta_background_flux_per_pix": 0.00050442,
+      "abs_delta_background_over_mean_RMS": 0.0882586835734951,
+      "abs_delta_common_aperture_arcsec": 22.9884951814812,
+      "abs_delta_log10_Mstar_dex": 0.013741643148366123,
+      "from_contained": true,
+      "from_size_pix": 512,
+      "mean_background_RMS_flux_per_pix": 0.005715245,
+      "passes": false,
+      "to_size_pix": 768
+    },
+    {
+      "abs_delta_R50_arcsec": 0.2726902214294116,
+      "abs_delta_background_flux_per_pix": 8.759000000000002e-06,
+      "abs_delta_background_over_mean_RMS": 0.0015353266228160512,
+      "abs_delta_common_aperture_arcsec": 0.0,
+      "abs_delta_log10_Mstar_dex": 0.020927050813577708,
+      "from_contained": true,
+      "from_size_pix": 768,
+      "mean_background_RMS_flux_per_pix": 0.005704975,
+      "passes": false,
+      "to_size_pix": 1024
+    },
+    {
+      "abs_delta_R50_arcsec": 0.23151861609303737,
+      "abs_delta_background_flux_per_pix": 5.667199999999999e-06,
+      "abs_delta_background_over_mean_RMS": 0.0009826699346036903,
+      "abs_delta_common_aperture_arcsec": 0.0,
+      "abs_delta_log10_Mstar_dex": 0.012349146197106364,
+      "from_contained": true,
+      "from_size_pix": 1024,
+      "mean_background_RMS_flux_per_pix": 0.0057671449999999996,
+      "passes": true,
+      "to_size_pix": 1280
+    }
+  ],
+  "team_release": "NGC 4808 TR1"
+}
