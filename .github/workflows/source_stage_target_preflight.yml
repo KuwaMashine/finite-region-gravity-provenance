@@ -7,6 +7,7 @@ on:
       - '.github/workflows/source_stage_target_preflight.yml'
       - '.github/scripts/source_stage_target_preflight.py'
       - '.github/scripts/source_stage_target_preflight_v2.py'
+      - '.github/scripts/source_stage_target_preflight_v3.py'
       - 'post-stage0/frozen-v4.99-source-engine/**'
       - 'post-stage0/STAGE0_EXTERNAL_TIMESTAMP_RECEIPT.json'
 
@@ -27,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python .github/scripts/source_stage_target_preflight_v2.py
+          python .github/scripts/source_stage_target_preflight_v3.py
       - name: Commit TARGET source-stage preflight receipt
         shell: bash
         run: |
