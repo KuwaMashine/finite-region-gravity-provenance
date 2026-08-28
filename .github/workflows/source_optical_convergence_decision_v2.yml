@@ -1,0 +1,36 @@
+name: WALLABY source-only optical convergence decision v2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/source_optical_convergence_decision_v2.yml'
+      - '.github/scripts/source_optical_convergence_decision_v2.py'
+
+permissions:
+  contents: write
+
+jobs:
+  convergence-decision-v2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply repaired nuisance-aware convergence criterion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/source_optical_convergence_decision_v2.py
+      - name: Commit repaired convergence decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-nersc-frame-convergence-v2
+          if git diff --cached --quiet; then
+            echo 'No convergence-decision changes.'
+          else
+            git commit -m 'Repair source-only optical frame convergence criterion'
+            git pull --rebase origin main
+            git push
+          fi
