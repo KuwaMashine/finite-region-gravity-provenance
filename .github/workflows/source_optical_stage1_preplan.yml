@@ -1,0 +1,35 @@
+name: WALLABY Stage-1 source-only optical spatial preplan
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/source-hi-stage1/SOURCE_HI_STAGE1_REPORT.json'
+      - '.github/workflows/source_optical_stage1_preplan.yml'
+      - '.github/scripts/source_optical_stage1_preplan.py'
+
+permissions:
+  contents: write
+
+jobs:
+  preplan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Data Lab client
+        run: python -m pip -q install --upgrade astro-datalab
+      - name: Resolve optical primary bricks and spatial shards
+        run: python .github/scripts/source_optical_stage1_preplan.py
+      - name: Commit source-only optical preplan
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/source-optical-stage1-preplan
+          if git diff --cached --quiet; then
+            echo 'No optical preplan changes.'
+          else
+            git commit -m 'Freeze Stage-1 optical spatial preplan'
+            git pull --rebase origin main
+            git push
+          fi
