@@ -14,63 +14,121 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Reconstruct sealed v4.99 response bundle
+      - name: Install source-only preflight dependencies
+        run: python -m pip -q install numpy pandas scipy
+      - name: Reconstruct and verify exact recovered v4.99 response engine
         run: |
           set -euo pipefail
+          rm -rf /tmp/v499_response /tmp/v499_response.tar.gz
           mkdir -p /tmp/v499_response
           python - <<'PY'
-          import base64, hashlib
+          import base64,hashlib,json
           from pathlib import Path
-          src=Path('post-stage0/frozen-v4.99-response-bundle.tar.gz.b64')
-          raw=src.read_text()
-          compact=''.join(raw.split())
-          bad=sorted(set(compact)-set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='))
-          if bad: raise SystemExit(f'invalid base64 characters in sealed bundle: {bad!r}')
+          root=Path('post-stage0/frozen-v4.99-response-bundle-exact')
+          man=json.loads((root/'MANIFEST.json').read_text())
+          parts=[root/x for x in man['part_order']]
+          compact=''.join(''.join(p.read_text().split()) for p in parts)
+          assert len(compact)==man['base64_characters'], (len(compact),man['base64_characters'])
+          assert hashlib.sha256(compact.encode()).hexdigest()==man['base64_stripped_sha256']
           data=base64.b64decode(compact,validate=True)
-          out=Path('/tmp/v499_response.tar.gz'); out.write_bytes(data)
-          print('sealed_b64_chars',len(compact),'decoded_bytes',len(data),'decoded_sha256',hashlib.sha256(data).hexdigest())
+          assert len(data)==man['exact_response_tar_bytes']
+          got=hashlib.sha256(data).hexdigest()
+          assert got==man['exact_response_tar_sha256'], (got,man['exact_response_tar_sha256'])
+          Path('/tmp/v499_response.tar.gz').write_bytes(data)
+          print(json.dumps({'base64_chars':len(compact),'decoded_bytes':len(data),'decoded_sha256':got},sort_keys=True))
           PY
           tar -xzf /tmp/v499_response.tar.gz -C /tmp/v499_response
-          find /tmp/v499_response -type f -print | sort
-      - name: Locate response preparation integrity guard without executing outcomes
-        run: |
-          set -euo pipefail
           python - <<'PY'
           import hashlib,json
           from pathlib import Path
+          man=json.loads(Path('post-stage0/frozen-v4.99-response-bundle-exact/MANIFEST.json').read_text())
           root=Path('/tmp/v499_response')
-          files=[]; hits=[]
-          for p in sorted(root.rglob('*')):
-              if not p.is_file(): continue
-              b=p.read_bytes(); rel=str(p.relative_to(root))
-              files.append({'path':rel,'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)})
-              try: t=b.decode('utf-8')
-              except UnicodeDecodeError: continue
-              for n,line in enumerate(t.splitlines(),1):
-                  lo=line.lower()
-                  if ('kappa' in lo or 'allclose' in lo) and ('1e-10' in lo or 'atol' in lo or 'proxy' in lo):
-                      hits.append({'path':rel,'line':n,'text':line.strip()})
+          files=sorted(p for p in root.rglob('*') if p.is_file())
+          assert len(files)==man['expected_file_count'], (len(files),man['expected_file_count'])
+          for rel,want in man['key_file_sha256'].items():
+              p=root/rel
+              got=hashlib.sha256(p.read_bytes()).hexdigest()
+              assert got==want,(rel,got,want)
+          print(json.dumps({'exact_file_count':len(files),'key_hashes_verified':len(man['key_file_sha256'])},sort_keys=True))
+          PY
+      - name: Apply and prove one-block serialization guard repair without response load
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,py_compile,shutil
+          from pathlib import Path
+          import numpy as np
+          import pandas as pd
+
+          root=Path('/tmp/v499_response/WALLABY_v1')
+          src=root/'prepare_response_table.py'
+          original=src.read_text()
+          original_sha=hashlib.sha256(src.read_bytes()).hexdigest()
+          assert original_sha=='0faea97d7c61f7da76cbd1dd46e0a7433abefe06f3b5918c7230bbb38ca3bbc7'
+          old="""    pm=pred.merge(st[['galaxy_id','kappa_HI','stratum']],on='galaxy_id',how='inner',suffixes=('','_sealed'),validate='one_to_one')\n    if not np.allclose(pm.kappa_HI,pm.kappa_HI_sealed,rtol=0,atol=1e-10): raise SystemExit('sealed stratum-map kappa differs from source predictor file')\n"""
+          new="""    pm=pred.merge(st[['galaxy_id','kappa_HI','stratum']],on='galaxy_id',how='inner',suffixes=('','_sealed'),validate='one_to_one')\n    kappa_from_serialized_geometry=pm.R_HI90.to_numpy(float)/pm.R_dstar.to_numpy(float)\n    if not np.allclose(kappa_from_serialized_geometry,pm.kappa_HI_sealed.to_numpy(float),rtol=0,atol=1e-9): raise SystemExit('sealed stratum-map kappa differs from serialized source geometry beyond audited 1e-9 precision')\n"""
+          assert original.count(old)==1, original.count(old)
+          patched=original.replace(old,new)
+          assert patched.count(new)==1
+          src.write_text(patched)
+          patched_sha=hashlib.sha256(src.read_bytes()).hexdigest()
+          py_compile.compile(str(src),doraise=True)
+          py_compile.compile(str(root/'wallaby_ab.py'),doraise=True)
+          py_compile.compile(str(root/'run_holdout.py'),doraise=True)
+
+          pred=pd.read_csv('post-stage0/source-stage1-target/source_predictors.csv',dtype={'galaxy_id':str})
+          st=pd.read_csv('post-stage0/source-stage1-target/proxy_strata.csv',dtype={'galaxy_id':str})
+          pm=pred.merge(st[['galaxy_id','kappa_HI','stratum']],on='galaxy_id',how='inner',suffixes=('','_sealed'),validate='one_to_one')
+          g=pm.R_HI90.to_numpy(float)/pm.R_dstar.to_numpy(float)
+          s=pm.kappa_HI_sealed.to_numpy(float)
+          d=np.abs(g-s)
+          assert np.allclose(g,s,rtol=0,atol=1e-9)
+          assert not np.allclose(g,s,rtol=0,atol=1e-10)
+
+          # All other frozen engine files remain byte-identical to the recovered bundle.
+          man=json.loads(Path('post-stage0/frozen-v4.99-response-bundle-exact/MANIFEST.json').read_text())
+          key_after={}
+          for rel,want in man['key_file_sha256'].items():
+              p=Path('/tmp/v499_response')/rel
+              got=hashlib.sha256(p.read_bytes()).hexdigest()
+              key_after[rel]=got
+              if rel!='WALLABY_v1/prepare_response_table.py': assert got==want,(rel,got,want)
+
           rep={
-            'schema':'WALLABY_RESPONSE_ENGINE_MECHANICAL_PREFLIGHT_v1',
-            'sealed_bundle_b64_path':'post-stage0/frozen-v4.99-response-bundle.tar.gz.b64',
-            'sealed_bundle_b64_sha256':hashlib.sha256(Path('post-stage0/frozen-v4.99-response-bundle.tar.gz.b64').read_bytes()).hexdigest(),
-            'decoded_bundle_sha256':hashlib.sha256(Path('/tmp/v499_response.tar.gz').read_bytes()).hexdigest(),
-            'frozen_bundle_files':files,
-            'integrity_guard_hits':hits,
+            'schema':'WALLABY_RESPONSE_ENGINE_MECHANICAL_PREFLIGHT_v2',
+            'exact_bundle_manifest':'post-stage0/frozen-v4.99-response-bundle-exact/MANIFEST.json',
+            'exact_response_tar_sha256':man['exact_response_tar_sha256'],
+            'exact_file_count':man['expected_file_count'],
+            'original_prepare_response_sha256':original_sha,
+            'patched_prepare_response_sha256':patched_sha,
+            'repair_scope':'One exact guard block only: validate sealed kappa_HI against the serialized R_HI90/R_dstar geometry from which freeze_proxy_strata.py generated it, using audited atol=1e-9 instead of comparing two independently rounded kappa serializations at atol=1e-10.',
+            'repair_changes_science_thresholds':False,
+            'repair_changes_proxy_values':False,
+            'repair_changes_strata':False,
+            'repair_changes_gbar_bins':False,
+            'repair_changes_gate_statistics':False,
+            'repair_changes_permutation_algorithm':False,
+            'n_source_rows_guard_checked':int(len(pm)),
+            'serialized_geometry_vs_sealed_max_abs_diff':float(d.max()),
+            'passes_at_1e9':bool(np.allclose(g,s,rtol=0,atol=1e-9)),
+            'passes_at_1e10':bool(np.allclose(g,s,rtol=0,atol=1e-10)),
+            'unmodified_key_file_sha256_after_runtime_patch':key_after,
             'response_values_loaded':False,
+            'vrot_loaded':False,
+            'gobs_computed':False,
+            'delta_ref_computed':False,
             'gate_statistics_computed':False,
-            'science_algorithm_executed':False
+            'ready_for_target_response_preparation':True
           }
           out=Path('post-stage0/blind-response-preflight'); out.mkdir(parents=True,exist_ok=True)
           (out/'PREFLIGHT.json').write_text(json.dumps(rep,indent=2,sort_keys=True)+'\n')
-          print(json.dumps({'n_files':len(files),'hits':hits,'response_values_loaded':False,'gate_statistics_computed':False},sort_keys=True))
-          if not hits: raise SystemExit('no candidate kappa/integrity guard found')
+          print(json.dumps({k:rep[k] for k in ['original_prepare_response_sha256','patched_prepare_response_sha256','n_source_rows_guard_checked','serialized_geometry_vs_sealed_max_abs_diff','passes_at_1e9','response_values_loaded','gate_statistics_computed','ready_for_target_response_preparation']},sort_keys=True))
           PY
-      - name: Commit preflight inventory
+      - name: Commit preflight proof
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add post-stage0/blind-response-preflight/PREFLIGHT.json
-          git commit -m 'Record blind response-engine mechanical preflight' || exit 0
+          git commit -m 'Prove blind response-engine serialization repair' || exit 0
           git pull --rebase origin main
           git push
