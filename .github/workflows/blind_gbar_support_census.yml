@@ -1,0 +1,109 @@
+name: WALLABY outcome-blind gbar support census
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/blind-gbar-support-trigger/RUN.json'
+
+permissions:
+  contents: write
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install frozen gravity dependencies
+        run: python -m pip -q install numpy pandas scipy
+      - name: Reconstruct source-side gbar support without Vrot
+        run: |
+          PYTHONPATH=post-stage0/frozen-v4.99-source-engine python - <<'PY'
+          import json
+          from pathlib import Path
+          import numpy as np
+          import pandas as pd
+          from wallaby_source_geometry import RingProfile
+          from baryonic_gravity import baryonic_acceleration
+
+          root=Path.cwd()
+          receipt=json.loads((root/'post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json').read_text())
+          assert receipt['source_stage_commit']=='23ef651806d1b2c5ea0afd59c54239491869f69e'
+          man=json.loads((root/'post-stage0/response-stage1/RESPONSE_EXPORT_MANIFEST.json').read_text())
+          assert man['source_stage_timestamp_verified'] is True
+
+          # Deliberately do not load vrot_kms. This is an outcome-free support census.
+          kin=pd.read_csv(root/'post-stage0/response-stage1/kinematics.csv',
+                          usecols=['galaxy_id','field_id','release_phase','qflag_model','rad_arcsec'],
+                          dtype={'galaxy_id':str})
+          pred=pd.read_csv(root/'post-stage0/source-stage1-target/source_predictors.csv',dtype={'galaxy_id':str})
+          rings=pd.read_csv(root/'post-stage0/source-stage1-target/baryonic_hi_fold.csv',dtype={'galaxy_id':str})
+          strata=pd.read_csv(root/'post-stage0/source-stage1-target/proxy_strata.csv',dtype={'galaxy_id':str})
+          VAL={'NGC5044','NGC4808','Vela'}
+          kin=kin[(kin.release_phase.astype(int)==2)&kin.field_id.astype(str).isin(VAL)&(kin.qflag_model.astype(int)==0)].copy()
+          pm=pred.merge(strata[['galaxy_id','kappa_HI','stratum']],on='galaxy_id',how='inner',suffixes=('','_sealed'),validate='one_to_one')
+          if not np.allclose(pm.kappa_HI,pm.kappa_HI_sealed,rtol=0,atol=1e-10): raise SystemExit('sealed kappa mismatch')
+
+          edges=np.asarray([-12.08,-11.755,-11.43,-11.105,-10.78,-10.455,-10.13,-9.805,-9.48,-9.155,-8.83,-8.505,-8.18],float)
+          rows=[]; fails=[]
+          for p in pm.sort_values('galaxy_id').itertuples(index=False):
+              gid=str(p.galaxy_id)
+              z=kin[kin.galaxy_id==gid].sort_values('rad_arcsec')
+              if z.empty or float(p.ell_maj_beams)<2.0: continue
+              try:
+                  rr=rings[rings.galaxy_id==gid].sort_values('pair_index')
+                  if len(rr)<4: raise ValueError('too few sealed baryonic cross-fit rings')
+                  gp=RingProfile(rr.rin_arcsec.to_numpy(float),rr.rout_arcsec.to_numpy(float),rr.sigma_hi_msun_pc2.to_numpy(float),tuple(range(len(rr))))
+                  bg=baryonic_acceleration(z.rad_arcsec.to_numpy(float),float(p.distance_mpc),10.0**float(p.logMstar),float(p.R_dstar_arcsec),gp)
+                  conv=np.asarray(bg['gravity_diagnostic']['converged_mask'],bool)
+                  gb=np.asarray(bg['gbar'],float)
+                  nconv=int(conv.sum())
+                  if nconv<3: raise ValueError('fewer than 3 radii pass Newtonian reconstruction tolerance')
+                  for i,rz in enumerate(z.itertuples(index=False)):
+                      if not conv[i] or not(np.isfinite(gb[i]) and gb[i]>0): continue
+                      lg=float(np.log10(gb[i]))
+                      bi=int(np.searchsorted(edges,lg,side='right')-1)
+                      if lg==edges[-1]: bi=len(edges)-2
+                      if lg<edges[0] or lg>edges[-1] or bi<0 or bi>=len(edges)-1: continue
+                      rows.append({'galaxy_id':gid,'field_id':str(p.field_id),'stratum':str(p.stratum),'gbar_bin':bi})
+              except Exception as e:
+                  fails.append({'galaxy_id':gid,'reason':str(e)})
+
+          g=pd.DataFrame(rows).drop_duplicates(['galaxy_id','field_id','stratum','gbar_bin']) if rows else pd.DataFrame(columns=['galaxy_id','field_id','stratum','gbar_bin'])
+          eligible=[]; bin_support=[]
+          for b in range(len(edges)-1):
+              z=g[g.gbar_bin==b]
+              c={s:int(z.loc[z.stratum==s,'galaxy_id'].nunique()) for s in ['low','middle','high']}
+              ok=all(c[s]>=2 for s in ['low','middle','high'])
+              if ok: eligible.append(b)
+              bin_support.append({'gbar_bin':b,'lo':float(edges[b]),'hi':float(edges[b+1]),'low':c['low'],'middle':c['middle'],'high':c['high'],'eligible':ok})
+          rep={
+            'schema':'WALLABY_BLIND_GBAR_SUPPORT_CENSUS_v1',
+            'outcome_blind':True,
+            'vrot_loaded':False,
+            'gobs_computed':False,
+            'delta_ref_computed':False,
+            'gate_statistics_computed':False,
+            'n_galaxies_with_gbar_rows':int(g.galaxy_id.nunique()) if len(g) else 0,
+            'n_galaxy_bin_cells':int(len(g)),
+            'n_gravity_reconstruction_failures':int(len(fails)),
+            'gravity_reconstruction_failures':fails,
+            'min_galaxies_per_stratum_per_bin':2,
+            'gbar_bin_edges':edges.tolist(),
+            'eligible_bins':eligible,
+            'n_eligible_bins':int(len(eligible)),
+            'bin_support':bin_support,
+            'scoreable_under_frozen_support_rule':bool(len(eligible)>0)
+          }
+          out=root/'post-stage0/blind-gbar-support'; out.mkdir(parents=True,exist_ok=True)
+          (out/'GBAR_SUPPORT.json').write_text(json.dumps(rep,indent=2,sort_keys=True)+'\n')
+          print(json.dumps({k:rep[k] for k in ['n_galaxies_with_gbar_rows','n_gravity_reconstruction_failures','eligible_bins','n_eligible_bins','scoreable_under_frozen_support_rule','vrot_loaded','gate_statistics_computed']},sort_keys=True))
+          PY
+      - name: Commit outcome-blind gbar support census
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/blind-gbar-support/GBAR_SUPPORT.json
+          git commit -m 'Record outcome-blind frozen gbar support census' || exit 0
+          git pull --rebase origin main
+          git push
