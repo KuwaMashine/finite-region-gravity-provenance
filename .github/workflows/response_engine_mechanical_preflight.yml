@@ -18,10 +18,18 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/v499_response
-          : > /tmp/v499_response.tar.gz
-          for f in post-stage0/frozen-v4.99-response-bundle/chunk_*.b64; do
-            base64 -d "$f" >> /tmp/v499_response.tar.gz
-          done
+          python - <<'PY'
+          import base64, hashlib
+          from pathlib import Path
+          src=Path('post-stage0/frozen-v4.99-response-bundle.tar.gz.b64')
+          raw=src.read_text()
+          compact=''.join(raw.split())
+          bad=sorted(set(compact)-set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='))
+          if bad: raise SystemExit(f'invalid base64 characters in sealed bundle: {bad!r}')
+          data=base64.b64decode(compact,validate=True)
+          out=Path('/tmp/v499_response.tar.gz'); out.write_bytes(data)
+          print('sealed_b64_chars',len(compact),'decoded_bytes',len(data),'decoded_sha256',hashlib.sha256(data).hexdigest())
+          PY
           tar -xzf /tmp/v499_response.tar.gz -C /tmp/v499_response
           find /tmp/v499_response -type f -print | sort
       - name: Locate response preparation integrity guard without executing outcomes
@@ -44,6 +52,9 @@ jobs:
                       hits.append({'path':rel,'line':n,'text':line.strip()})
           rep={
             'schema':'WALLABY_RESPONSE_ENGINE_MECHANICAL_PREFLIGHT_v1',
+            'sealed_bundle_b64_path':'post-stage0/frozen-v4.99-response-bundle.tar.gz.b64',
+            'sealed_bundle_b64_sha256':hashlib.sha256(Path('post-stage0/frozen-v4.99-response-bundle.tar.gz.b64').read_bytes()).hexdigest(),
+            'decoded_bundle_sha256':hashlib.sha256(Path('/tmp/v499_response.tar.gz').read_bytes()).hexdigest(),
             'frozen_bundle_files':files,
             'integrity_guard_hits':hits,
             'response_values_loaded':False,
