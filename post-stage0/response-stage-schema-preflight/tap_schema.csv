@@ -1,0 +1,40 @@
+column_name,datatype,arraysize,unit,description
+name,char,22,,WALLABY source name (WALLABY Jhhmmss+/-ddmmss)
+ra,double,,deg,Right ascension (J2000) of centroid position
+dec,double,,deg,Declination (J2000) of centroid position
+freq,double,,deg,Barycentric frequency of centroid position
+team_release,char,30,,Internal team release main
+team_release_kin,char,30,,Internal kinematic team release
+Vsys_model,double,,km.s-1,Model systemic velocity
+e_Vsys_model,double,,km.s-1,Statistical uncertainty of model systemic velocity
+X_model,double,,pix,Kinematically modelled center position in X
+e_X_model,double,,pix,Statistical uncertainty of modelled center position in X
+Y_model,double,,pix,Kinematically modelled center position in Y
+e_Y_model,double,,pix,Statistical uncertainty of modelled center position in Y
+RA_model,double,,deg,Kinematically modelled center position in Right ascension (J2000)
+e_RA_model,double,,deg,"Statistical uncertainty of modelled center position in Right
+     ascension (J2000)"
+DEC_model,double,,deg,Kinematically modelled center position in Declination (J2000)
+e_DEC_model,double,,deg,"Statistical uncertainty of modelled center position in
+     Declination (J2000)"
+Inc_model,double,,deg,Kinematically modelled inclination
+e_Inc_model,double,,deg,Statistical uncertainty of modelled inclination
+PA_model,double,,deg,"Kinematically modelled position angle relative to the local X-Y
+     axis"
+e_PA_model,double,,deg,Statistical uncertainty of modelled position angle
+PA_model_g,double,,deg,"Kinematically modelled position angle relative to the global N-S
+     coordinates"
+e_PA_model_g,double,,deg,"Statistical uncertainty of modelled position angle relative to
+     the global N-S coordinates"
+QFlag_model,double,,deg,Kinematically model quality flag
+Rad,char,*,arcsec,The radial array for the rotation curve
+Vrot_model,char,*,km.s-1,The kinematically modelled rotation curve
+e_Vrot_model,char,*,km.s-1,Statistical uncertainty of the rotation curve
+e_Vrot_model_inc,char,*,km.s-1,"Statistical uncertainty of the rotation curve due to the error on
+     the inclination"
+Rad_SD,char,*,arcsec,The radial array for the surface density profile
+SD_model,char,*,msol/pc^2,The kinematically modelled projected surface density profile
+e_SD_model,char,*,msol/pc^2,Statistical uncertainty of the projected surface density
+SD_FO_model,char,*,msol/pc^2,The kinematically modelled deprojected surface density profile
+e_SD_FO_model_inc,char,*,msol/pc^2,"Statistical uncertainty of the deprojected surface density due to
+     the inclination"

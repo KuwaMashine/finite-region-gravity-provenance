@@ -1,0 +1,8 @@
+{
+  "endpoint": "https://ws-uv.canfar.net/youcat/sync",
+  "query_kind": "TAP_SCHEMA metadata only; no catalogue rows/response values loaded",
+  "response_values_loaded": false,
+  "schema": "WALLABY_RESPONSE_SCHEMA_PREFLIGHT_v1",
+  "stage1_receipt_verified": true,
+  "table": "cirada.Wallaby_dr2_kinematic_catalogue"
+}
