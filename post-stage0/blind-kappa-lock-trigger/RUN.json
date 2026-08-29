@@ -1,0 +1,4 @@
+{
+  "schema": "WALLABY_KAPPA_LOCK_AUDIT_TRIGGER_v1",
+  "scope": "Source-only identity audit of kappa_HI between the frozen predictor table and frozen proxy-strata map. No response values loaded or statistics computed."
+}
