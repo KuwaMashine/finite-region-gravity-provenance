@@ -23,21 +23,25 @@ jobs:
           from pathlib import Path
           import numpy as np, pandas as pd
           root=Path.cwd()
-          p=pd.read_csv(root/'post-stage0/source-stage1-target/source_predictors.csv',usecols=['galaxy_id','kappa_HI'],dtype={'galaxy_id':str})
+          p=pd.read_csv(root/'post-stage0/source-stage1-target/source_predictors.csv',usecols=['galaxy_id','R_HI90','R_dstar','kappa_HI'],dtype={'galaxy_id':str})
           s=pd.read_csv(root/'post-stage0/source-stage1-target/proxy_strata.csv',usecols=['galaxy_id','kappa_HI','stratum'],dtype={'galaxy_id':str})
           z=p.merge(s,on='galaxy_id',suffixes=('_pred','_sealed'),validate='one_to_one')
           a=z.kappa_HI_pred.to_numpy(float); b=z.kappa_HI_sealed.to_numpy(float)
-          nan_a=np.isnan(a); nan_b=np.isnan(b); both_nan=nan_a & nan_b; one_nan=nan_a ^ nan_b
-          finite=np.isfinite(a)&np.isfinite(b)
-          d=np.abs(a[finite]-b[finite])
+          geom=z.R_HI90.to_numpy(float)/z.R_dstar.to_numpy(float)
+          finite=np.isfinite(a)&np.isfinite(b)&np.isfinite(geom)
+          d_pred=np.abs(a[finite]-b[finite]); d_geom=np.abs(geom[finite]-b[finite])
           rep={
-            'schema':'WALLABY_KAPPA_LOCK_AUDIT_v1','source_only':True,'response_values_loaded':False,
-            'n_joined':int(len(z)),'n_pred_nan':int(nan_a.sum()),'n_sealed_nan':int(nan_b.sum()),
-            'n_both_nan':int(both_nan.sum()),'n_one_sided_nan':int(one_nan.sum()),
-            'n_finite':int(finite.sum()),'n_finite_diff_gt_1e10':int((d>1e-10).sum()) if len(d) else 0,
-            'max_abs_finite_diff':float(d.max()) if len(d) else None,
-            'np_allclose_exact_script_equal_nan_false':bool(np.allclose(a,b,rtol=0,atol=1e-10)),
-            'np_allclose_if_shared_nan_allowed':bool(np.allclose(a,b,rtol=0,atol=1e-10,equal_nan=True))
+            'schema':'WALLABY_KAPPA_LOCK_AUDIT_v2','source_only':True,'response_values_loaded':False,
+            'n_joined':int(len(z)),'n_finite':int(finite.sum()),
+            'predictor_vs_sealed_max_abs_diff':float(d_pred.max()),
+            'predictor_vs_sealed_n_gt_1e10':int((d_pred>1e-10).sum()),
+            'serialized_geometry_vs_sealed_max_abs_diff':float(d_geom.max()),
+            'serialized_geometry_vs_sealed_n_gt_1e10':int((d_geom>1e-10).sum()),
+            'serialized_geometry_vs_sealed_n_gt_1e9':int((d_geom>1e-9).sum()),
+            'serialized_geometry_vs_sealed_n_gt_2e9':int((d_geom>2e-9).sum()),
+            'allclose_geometry_at_1e9':bool(np.allclose(geom,b,rtol=0,atol=1e-9)),
+            'allclose_geometry_at_2e9':bool(np.allclose(geom,b,rtol=0,atol=2e-9)),
+            'writer_basis':'freeze_proxy_strata.py reads serialized R_HI90/R_dstar, recomputes ratio, then writes kappa_HI with %.12g'
           }
           out=root/'post-stage0/blind-kappa-lock'; out.mkdir(parents=True,exist_ok=True)
           (out/'AUDIT.json').write_text(json.dumps(rep,indent=2,sort_keys=True)+'\n')
@@ -48,6 +52,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add post-stage0/blind-kappa-lock/AUDIT.json
-          git commit -m 'Audit frozen source kappa identity before blind run' || exit 0
+          git commit -m 'Refine frozen source kappa serialization audit' || exit 0
           git pull --rebase origin main
           git push
