@@ -1,0 +1,27 @@
+{
+  "n_full_stellar": 389,
+  "n_hi_robust": 747,
+  "n_optical_candidates_ngc_fields": 649,
+  "n_optical_profile_rows": 18403,
+  "n_vela_hi_survivors_forced_optical_false": 98,
+  "next": "Create exact source export manifest for meta.csv, committed H I profile and optical_profile.csv; run byte-verified v4.99 source engine in TARGET mode; freeze predictor/HI-fold/strata/beam receipts before response opening.",
+  "production_frame_lock_sha256": "0a0d028d771d799cb71c933acbd4604befb728a6c187ae7d39a8444845d15c56",
+  "response_products_used": false,
+  "schema": "WALLABY_STAGE1_SOURCE_OPTICAL_FULL_v1",
+  "scope": "source-only optical processing of committed H I survivors; no response products",
+  "status_by_field": {
+    "NGC4808": {
+      "frame_nonconverged_after_registered_ladder": 13,
+      "pass": 97
+    },
+    "NGC5044": {
+      "frame_nonconverged_after_registered_ladder": 65,
+      "no_dr10_imaging_coverage": 182,
+      "pass": 292
+    },
+    "Vela": {
+      "no_dr10_field_coverage": 98
+    }
+  },
+  "vela_coverage_receipt_sha256": "83ab4ff7ba9d8ada6b48314027d43ebca264ca087357279ef338d40ef0367c81"
+}
