@@ -3,5 +3,9 @@
   "stage1_receipt_commit": "c7125a4c5e09b3be1f278e6da2c682f71a44b0de",
   "response_export_commit": "87ab52c96206f5c998ecac1fd1e62ab88603a0d9",
   "readiness_report": "post-stage0/blind-readiness/READINESS.json",
+  "kappa_lock_audit": "post-stage0/blind-kappa-lock/AUDIT.json",
+  "mechanical_kappa_check_repair_commit": "23f32d2935605d9b6d5bfa57aa90844f515ccf8c",
+  "prior_run_id": 33272746462,
+  "prior_failure_scope": "source-only integrity guard compared differently rounded kappa_HI serializations; no Vrot, gobs, delta_ref or Gate statistic was loaded/computed",
   "scope": "Outcome-blind frozen gbar support only. Load response radii but not Vrot_model; reconstruct gbar from sealed source predictors and baryonic H I, then count preregistered low/middle/high galaxy support per frozen gbar bin. Do not compute gobs, delta_ref, Gate A or Gate B."
 }
