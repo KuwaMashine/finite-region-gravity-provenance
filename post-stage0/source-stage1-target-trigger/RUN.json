@@ -8,8 +8,12 @@
   "frozen_v499_manifest_sha256": "61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c",
   "source_engine_verification": "pass",
   "mechanical_optical_repair_commit": "44cad4b01a9b1ff69c66eb41b9653fd4d0f2d61d",
+  "mechanical_target_push_repair_commit": "956d7f16236abe529d183dfd36e633353cba88b0",
+  "prior_target_run_id": 33270584274,
+  "prior_target_science_stage_completed": true,
+  "prior_target_failure_scope": "git pull --rebase blocked by runtime-only executable-bit worktree changes after all source outputs and hashes completed",
   "science_definitions_changed": false,
   "response_products_used": false,
   "validation_kinematics_opened": false,
-  "instruction": "Run the already-armed exact-v4.99 TARGET source-only workflow and freeze source predictors, baryonic H I fold, proxy strata, beam report, prepare report, timestamp payload and SHA256SUMS before any response-side data are opened."
+  "instruction": "Rerun the already-armed exact-v4.99 TARGET source-only workflow with only the post-runtime chmod worktree restoration repair; freeze source predictors, baryonic H I fold, proxy strata, beam report, prepare report, timestamp payload and SHA256SUMS before any response-side data are opened."
 }
