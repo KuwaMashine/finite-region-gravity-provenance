@@ -1,0 +1,107 @@
+name: WALLABY Stage-1 response export after source receipt
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/response-stage1-trigger/RUN.json'
+
+permissions:
+  contents: write
+
+jobs:
+  response-export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install transport dependencies
+        run: python -m pip -q install pandas requests
+      - name: Verify source receipt and fetch/normalize registered response product
+        run: |
+          python - <<'PY'
+          import hashlib, io, json, re, requests
+          from pathlib import Path
+          import numpy as np
+          import pandas as pd
+
+          root=Path.cwd()
+          receipt=json.loads((root/'post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json').read_text())
+          assert receipt['source_stage_commit']=='23ef651806d1b2c5ea0afd59c54239491869f69e'
+          assert receipt['frozen_manifest_file_sha256']=='61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c'
+          assert receipt['response_products_used_before_receipt'] is False
+          assert receipt['validation_kinematics_opened_before_receipt'] is False
+
+          endpoint='https://ws-uv.canfar.net/youcat/sync'
+          table='cirada.Wallaby_dr2_kinematic_catalogue'
+          doi='10.25919/7w8n-9h19'
+          query=f'SELECT name,QFlag_model,Rad,Vrot_model FROM {table}'
+          r=requests.post(endpoint,data={'REQUEST':'doQuery','LANG':'ADQL','FORMAT':'csv','QUERY':query},timeout=180)
+          r.raise_for_status()
+          raw=pd.read_csv(io.BytesIO(r.content),dtype={'name':str})
+          need={'name','QFlag_model','Rad','Vrot_model'}
+          if not need.issubset(raw.columns): raise SystemExit(f'kinematic TAP response missing {sorted(need-set(raw.columns))}')
+          if raw['name'].duplicated().any(): raise SystemExit('duplicate kinematic source names in public catalogue')
+
+          pred=pd.read_csv(root/'post-stage0/source-stage1-target/source_predictors.csv',dtype={'galaxy_id':str})
+          pcols={'galaxy_id','field_id','release_phase'}
+          if not pcols.issubset(pred.columns): raise SystemExit('frozen predictor table lacks join metadata')
+          if pred.galaxy_id.duplicated().any(): raise SystemExit('duplicate source-stage galaxy_id')
+          pmeta=pred.set_index('galaxy_id')[['field_id','release_phase']]
+
+          num=re.compile(r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][-+]?\d+)?')
+          allowed=re.compile(r'^[\s\[\]\(\)\{\},;]*$')
+          def arr(x,label,gid):
+              s=str(x).strip()
+              toks=num.findall(s)
+              residue=num.sub('',s)
+              if not toks or not allowed.match(residue):
+                  raise SystemExit(f'unrecognized {label} array serialization for {gid}')
+              a=np.asarray([float(t) for t in toks],float)
+              if not np.isfinite(a).all(): raise SystemExit(f'nonfinite {label} array for {gid}')
+              return a
+
+          rows=[]; matched=0
+          for z in raw.itertuples(index=False):
+              gid=str(z.name).strip()
+              if gid not in pmeta.index:
+                  continue
+              matched+=1
+              q=float(z.QFlag_model)
+              if not np.isfinite(q) or abs(q-round(q))>1e-9: raise SystemExit(f'nonintegral QFlag_model for {gid}')
+              rr=arr(z.Rad,'Rad',gid); vv=arr(z.Vrot_model,'Vrot_model',gid)
+              if len(rr)!=len(vv) or len(rr)==0: raise SystemExit(f'Rad/Vrot_model length mismatch for {gid}')
+              field=str(pmeta.loc[gid,'field_id']); phase=int(pmeta.loc[gid,'release_phase'])
+              for rad,v in zip(rr,vv):
+                  rows.append({'galaxy_id':gid,'field_id':field,'release_phase':phase,
+                               'qflag_model':int(round(q)),'rad_arcsec':float(rad),'vrot_kms':float(v)})
+          if not rows: raise SystemExit('no public kinematic rows joined to frozen source-stage identifiers')
+          outdir=root/'post-stage0/response-stage1'; outdir.mkdir(parents=True,exist_ok=True)
+          out=pd.DataFrame(rows).sort_values(['galaxy_id','rad_arcsec'])
+          kin=outdir/'kinematics.csv'; out.to_csv(kin,index=False,float_format='%.12g')
+          sha=lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          manifest={
+            'manifest_version':'WALLABY_RESPONSE_EXPORT_v1','stage':'RESPONSE','join_key':'galaxy_id',
+            'source_stage_timestamp_verified':True,
+            'product_ids':{'kinematic_catalogue':f'DOI:{doi}; CADC:{table}'},
+            'column_map':{
+              'galaxy_id':'name','field_id':'source-stage frozen field_id joined by name',
+              'release_phase':'source-stage frozen release_phase joined by name',
+              'qflag_model':'QFlag_model','rad_arcsec':'Rad','vrot_kms':'Vrot_model'},
+            'normalized_files':{'kinematics':{'path':'post-stage0/response-stage1/kinematics.csv','sha256':sha(kin)}},
+            'notes':'Created only after public Stage-1 source receipt c7125a4c5e09b3be1f278e6da2c682f71a44b0de. Validation membership/field labels are inherited from the sealed source-stage identifiers; no response value is used to define membership.'}
+          (outdir/'RESPONSE_EXPORT_MANIFEST.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
+          report={'schema':'WALLABY_RESPONSE_EXPORT_REPORT_v1','public_table':table,'public_doi':doi,
+                  'n_public_catalogue_rows':int(len(raw)),'n_source_stage_identifiers_with_kinematics':int(matched),
+                  'n_normalized_radial_rows':int(len(out)),'normalized_kinematics_sha256':sha(kin),
+                  'stage1_receipt_verified':True,'selection_basis':'stable source-stage galaxy_id only; no response-value selection in transport'}
+          (outdir/'RESPONSE_EXPORT_REPORT.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(report,sort_keys=True))
+          PY
+      - name: Commit normalized response export and manifest
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/response-stage1
+          git commit -m 'Freeze post-receipt WALLABY response export' || exit 0
+          git pull --rebase origin main
+          git push
