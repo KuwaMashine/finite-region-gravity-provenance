@@ -1,0 +1,12 @@
+{
+  "schema": "WALLABY_GATE_AB_REVEAL_TRIGGER_v1",
+  "explicit_user_authorization": true,
+  "authorization_text": "run it",
+  "armed_manifest_sha256": "31d55b30cbef6bc5a6a4db71897f741444db6c1e8caf6c80f7fa65b3d9436de5",
+  "armed_manifest_commit": "08d6499792ed335e1c5bcd35f4baeae9cdd12284",
+  "reveal_workflow_commit": "01ba613f16982dc8a2f77b9790e0243169a0254c",
+  "single_execution_intent": true,
+  "science_changes_authorized": false,
+  "parameter_tuning_authorized": false,
+  "instruction": "Run the sealed preregistered Gate A/B blind reveal exactly once."
+}
