@@ -1,0 +1,11 @@
+{
+  "baryonic_hi_fold_sha256": "99a54c62c1e0c9968201b0596f82d8ee6af29542036be3d80d69c749cc0ba44f",
+  "frozen_manifest_file_sha256": "61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c",
+  "proxy_strata_map_sha256": "ef3f903283a5ed99973226b4cb9612803057c9b3457fa72d625d52e14fe6dd8a",
+  "proxy_strata_metadata_sha256": "3618d5157d68b98709212a50b5c97321e0907fb6b91862b85fc4838aa9399dbd",
+  "purpose": "External Stage-1 timestamp payload; create receipt before opening validation kinematics",
+  "response_products_used": false,
+  "source_beam_report_sha256": "fcdb63935652d58671b8d53591f19d1479e3c5479635f65eecb4d0294c178262",
+  "source_predictors_sha256": "2ad4a78dd1cb3d56cf17f3247451a08458797beddd8e0fd56528bfdd943388a2",
+  "source_prepare_report_sha256": "09617998f703f3c8382afa4a7c9766976d960253aebe9456caf9cafe5af63e68"
+}

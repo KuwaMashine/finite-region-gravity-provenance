@@ -1,0 +1,26 @@
+{
+  "n_galaxies": 389,
+  "output_csv": "post-stage0/source-stage1-target/proxy_strata.csv",
+  "output_csv_sha256": "ef3f903283a5ed99973226b4cb9612803057c9b3457fa72d625d52e14fe6dd8a",
+  "predictor_input": "post-stage0/source-stage1-target/source_predictors.csv",
+  "predictor_input_sha256": "2ad4a78dd1cb3d56cf17f3247451a08458797beddd8e0fd56528bfdd943388a2",
+  "ranges_audit_only": {
+    "high": {
+      "max": 280.0530191308559,
+      "min": 13.601067538958441,
+      "n": 129
+    },
+    "low": {
+      "max": 9.008236218774469,
+      "min": 2.8197572197810157,
+      "n": 130
+    },
+    "middle": {
+      "max": 13.507233837927794,
+      "min": 9.024146136653641,
+      "n": 130
+    }
+  },
+  "response_products_used": false,
+  "rule": "global rank tertiles; stable sort by (kappa_HI, galaxy_id); numpy.array_split sizes"
+}

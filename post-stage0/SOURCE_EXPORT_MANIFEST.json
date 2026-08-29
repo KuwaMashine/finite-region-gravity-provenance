@@ -1,0 +1,86 @@
+{
+  "column_map": {
+    "hi_profile": {
+      "galaxy_id": "source catalogue name",
+      "rad_hi_source_arcsec": "exact frozen source_moment0_profile.py annulus centre",
+      "sigma_hi_source_weight": "signed source moment-0 annular density; no pixel clipping"
+    },
+    "meta": {
+      "distance_mpc": "dist_h",
+      "ell_maj_beams": "ell_maj / 5.0 for 6 arcsec source-catalogue pixels and 30 arcsec beam",
+      "field_id": "team_release -> frozen validation field id",
+      "full_stellar": "all-three-band DR10 + frozen AutoProf/common-aperture/MLCR + registered finite-frame convergence",
+      "galaxy_id": "source catalogue name",
+      "logMHI": "log_m_hi_corr",
+      "logMstar": "median of frozen 45 MLCR log-mass estimates from foreground-corrected DR10 common-aperture g/r/z photometry",
+      "release_phase": "constant 2 for final validation releases",
+      "robust_sample": "qflag==0 + finite source metadata + successful exact frozen source-moment0 profile construction"
+    },
+    "optical_profile": {
+      "ellipticity": "r-band AutoProf geometric ellipticity",
+      "galaxy_id": "source catalogue name",
+      "mu_r": "retained observed r-band surface-brightness profile; the radius-independent Galactic extinction correction enters stellar-mass photometry and does not alter the frozen profile-shape scale estimator",
+      "muerr_r": "r-band surface-brightness uncertainty",
+      "radius_arcsec": "AutoProf forced-profile R within registered common uncertainty aperture"
+    }
+  },
+  "firewall": "No response/rotation product has been loaded. This manifest freezes exact normalized source inputs before TARGET source-stage execution.",
+  "join_key": "galaxy_id",
+  "normalized_files": {
+    "hi_profile": {
+      "path": "post-stage0/source-hi-stage1/hi_profile.csv",
+      "sha256": "baa001b0ff9c6f4d4a4279c41ea2489f2a6afad9dd9cb84f71b885b01e928592"
+    },
+    "meta": {
+      "path": "post-stage0/source-optical-stage1/meta.csv",
+      "sha256": "530e763cdf71171bb4ac9e27b9241c681fed501145d59b3819797c9ff00b154b"
+    },
+    "optical_profile": {
+      "path": "post-stage0/source-optical-stage1/optical_profile.csv",
+      "sha256": "4319a9a852998d3346ae75646e12f37b71a3751eb87fcf142f79e09c027ea160"
+    }
+  },
+  "product_ids": {
+    "galactic_extinction": {
+      "normalized_extinction_values_are_carried_in": "post-stage0/source-optical-stage1/optical_status.csv",
+      "rule": "source coordinate only; Schlafly-Finkbeiner/Legacy g,r,z coefficients as frozen in Stage-0A optical implementation",
+      "service": "IRSA SFD dust query at frozen WALLABY source-catalogue sky centroid"
+    },
+    "legacy_survey_dr10_optical": {
+      "per_frame_brick_url_sha256_and_geometry_receipt": "post-stage0/source-optical-stage1/frame_audit.csv",
+      "per_frame_brick_url_sha256_and_geometry_receipt_sha256": "ab70fc623e223add729edc809f651bc64f000e475da490093a87cf5a467904cf",
+      "production_frame_lock": "post-stage0/SOURCE_OPTICAL_PRODUCTION_FRAME_LOCK.json",
+      "production_frame_lock_sha256": "0a0d028d771d799cb71c933acbd4604befb728a6c187ae7d39a8444845d15c56",
+      "service": "NERSC DESI Legacy Imaging Surveys DR10 south coadd g/r/z images"
+    },
+    "wallaby_source_catalogue": {
+      "final_releases": [
+        "NGC 4808 TR1",
+        "NGC 5044 TR3",
+        "Vela TR1"
+      ],
+      "normalized_source_catalogue_receipt": "post-stage0/source-only-probe/source_catalogue_safe.csv",
+      "normalized_source_catalogue_sha256": "82fc4c21999da1fbd7b9055c3569757054b843235eb0df59c385fc8754dd418e",
+      "service": "CANFAR/CIRADA TAP cirada.Wallaby_dr2_source_catalogue"
+    },
+    "wallaby_source_data_hi": {
+      "per_object_url_and_sha256_receipt": "post-stage0/source-hi-stage1/source_hi_status.csv",
+      "per_object_url_and_sha256_receipt_sha256": "6d0f3eb9db80c9b6708e0e02585740cff9425ce1cbfb1ec9e0f36a7193be5cc1",
+      "service": "CADC public WALLABY source_data moment-0 and source-mask products"
+    }
+  },
+  "response_products_loaded": false,
+  "schema": "WALLABY_SOURCE_EXPORT_MANIFEST_v1",
+  "source_side_evidence": {
+    "frame_lock_sha256": "0a0d028d771d799cb71c933acbd4604befb728a6c187ae7d39a8444845d15c56",
+    "hi_status_sha256": "6d0f3eb9db80c9b6708e0e02585740cff9425ce1cbfb1ec9e0f36a7193be5cc1",
+    "optical_frame_audit_sha256": "ab70fc623e223add729edc809f651bc64f000e475da490093a87cf5a467904cf"
+  },
+  "stage": "SOURCE_ONLY",
+  "validation_fields": [
+    "NGC5044",
+    "NGC4808",
+    "Vela"
+  ],
+  "validation_release_phase": 2
+}

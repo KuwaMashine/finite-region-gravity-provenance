@@ -1,0 +1,15 @@
+{
+  "allowed_fields": [
+    "NGC4808",
+    "NGC5044",
+    "Vela"
+  ],
+  "failures": [],
+  "firewall": "No response/rotation columns accepted; H I profile is explicitly source-derived; strata are frozen later from kappa_HI before kinematic response load.",
+  "mode": "TARGET",
+  "n_fail": 0,
+  "n_meta_eligible": 389,
+  "n_predictor_pass": 389,
+  "release_phase": 2,
+  "role": "validation"
+}
