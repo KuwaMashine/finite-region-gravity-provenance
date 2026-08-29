@@ -1,0 +1,8 @@
+{
+  "schema": "WALLABY_BLIND_RESPONSE_PREFLIGHT_TRIGGER_v1",
+  "stage1_external_receipt": "post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json",
+  "response_manifest": "post-stage0/response-stage1/RESPONSE_EXPORT_MANIFEST.json",
+  "support_census": "post-stage0/blind-gbar-support/GBAR_SUPPORT.json",
+  "kappa_serialization_audit": "post-stage0/blind-kappa-lock/AUDIT.json",
+  "scope": "Inventory the frozen v4.99 response bundle and locate the over-tight kappa serialization guard. Do not load response values and do not compute Gate A/B."
+}
