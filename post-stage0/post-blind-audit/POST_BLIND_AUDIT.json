@@ -1,0 +1,776 @@
+{
+  "conclusion": {
+    "bridge_status": "The frozen kappa_HI/source-history to response mapping is not supported by this holdout. Upstream finite-region theorems are not tested directly by this failure.",
+    "gate_A": "The preregistered structural-spread statistic is null in this holdout and is not a near-threshold pass.",
+    "gate_B": "The preregistered positive-direction scalar law fails; the coherent negative orientation is an exploratory post-blind clue, not a success.",
+    "next_test": "Audit whether the negative orientation is a measurement/model-systematic artifact or evidence that the phenomenological read/sign mapping was wrong; any revised observable/sign law must be preregistered on a new independent holdout."
+  },
+  "conditioned_randomization_space": {
+    "exact_randomization": {
+      "n_unique_A": 12,
+      "n_unique_B": 10,
+      "null_A_quantiles": [
+        0.5326956531710706,
+        0.5698869539562975,
+        0.6103932318915043
+      ],
+      "null_B_quantiles": [
+        -0.5541755253088784,
+        -0.5334581596416725,
+        -0.4936621136873926
+      ],
+      "p_gate_A_upper": 0.4166666666666667,
+      "p_gate_B_negative_exploratory": 0.16666666666666666,
+      "p_gate_B_positive": 1.0,
+      "p_gate_B_two_sided_exploratory": 0.3333333333333333,
+      "status": "enumerated",
+      "total_states": 12
+    },
+    "groups": [
+      {
+        "coverage_signature": [
+          0,
+          1,
+          2
+        ],
+        "distinct_label_assignments": 2,
+        "field_id": "NGC4808",
+        "n_galaxies": 2,
+        "stratum_counts": {
+          "low": 1,
+          "middle": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          0,
+          2
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC4808",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "high": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          2,
+          3
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC4808",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "low": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC4808",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "low": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          2,
+          4,
+          6
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC4808",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "high": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          3,
+          4
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC4808",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "low": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          3,
+          4,
+          5,
+          7
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC4808",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "high": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          0,
+          1,
+          2
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC5044",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "low": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          1,
+          2
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC5044",
+        "n_galaxies": 3,
+        "stratum_counts": {
+          "low": 3
+        }
+      },
+      {
+        "coverage_signature": [
+          1,
+          2,
+          3
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC5044",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "low": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC5044",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "middle": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          2,
+          3,
+          4
+        ],
+        "distinct_label_assignments": 2,
+        "field_id": "NGC5044",
+        "n_galaxies": 2,
+        "stratum_counts": {
+          "low": 1,
+          "middle": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC5044",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "low": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          2,
+          3,
+          5,
+          6
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC5044",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "middle": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "distinct_label_assignments": 3,
+        "field_id": "NGC5044",
+        "n_galaxies": 3,
+        "stratum_counts": {
+          "low": 2,
+          "middle": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          3,
+          5,
+          6
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC5044",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "high": 1
+        }
+      },
+      {
+        "coverage_signature": [
+          4,
+          5,
+          6
+        ],
+        "distinct_label_assignments": 1,
+        "field_id": "NGC5044",
+        "n_galaxies": 1,
+        "stratum_counts": {
+          "low": 1
+        }
+      }
+    ],
+    "n_groups": 17,
+    "total_distinct_label_assignments": 12
+  },
+  "directional_stability": {
+    "all_five_bins_negative": true,
+    "leave_one_bin_out": [
+      {
+        "T_N_remaining": -0.5898777029673785,
+        "remaining_all_negative": true,
+        "removed_gbar_bin": 2
+      },
+      {
+        "T_N_remaining": -0.6360860340476355,
+        "remaining_all_negative": true,
+        "removed_gbar_bin": 3
+      },
+      {
+        "T_N_remaining": -0.49019340640790887,
+        "remaining_all_negative": true,
+        "removed_gbar_bin": 4
+      },
+      {
+        "T_N_remaining": -0.6605418802897383,
+        "remaining_all_negative": true,
+        "removed_gbar_bin": 5
+      },
+      {
+        "T_N_remaining": -0.39417860283173056,
+        "remaining_all_negative": true,
+        "removed_gbar_bin": 6
+      }
+    ],
+    "leave_one_galaxy_out": [
+      {
+        "T_N": -0.5541755253088784,
+        "T_spread": 0.5791028781357349,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J124947+035042",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5449552619798033,
+        "T_spread": 0.570068253921495,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J125451+023900",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.17762179786964422,
+        "T_spread": 0.1950547937163125,
+        "eligible_bins": [
+          3,
+          5
+        ],
+        "galaxy_id": "WALLABY J125515+081543",
+        "n_bins": 2
+      },
+      {
+        "T_N": -0.5537440369712945,
+        "T_spread": 0.5789364585780449,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J125604+034843",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5492784064403097,
+        "T_spread": 0.572531125307542,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130148-114530",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5312498066845102,
+        "T_spread": 0.549085649924022,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130223-122031",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5541755253088784,
+        "T_spread": 0.5791028781357349,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130235-113803",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5300060542032318,
+        "T_spread": 0.551052337705862,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130315+074816",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5312693681197432,
+        "T_spread": 0.5546282964367519,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130358+054204",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5816518455579897,
+        "T_spread": 0.6095191844820651,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130415-102023",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5546070136464621,
+        "T_spread": 0.579269297693425,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130618-173039",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.8027650149461736,
+        "T_spread": 0.820531681333025,
+        "eligible_bins": [
+          2,
+          6
+        ],
+        "galaxy_id": "WALLABY J130802+062900",
+        "n_bins": 2
+      },
+      {
+        "T_N": -0.5537440369712945,
+        "T_spread": 0.5789364585780449,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130815-210002",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5898777029673785,
+        "T_spread": 0.6069520632451562,
+        "eligible_bins": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130906+051433",
+        "n_bins": 4
+      },
+      {
+        "T_N": -0.5449552619798033,
+        "T_spread": 0.570068253921495,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J130947-101916",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5537440369712945,
+        "T_spread": 0.579269297693425,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J131739-213708",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5546070136464621,
+        "T_spread": 0.579269297693425,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J132635-221419",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.5541755253088784,
+        "T_spread": 0.5791028781357349,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J133019-220858",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.4826681019804944,
+        "T_spread": 0.5244984137262083,
+        "eligible_bins": [
+          2,
+          3,
+          4
+        ],
+        "galaxy_id": "WALLABY J133041-233009",
+        "n_bins": 3
+      },
+      {
+        "T_N": -0.6107354077938167,
+        "T_spread": 0.6660237891390249,
+        "eligible_bins": [
+          2,
+          4
+        ],
+        "galaxy_id": "WALLABY J133440-234722",
+        "n_bins": 2
+      },
+      {
+        "T_N": -0.5812203572204059,
+        "T_spread": 0.609685604039755,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J133756-240727",
+        "n_bins": 5
+      },
+      {
+        "T_N": -0.4826681019804944,
+        "T_spread": 0.5244984137262083,
+        "eligible_bins": [
+          2,
+          3,
+          4
+        ],
+        "galaxy_id": "WALLABY J133801-225524",
+        "n_bins": 3
+      },
+      {
+        "T_N": -0.5408866254683689,
+        "T_spread": 0.5589968836562751,
+        "eligible_bins": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "galaxy_id": "WALLABY J134019-235122",
+        "n_bins": 5
+      }
+    ],
+    "leave_one_galaxy_out_summary": {
+      "T_N_max": -0.17762179786964422,
+      "T_N_min": -0.8027650149461736,
+      "T_spread_max": 0.820531681333025,
+      "T_spread_min": 0.1950547937163125,
+      "all_scoreable_T_N_negative": true,
+      "n_not_scoreable": 0,
+      "n_scoreable": 23
+    },
+    "per_bin_high_minus_low_A_N": [
+      {
+        "gbar_bin": 2,
+        "value": -0.41136681467487757
+      },
+      {
+        "gbar_bin": 3,
+        "value": -0.22653349035384962
+      },
+      {
+        "gbar_bin": 4,
+        "value": -0.810104000912756
+      },
+      {
+        "gbar_bin": 5,
+        "value": -0.1287101053854388
+      },
+      {
+        "gbar_bin": 6,
+        "value": -1.1941632152174695
+      }
+    ]
+  },
+  "interpretation_firewall": {
+    "negative_direction_is_post_blind_exploratory_only": true,
+    "no_threshold_or_proxy_or_bin_or_permutation_rule_changed": true,
+    "primary_verdict_reinterpreted": false
+  },
+  "monte_carlo_reproduction": {
+    "n": 25000,
+    "null_A_quantiles": [
+      0.5320259035086,
+      0.563106483094935,
+      0.611062981553975
+    ],
+    "null_B_quantiles": [
+      -0.5541755253088784,
+      -0.5258276886025877,
+      -0.4932947993240832
+    ],
+    "p_gate_A_upper": 0.4156633734650614,
+    "p_gate_B_negative_exploratory": 0.1669933202671893,
+    "p_gate_B_positive": 1.0,
+    "p_gate_B_two_sided_exploratory": 0.3339866405343786,
+    "seed": 3911654986
+  },
+  "primary_verdict_frozen": {
+    "T_N": -0.5541755253088784,
+    "T_spread": 0.5791028781357349,
+    "gate_A": "FAIL",
+    "gate_B": "FAIL",
+    "p_gate_A_upper": 0.4156633734650614,
+    "p_gate_B_positive": 1.0
+  },
+  "sample": {
+    "field_strata_counts": {
+      "NGC4808": {
+        "high": 3,
+        "low": 4,
+        "middle": 1
+      },
+      "NGC5044": {
+        "high": 1,
+        "low": 10,
+        "middle": 4
+      }
+    },
+    "high_stratum_galaxies": [
+      {
+        "field_id": "NGC4808",
+        "galaxy_id": "WALLABY J125515+081543",
+        "median_A_N": -1.126208927153063,
+        "median_delta_ref": -1.40990219415,
+        "n_bins": 3,
+        "proxy_value": 17.9577865535,
+        "stratum": "high"
+      },
+      {
+        "field_id": "NGC4808",
+        "galaxy_id": "WALLABY J130802+062900",
+        "median_A_N": 0.34498761724492033,
+        "median_delta_ref": -0.1409014004745,
+        "n_bins": 4,
+        "proxy_value": 14.2285679272,
+        "stratum": "high"
+      },
+      {
+        "field_id": "NGC4808",
+        "galaxy_id": "WALLABY J130906+051433",
+        "median_A_N": 1.3162978776634864,
+        "median_delta_ref": 0.4486226485100035,
+        "n_bins": 2,
+        "proxy_value": 19.8563792943,
+        "stratum": "high"
+      },
+      {
+        "field_id": "NGC5044",
+        "galaxy_id": "WALLABY J133440-234722",
+        "median_A_N": 0.29708722631626505,
+        "median_delta_ref": -0.0510349556567,
+        "n_bins": 3,
+        "proxy_value": 14.1453593133,
+        "stratum": "high"
+      }
+    ],
+    "n_galaxies": 23,
+    "strata_counts": {
+      "high": 4,
+      "low": 14,
+      "middle": 5
+    }
+  },
+  "schema": "WALLABY_POST_BLIND_FORENSIC_AUDIT_v1",
+  "stellar_only_conditioning_sensitivity": {
+    "observed": {
+      "T_N": -0.5334826194650457,
+      "T_spread": 0.49261477599878334,
+      "eligible_bins": [
+        2,
+        3,
+        6
+      ],
+      "n_bins": 3,
+      "per_bin": [
+        {
+          "A_N_medians": {
+            "high": 0.5149542205875094,
+            "low": 0.7742308451651876,
+            "middle": 0.635849197065083
+          },
+          "delta_ref_medians": {
+            "high": -0.0978245942722,
+            "low": 0.089651379261,
+            "middle": -0.01407402576381
+          },
+          "gbar_bin": 2,
+          "high_minus_low_A_N": -0.2592766245776782,
+          "spread": 0.1874759735332
+        },
+        {
+          "A_N_medians": {
+            "high": 0.47589972387076884,
+            "low": 0.6229077424707583,
+            "middle": 0.520440089149203
+          },
+          "delta_ref_medians": {
+            "high": -0.032293646757950004,
+            "low": 0.0847174827372,
+            "middle": -0.00335242713095
+          },
+          "gbar_bin": 3,
+          "high_minus_low_A_N": -0.14700801859998947,
+          "spread": 0.11701112949515001
+        },
+        {
+          "A_N_medians": {
+            "high": -0.6502462036832227,
+            "low": 0.5439170115342468,
+            "middle": 0.2505265451919228
+          },
+          "delta_ref_medians": {
+            "high": -0.8587570374915,
+            "low": 0.3146001874765,
+            "middle": 0.06835520602535
+          },
+          "gbar_bin": 6,
+          "high_minus_low_A_N": -1.1941632152174695,
+          "spread": 1.173357224968
+        }
+      ]
+    },
+    "permutation": {
+      "n": 25000,
+      "null_gate_A_quantiles": [
+        0.4712817983806666,
+        0.48935011402830003,
+        0.5178674051750667
+      ],
+      "null_gate_B_quantiles": [
+        -0.5507007207624731,
+        -0.5319598519377929,
+        -0.4989012362282759
+      ],
+      "p_gate_A_upper": 0.42070317187312506,
+      "p_gate_B_one_sided_positive": 0.6627334906603736,
+      "seed": 3911654986,
+      "stratification": "survey field + frozen gbar-bin coverage signature"
+    },
+    "status": "ok"
+  }
+}
