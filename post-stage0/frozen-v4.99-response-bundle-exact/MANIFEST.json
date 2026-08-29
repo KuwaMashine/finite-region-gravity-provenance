@@ -1,0 +1,36 @@
+{
+  "schema": "WALLABY_V499_RESPONSE_BUNDLE_RECOVERY_v1",
+  "canonical_v499_zip_sha256": "fb449811c319a7bb0d550b8feded06f96ed19bd53723a153b2d3b8ef8ac355b6",
+  "exact_response_tar_sha256": "7857bfa6689a9d151aa4428cf7e5af52da8cd94b717f312c90621dbb4d33f142",
+  "exact_response_tar_bytes": 71999,
+  "base64_characters": 96000,
+  "base64_stripped_sha256": "09ee1782f1ed6290c2312cf36bf6471a1b9e4cf58f0567b1aa3b507492e75042",
+  "part_order": [
+    "chunk_00.b64",
+    "chunk_01.b64",
+    "part_01.b64",
+    "part_02.b64",
+    "part_03.b64",
+    "part_04.b64",
+    "part_05.b64",
+    "part_06.b64",
+    "part_07.b64"
+  ],
+  "expected_file_count": 52,
+  "key_file_sha256": {
+    "WALLABY_v1/prepare_response_table.py": "0faea97d7c61f7da76cbd1dd46e0a7433abefe06f3b5918c7230bbb38ca3bbc7",
+    "WALLABY_v1/wallaby_ab.py": "7b452caa31cc1eaa6717c1f99fe6bd1927aa84798d94be1545e7f1796b33c3d1",
+    "WALLABY_v1/run_holdout.py": "b0038ca7fe38e89e854f0789b7cb3d388221d539be05df54d64bcc75ca452301",
+    "WALLABY_v1/holdout_integrity.py": "5d8040ddcbc306c5fd7c34adee13989f7ebd808c44807aeaaeb4702252267510",
+    "WALLABY_v1/baryonic_gravity.py": "717cc8558cc63b385630cbe02fc3e06337c748b4d1a8c4d6a61a3d069ba0f801"
+  },
+  "verification_basis": "The recovered tar was compared byte-for-byte against Holdout_Execution/WALLABY_v1 inside the canonical v4.99 ZIP: 52/52 paths identical, zero missing, zero extra, zero hash mismatches.",
+  "supersedes_for_execution": [
+    "post-stage0/frozen-v4.99-response-bundle.tar.gz.b64",
+    "post-stage0/frozen-v4.99-response-bundle/"
+  ],
+  "supersession_reason": "Earlier GitHub convenience transcriptions contain literal truncation markers and are not executable archives. They are retained as provenance but MUST NOT be used for the blind reveal.",
+  "response_values_loaded_during_recovery": false,
+  "gate_statistics_computed_during_recovery": false,
+  "science_code_changed": false
+}
