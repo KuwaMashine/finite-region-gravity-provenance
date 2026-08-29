@@ -1,0 +1,76 @@
+{
+  "schema": "WALLABY_GATE_AB_ARMED_v1",
+  "state": "READY_FOR_EXPLICIT_BLIND_REVEAL",
+  "ready_for_explicit_reveal": true,
+  "reveal_workflow": ".github/workflows/blind_gate_ab_reveal.yml",
+  "reveal_workflow_commit": "01ba613f16982dc8a2f77b9790e0243169a0254c",
+  "reveal_trigger_path": "post-stage0/blind-gate-ab-reveal-trigger/RUN.json",
+  "reveal_trigger_present_at_arming": false,
+  "single_execution_intent": true,
+  "canonical_v499_zip_sha256": "fb449811c319a7bb0d550b8feded06f96ed19bd53723a153b2d3b8ef8ac355b6",
+  "exact_response_engine": {
+    "recovery_manifest": "post-stage0/frozen-v4.99-response-bundle-exact/MANIFEST.json",
+    "recovery_manifest_commit": "8ac71703460af1488a9707952a747439e25854cc",
+    "response_tar_sha256": "7857bfa6689a9d151aa4428cf7e5af52da8cd94b717f312c90621dbb4d33f142",
+    "file_count": 52,
+    "wallaby_ab_sha256": "7b452caa31cc1eaa6717c1f99fe6bd1927aa84798d94be1545e7f1796b33c3d1",
+    "run_holdout_sha256": "b0038ca7fe38e89e854f0789b7cb3d388221d539be05df54d64bcc75ca452301",
+    "prepare_response_table_original_sha256": "0faea97d7c61f7da76cbd1dd46e0a7433abefe06f3b5918c7230bbb38ca3bbc7",
+    "target_adapter_lock_sha256": "de9de2a36ce0d6488f7b59faa0143538090a1c90462677044d4462bb22bd7223",
+    "pretarget_manifest_file_sha256": "61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c"
+  },
+  "mechanical_serialization_repair": {
+    "preflight_proof": "post-stage0/blind-response-preflight/PREFLIGHT.json",
+    "preflight_proof_commit": "94cf8e922edd47af38d9a1efe6fae125a717d8cd",
+    "patched_prepare_response_sha256": "1728de89a291c0a0dcd369e198b6a2ce04d75624a87cff056dadc53b518eebdf",
+    "serialized_geometry_vs_sealed_max_abs_diff": 4.5713477447861806e-10,
+    "audited_atol": 1e-9,
+    "source_rows_checked": 389,
+    "science_thresholds_changed": false,
+    "proxy_values_changed": false,
+    "strata_changed": false,
+    "gbar_bins_changed": false,
+    "gate_statistics_changed": false,
+    "permutation_algorithm_changed": false
+  },
+  "blind_provenance": {
+    "stage0_receipt": "post-stage0/STAGE0_EXTERNAL_TIMESTAMP_RECEIPT.json",
+    "stage0_proof_commit": "15abeac9b6d285ce42caf26498115c0686d9bcd3",
+    "stage1_receipt": "post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json",
+    "source_stage_commit": "23ef651806d1b2c5ea0afd59c54239491869f69e",
+    "response_export_provenance_commit": "87ab52c96206f5c998ecac1fd1e62ab88603a0d9",
+    "proxy_strata_map_sha256": "ef3f903283a5ed99973226b4cb9612803057c9b3457fa72d625d52e14fe6dd8a",
+    "source_beam_report_sha256": "fcdb63935652d58671b8d53591f19d1479e3c5479635f65eecb4d0294c178262",
+    "source_predictors_sha256": "2ad4a78dd1cb3d56cf17f3247451a08458797beddd8e0fd56528bfdd943388a2",
+    "baryonic_hi_fold_sha256": "99a54c62c1e0c9968201b0596f82d8ee6af29542036be3d80d69c749cc0ba44f"
+  },
+  "outcome_blind_readiness": {
+    "support_report": "post-stage0/blind-gbar-support/GBAR_SUPPORT.json",
+    "n_primary_galaxies": 23,
+    "n_galaxy_bin_cells": 72,
+    "eligible_gbar_bins": [2, 3, 4, 5, 6],
+    "n_eligible_gbar_bins": 5,
+    "gravity_reconstruction_failures": 0,
+    "scoreable_under_frozen_support_rule": true
+  },
+  "frozen_gate_configuration": {
+    "gbar_bin_edges": [-12.08, -11.755, -11.43, -11.105, -10.78, -10.455, -10.13, -9.805, -9.48, -9.155, -8.83, -8.505, -8.18],
+    "min_galaxies_per_stratum_per_bin": 2,
+    "n_permutations": 25000,
+    "proxy_rule": "preassigned_source_rank_tertiles",
+    "seed": 3911654986,
+    "permutation_stratification": "survey field + frozen gbar-bin coverage signature"
+  },
+  "arming_firewall": {
+    "response_values_loaded_by_arming": false,
+    "vrot_loaded_by_arming": false,
+    "gobs_computed_by_arming": false,
+    "delta_ref_computed_by_arming": false,
+    "gate_statistics_computed": false,
+    "gate_a_result_seen": false,
+    "gate_b_result_seen": false
+  },
+  "response_values_loaded_by_arming": false,
+  "gate_statistics_computed": false,
+  "next_action": "Create the reveal trigger only after explicit user authorization. That trigger will open the frozen kinematics, prepare the primary table with the audited runtime-only serialization guard repair, and run the preregistered Gate A/B engine exactly once."
+}
