@@ -1,0 +1,62 @@
+name: WALLABY blind response-engine mechanical preflight
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/blind-response-preflight-trigger/RUN.json'
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct sealed v4.99 response bundle
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v499_response
+          cat post-stage0/frozen-v4.99-response-bundle/chunk_*.b64 | base64 -d > /tmp/v499_response.tar.gz
+          tar -xzf /tmp/v499_response.tar.gz -C /tmp/v499_response
+          find /tmp/v499_response -type f -print | sort
+      - name: Locate response preparation integrity guard without executing outcomes
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,re
+          from pathlib import Path
+          root=Path('/tmp/v499_response')
+          files=[]; hits=[]
+          for p in sorted(root.rglob('*')):
+              if not p.is_file(): continue
+              b=p.read_bytes(); rel=str(p.relative_to(root))
+              files.append({'path':rel,'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)})
+              try: t=b.decode('utf-8')
+              except UnicodeDecodeError: continue
+              for n,line in enumerate(t.splitlines(),1):
+                  lo=line.lower()
+                  if ('kappa' in lo or 'allclose' in lo) and ('1e-10' in lo or 'atol' in lo or 'proxy' in lo):
+                      hits.append({'path':rel,'line':n,'text':line.strip()})
+          rep={
+            'schema':'WALLABY_RESPONSE_ENGINE_MECHANICAL_PREFLIGHT_v1',
+            'frozen_bundle_files':files,
+            'integrity_guard_hits':hits,
+            'response_values_loaded':False,
+            'gate_statistics_computed':False,
+            'science_algorithm_executed':False
+          }
+          out=Path('post-stage0/blind-response-preflight'); out.mkdir(parents=True,exist_ok=True)
+          (out/'PREFLIGHT.json').write_text(json.dumps(rep,indent=2,sort_keys=True)+'\n')
+          print(json.dumps({'n_files':len(files),'hits':hits,'response_values_loaded':False,'gate_statistics_computed':False},sort_keys=True))
+          if not hits: raise SystemExit('no candidate kappa/integrity guard found')
+          PY
+      - name: Commit preflight inventory
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/blind-response-preflight/PREFLIGHT.json
+          git commit -m 'Record blind response-engine mechanical preflight' || exit 0
+          git pull --rebase origin main
+          git push
