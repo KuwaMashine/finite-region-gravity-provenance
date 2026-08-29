@@ -1,0 +1,225 @@
+name: WALLABY Gate A/B blind reveal
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/blind-gate-ab-reveal-trigger/RUN.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wallaby-gate-ab-blind-reveal
+  cancel-in-progress: false
+
+jobs:
+  reveal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install frozen analysis dependencies
+        run: python -m pip -q install numpy pandas scipy
+
+      - name: Verify explicit reveal authorization and armed manifest
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          trigger=Path('post-stage0/blind-gate-ab-reveal-trigger/RUN.json')
+          armed=Path('post-stage0/blind-gate-ab-armed/ARMED.json')
+          t=json.loads(trigger.read_text()); a=json.loads(armed.read_text())
+          if t.get('schema')!='WALLABY_GATE_AB_REVEAL_TRIGGER_v1': raise SystemExit('invalid reveal trigger schema')
+          if t.get('explicit_user_authorization') is not True: raise SystemExit('explicit_user_authorization must be true')
+          if a.get('schema')!='WALLABY_GATE_AB_ARMED_v1' or a.get('ready_for_explicit_reveal') is not True: raise SystemExit('armed manifest is not ready')
+          ah=hashlib.sha256(armed.read_bytes()).hexdigest()
+          if t.get('armed_manifest_sha256')!=ah: raise SystemExit(f'armed manifest SHA mismatch: {ah}')
+          if a.get('gate_statistics_computed') is not False or a.get('response_values_loaded_by_arming') is not False: raise SystemExit('arming state is not outcome-blind')
+          print(json.dumps({'authorization':'verified','armed_manifest_sha256':ah,'gate_statistics_before_reveal':False},sort_keys=True))
+          PY
+
+      - name: Reconstruct and verify exact recovered v4.99 response engine
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/v499_response /tmp/v499_response.tar.gz /tmp/v499_prepare_runtime /tmp/blind
+          mkdir -p /tmp/v499_response /tmp/blind
+          python - <<'PY'
+          import base64,hashlib,json
+          from pathlib import Path
+          root=Path('post-stage0/frozen-v4.99-response-bundle-exact')
+          man=json.loads((root/'MANIFEST.json').read_text())
+          compact=''.join(''.join((root/x).read_text().split()) for x in man['part_order'])
+          if len(compact)!=man['base64_characters']: raise SystemExit('recovered bundle base64 length mismatch')
+          if hashlib.sha256(compact.encode()).hexdigest()!=man['base64_stripped_sha256']: raise SystemExit('recovered bundle base64 SHA mismatch')
+          data=base64.b64decode(compact,validate=True)
+          if len(data)!=man['exact_response_tar_bytes']: raise SystemExit('recovered bundle byte length mismatch')
+          got=hashlib.sha256(data).hexdigest()
+          if got!=man['exact_response_tar_sha256']: raise SystemExit('recovered response tar SHA mismatch')
+          Path('/tmp/v499_response.tar.gz').write_bytes(data)
+          PY
+          tar -xzf /tmp/v499_response.tar.gz -C /tmp/v499_response
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          man=json.loads(Path('post-stage0/frozen-v4.99-response-bundle-exact/MANIFEST.json').read_text())
+          root=Path('/tmp/v499_response')
+          files=sorted(p for p in root.rglob('*') if p.is_file())
+          if len(files)!=man['expected_file_count']: raise SystemExit(f'exact engine file count mismatch: {len(files)}')
+          for rel,want in man['key_file_sha256'].items():
+              got=hashlib.sha256((root/rel).read_bytes()).hexdigest()
+              if got!=want: raise SystemExit(f'exact engine key hash mismatch: {rel}')
+          if hashlib.sha256((root/'WALLABY_v1/TARGET_ADAPTER_LOCK.json').read_bytes()).hexdigest()!='de9de2a36ce0d6488f7b59faa0143538090a1c90462677044d4462bb22bd7223': raise SystemExit('target adapter lock SHA mismatch')
+          if hashlib.sha256((root/'WALLABY_v1/PRETARGET_MANIFEST_SHA256.txt').read_bytes()).hexdigest()!='61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c': raise SystemExit('pretarget manifest file SHA mismatch')
+          print(json.dumps({'exact_engine_verified':True,'files':len(files),'response_tar_sha256':man['exact_response_tar_sha256']},sort_keys=True))
+          PY
+
+      - name: Build mechanically repaired response-preparation runtime copy
+        run: |
+          set -euo pipefail
+          cp -a /tmp/v499_response/WALLABY_v1 /tmp/v499_prepare_runtime
+          python - <<'PY'
+          import hashlib,py_compile
+          from pathlib import Path
+          p=Path('/tmp/v499_prepare_runtime/prepare_response_table.py')
+          original=p.read_text()
+          if hashlib.sha256(p.read_bytes()).hexdigest()!='0faea97d7c61f7da76cbd1dd46e0a7433abefe06f3b5918c7230bbb38ca3bbc7': raise SystemExit('unexpected original prepare_response_table.py')
+          old="""    pm=pred.merge(st[['galaxy_id','kappa_HI','stratum']],on='galaxy_id',how='inner',suffixes=('','_sealed'),validate='one_to_one')\n    if not np.allclose(pm.kappa_HI,pm.kappa_HI_sealed,rtol=0,atol=1e-10): raise SystemExit('sealed stratum-map kappa differs from source predictor file')\n"""
+          new="""    pm=pred.merge(st[['galaxy_id','kappa_HI','stratum']],on='galaxy_id',how='inner',suffixes=('','_sealed'),validate='one_to_one')\n    kappa_from_serialized_geometry=pm.R_HI90.to_numpy(float)/pm.R_dstar.to_numpy(float)\n    if not np.allclose(kappa_from_serialized_geometry,pm.kappa_HI_sealed.to_numpy(float),rtol=0,atol=1e-9): raise SystemExit('sealed stratum-map kappa differs from serialized source geometry beyond audited 1e-9 precision')\n"""
+          if original.count(old)!=1: raise SystemExit(f'expected exactly one repair target, found {original.count(old)}')
+          p.write_text(original.replace(old,new))
+          got=hashlib.sha256(p.read_bytes()).hexdigest()
+          if got!='1728de89a291c0a0dcd369e198b6a2ce04d75624a87cff056dadc53b518eebdf': raise SystemExit(f'patched prepare_response_table.py SHA mismatch: {got}')
+          py_compile.compile(str(p),doraise=True)
+          exact=Path('/tmp/v499_response/WALLABY_v1/prepare_response_table.py')
+          if hashlib.sha256(exact.read_bytes()).hexdigest()!='0faea97d7c61f7da76cbd1dd46e0a7433abefe06f3b5918c7230bbb38ca3bbc7': raise SystemExit('canonical engine was modified')
+          print('mechanical response-preparation repair verified')
+          PY
+
+      - name: Open frozen response and prepare exact primary analysis table
+        run: |
+          set -euo pipefail
+          PYTHONPATH=/tmp/v499_prepare_runtime python /tmp/v499_prepare_runtime/prepare_response_table.py \
+            --predictors "$GITHUB_WORKSPACE/post-stage0/source-stage1-target/source_predictors.csv" \
+            --baryonic-hi "$GITHUB_WORKSPACE/post-stage0/source-stage1-target/baryonic_hi_fold.csv" \
+            --strata-map "$GITHUB_WORKSPACE/post-stage0/source-stage1-target/proxy_strata.csv" \
+            --kinematics "$GITHUB_WORKSPACE/post-stage0/response-stage1/kinematics.csv" \
+            --mode TARGET \
+            --strata-receipt "$GITHUB_WORKSPACE/post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json" \
+            --response-export-manifest "$GITHUB_WORKSPACE/post-stage0/response-stage1/RESPONSE_EXPORT_MANIFEST.json" \
+            --beam-report "$GITHUB_WORKSPACE/post-stage0/source-stage1-target/source_beam_report.json" \
+            --out /tmp/blind/analysis_input.csv \
+            --report /tmp/blind/PREPARE_REPORT.json
+
+      - name: Freeze runtime TARGET config from preregistered v4.99 constants
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          ws=Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          eng=Path('/tmp/v499_response/WALLABY_v1')
+          inp=Path('/tmp/blind/analysis_input.csv')
+          sha=lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          proxy=ws/'post-stage0/source-stage1-target/proxy_strata.csv'
+          beam=ws/'post-stage0/source-stage1-target/source_beam_report.json'
+          stage0=ws/'post-stage0/STAGE0_EXTERNAL_TIMESTAMP_RECEIPT.json'
+          stage1=ws/'post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json'
+          r0=json.loads(stage0.read_text()); r1=json.loads(stage1.read_text())
+          if r0.get('frozen_manifest_file_sha256')!='61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c': raise SystemExit('Stage-0 receipt mismatch')
+          if r1.get('source_stage_commit')!='23ef651806d1b2c5ea0afd59c54239491869f69e': raise SystemExit('Stage-1 source commit mismatch')
+          if r1.get('proxy_strata_map_sha256')!=sha(proxy): raise SystemExit('Stage-1 proxy map hash mismatch')
+          if r1.get('source_beam_report_sha256')!=sha(beam): raise SystemExit('Stage-1 beam report hash mismatch')
+          cfg={
+            'frozen':{
+              'gbar_bin_edges':[-12.08,-11.755,-11.43,-11.105,-10.78,-10.455,-10.13,-9.805,-9.48,-9.155,-8.83,-8.505,-8.18],
+              'min_galaxies_per_stratum_per_bin':2,
+              'n_permutations':25000,
+              'proxy_cuts':None,
+              'proxy_rule':'preassigned_source_rank_tertiles',
+              'seed':3911654986
+            },
+            'input_csv':str(inp),
+            'input_sha256':sha(inp),
+            'mode':'TARGET',
+            'proxy_strata_map':{
+              'beam_report':{'sealed_file':str(beam),'sha256':sha(beam)},
+              'sealed_file':str(proxy),'sha256':sha(proxy),
+              'timestamp_receipt':str(stage1)
+            },
+            'reference_constructor':{'sealed_file':'gate_a_reference.py','sha256':'4e2ec5b7ac5741f7069bd129e472807cfa50ca0323ebb62069c18e1222bd1278'},
+            'target_adapter':{'sealed_file':'TARGET_ADAPTER_LOCK.json','sha256':'de9de2a36ce0d6488f7b59faa0143538090a1c90462677044d4462bb22bd7223'},
+            'timestamp_receipt':str(stage0)
+          }
+          out=eng/'config_target.runtime.json'; out.write_text(json.dumps(cfg,indent=2,sort_keys=True)+'\n')
+          Path('/tmp/blind/CONFIG_TARGET.json').write_text(out.read_text())
+          print(json.dumps({'input_sha256':cfg['input_sha256'],'proxy_strata_sha256':sha(proxy),'source_beam_report_sha256':sha(beam),'n_permutations':25000,'seed':3911654986},sort_keys=True))
+          PY
+
+      - name: Run preregistered Gate A/B once
+        run: |
+          set -euo pipefail
+          PYTHONPATH=/tmp/v499_response/WALLABY_v1 python /tmp/v499_response/WALLABY_v1/run_holdout.py \
+            --config /tmp/v499_response/WALLABY_v1/config_target.runtime.json \
+            --out /tmp/blind/GATE_AB_RESULT.json
+
+      - name: Seal blind execution receipt and hashes
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,shutil
+          from pathlib import Path
+          ws=Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          out=ws/'post-stage0/blind-gate-ab-result'
+          if out.exists(): raise SystemExit('blind-gate-ab-result already exists; refusing a second reveal')
+          out.mkdir(parents=True)
+          for n in ['analysis_input.csv','PREPARE_REPORT.json','CONFIG_TARGET.json','GATE_AB_RESULT.json']:
+              shutil.copy2(Path('/tmp/blind')/n,out/n)
+          sha=lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          manifest=json.loads((ws/'post-stage0/frozen-v4.99-response-bundle-exact/MANIFEST.json').read_text())
+          pre=json.loads((ws/'post-stage0/blind-response-preflight/PREFLIGHT.json').read_text())
+          result=json.loads((out/'GATE_AB_RESULT.json').read_text())
+          cfg=json.loads((out/'CONFIG_TARGET.json').read_text())
+          receipt={
+            'schema':'WALLABY_GATE_AB_BLIND_EXECUTION_RECEIPT_v1',
+            'trigger_commit':os.environ['GITHUB_SHA'],
+            'explicit_reveal_trigger':'post-stage0/blind-gate-ab-reveal-trigger/RUN.json',
+            'armed_manifest':'post-stage0/blind-gate-ab-armed/ARMED.json',
+            'source_stage_commit':'23ef651806d1b2c5ea0afd59c54239491869f69e',
+            'response_export_provenance_commit':'87ab52c96206f5c998ecac1fd1e62ab88603a0d9',
+            'response_engine_tar_sha256':manifest['exact_response_tar_sha256'],
+            'wallaby_ab_sha256':'7b452caa31cc1eaa6717c1f99fe6bd1927aa84798d94be1545e7f1796b33c3d1',
+            'run_holdout_sha256':'b0038ca7fe38e89e854f0789b7cb3d388221d539be05df54d64bcc75ca452301',
+            'original_prepare_response_sha256':pre['original_prepare_response_sha256'],
+            'runtime_prepare_response_sha256':pre['patched_prepare_response_sha256'],
+            'serialization_guard_repair':pre['repair_scope'],
+            'science_thresholds_changed':False,
+            'gate_statistics_changed':False,
+            'permutation_algorithm_changed':False,
+            'n_permutations':cfg['frozen']['n_permutations'],
+            'seed':cfg['frozen']['seed'],
+            'gbar_bin_edges':cfg['frozen']['gbar_bin_edges'],
+            'min_galaxies_per_stratum_per_bin':cfg['frozen']['min_galaxies_per_stratum_per_bin'],
+            'analysis_input_sha256':sha(out/'analysis_input.csv'),
+            'prepare_report_sha256':sha(out/'PREPARE_REPORT.json'),
+            'config_sha256':sha(out/'CONFIG_TARGET.json'),
+            'gate_ab_result_sha256':sha(out/'GATE_AB_RESULT.json'),
+            'result_mode':result.get('mode'),
+            'single_execution_intent':True
+          }
+          (out/'EXECUTION_RECEIPT.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+          names=['analysis_input.csv','PREPARE_REPORT.json','CONFIG_TARGET.json','GATE_AB_RESULT.json','EXECUTION_RECEIPT.json']
+          (out/'SHA256SUMS.txt').write_text(''.join(f'{sha(out/n)}  {n}\n' for n in names))
+          print(json.dumps({'sealed_result_dir':str(out.relative_to(ws)),'gate_ab_result_sha256':receipt['gate_ab_result_sha256'],'single_execution_intent':True},sort_keys=True))
+          PY
+
+      - name: Commit immutable blind result
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/blind-gate-ab-result
+          git commit -m 'Reveal preregistered WALLABY Gate A/B result'
+          git pull --rebase origin main
+          git push
