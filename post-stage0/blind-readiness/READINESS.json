@@ -1,0 +1,31 @@
+{
+  "all_matched_by_field": {
+    "NGC4808": 9,
+    "NGC5044": 18
+  },
+  "all_matched_by_stratum": {
+    "high": 4,
+    "low": 17,
+    "middle": 6
+  },
+  "eligible_by_field": {
+    "NGC4808": 8,
+    "NGC5044": 15
+  },
+  "eligible_by_stratum": {
+    "high": 4,
+    "low": 14,
+    "middle": 5
+  },
+  "frozen_primary_rule": "ell_maj_beams >= 2.0 and QFlag_model == 0",
+  "gate_statistics_computed": false,
+  "n_primary_ge2_beams": 25,
+  "n_primary_qflag0_eligible": 23,
+  "n_qflag0": 25,
+  "n_response_ids": 27,
+  "outcome_blind": true,
+  "planning_reference": "P04 frozen power statement: N=92 gives ~57-59% Test-A planning power at alpha=0.05; N=148 gives 75-89%; these are planning surrogates, not outcome evidence.",
+  "residuals_computed": false,
+  "schema": "WALLABY_BLIND_READINESS_CENSUS_v1",
+  "vrot_loaded": false
+}
