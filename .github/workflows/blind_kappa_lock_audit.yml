@@ -1,0 +1,53 @@
+name: WALLABY frozen kappa lock audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/blind-kappa-lock-trigger/RUN.json'
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install audit dependency
+        run: python -m pip -q install numpy pandas
+      - name: Audit source-only kappa identity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import numpy as np, pandas as pd
+          root=Path.cwd()
+          p=pd.read_csv(root/'post-stage0/source-stage1-target/source_predictors.csv',usecols=['galaxy_id','kappa_HI'],dtype={'galaxy_id':str})
+          s=pd.read_csv(root/'post-stage0/source-stage1-target/proxy_strata.csv',usecols=['galaxy_id','kappa_HI','stratum'],dtype={'galaxy_id':str})
+          z=p.merge(s,on='galaxy_id',suffixes=('_pred','_sealed'),validate='one_to_one')
+          a=z.kappa_HI_pred.to_numpy(float); b=z.kappa_HI_sealed.to_numpy(float)
+          nan_a=np.isnan(a); nan_b=np.isnan(b); both_nan=nan_a & nan_b; one_nan=nan_a ^ nan_b
+          finite=np.isfinite(a)&np.isfinite(b)
+          d=np.abs(a[finite]-b[finite])
+          rep={
+            'schema':'WALLABY_KAPPA_LOCK_AUDIT_v1','source_only':True,'response_values_loaded':False,
+            'n_joined':int(len(z)),'n_pred_nan':int(nan_a.sum()),'n_sealed_nan':int(nan_b.sum()),
+            'n_both_nan':int(both_nan.sum()),'n_one_sided_nan':int(one_nan.sum()),
+            'n_finite':int(finite.sum()),'n_finite_diff_gt_1e10':int((d>1e-10).sum()) if len(d) else 0,
+            'max_abs_finite_diff':float(d.max()) if len(d) else None,
+            'np_allclose_exact_script_equal_nan_false':bool(np.allclose(a,b,rtol=0,atol=1e-10)),
+            'np_allclose_if_shared_nan_allowed':bool(np.allclose(a,b,rtol=0,atol=1e-10,equal_nan=True))
+          }
+          out=root/'post-stage0/blind-kappa-lock'; out.mkdir(parents=True,exist_ok=True)
+          (out/'AUDIT.json').write_text(json.dumps(rep,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(rep,sort_keys=True))
+          PY
+      - name: Commit source-only lock audit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/blind-kappa-lock/AUDIT.json
+          git commit -m 'Audit frozen source kappa identity before blind run' || exit 0
+          git pull --rebase origin main
+          git push
