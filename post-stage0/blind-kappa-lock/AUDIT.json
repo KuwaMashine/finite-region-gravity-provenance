@@ -1,0 +1,15 @@
+{
+  "max_abs_finite_diff": 9.999894245993346e-10,
+  "n_both_nan": 0,
+  "n_finite": 389,
+  "n_finite_diff_gt_1e10": 30,
+  "n_joined": 389,
+  "n_one_sided_nan": 0,
+  "n_pred_nan": 0,
+  "n_sealed_nan": 0,
+  "np_allclose_exact_script_equal_nan_false": false,
+  "np_allclose_if_shared_nan_allowed": false,
+  "response_values_loaded": false,
+  "schema": "WALLABY_KAPPA_LOCK_AUDIT_v1",
+  "source_only": true
+}
