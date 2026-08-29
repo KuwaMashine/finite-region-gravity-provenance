@@ -4,7 +4,7 @@
   "response_manifest": "post-stage0/response-stage1/RESPONSE_EXPORT_MANIFEST.json",
   "support_census": "post-stage0/blind-gbar-support/GBAR_SUPPORT.json",
   "kappa_serialization_audit": "post-stage0/blind-kappa-lock/AUDIT.json",
-  "archive_reconstruction_repair_commit": "72d25b9ad1eff5a958e5e4501ed502c4c439060f",
-  "prior_preflight_run": 33273227251,
-  "scope": "Inventory the frozen v4.99 response bundle and locate the over-tight kappa serialization guard. Decode independently encoded chunks before concatenating bytes. Do not load response values and do not compute Gate A/B."
+  "archive_reconstruction_repair_commit": "f472209476efdfa1d8ba1fde5cdd6d55ea5ea324",
+  "prior_preflight_runs": [33273227251, 33273265297],
+  "scope": "Inventory the frozen v4.99 response bundle from the single sealed base64 blob and locate the over-tight kappa serialization guard. Normalize whitespace only during base64 decode. Do not load response values and do not compute Gate A/B."
 }
