@@ -1,0 +1,66 @@
+name: WALLABY blind readiness census
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/blind-readiness-trigger/RUN.json'
+
+permissions:
+  contents: write
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Outcome-blind readiness census
+        run: |
+          python - <<'PY'
+          import json, hashlib
+          from pathlib import Path
+          import pandas as pd
+          root=Path.cwd()
+          receipt=json.loads((root/'post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json').read_text())
+          assert receipt['source_stage_commit']=='23ef651806d1b2c5ea0afd59c54239491869f69e'
+          man=json.loads((root/'post-stage0/response-stage1/RESPONSE_EXPORT_MANIFEST.json').read_text())
+          assert man['source_stage_timestamp_verified'] is True
+          kin=pd.read_csv(root/'post-stage0/response-stage1/kinematics.csv',usecols=['galaxy_id','field_id','qflag_model'])
+          pred=pd.read_csv(root/'post-stage0/source-stage1-target/source_predictors.csv',usecols=['galaxy_id','field_id','ell_maj_beams'])
+          strata=pd.read_csv(root/'post-stage0/source-stage1-target/proxy_strata.csv',usecols=['galaxy_id','stratum'])
+          kg=kin.drop_duplicates('galaxy_id')
+          if kg.galaxy_id.duplicated().any(): raise SystemExit('duplicate response IDs')
+          z=kg.merge(pred,on='galaxy_id',suffixes=('_response','_source'),validate='one_to_one').merge(strata,on='galaxy_id',validate='one_to_one')
+          z['qflag0']=z.qflag_model.astype(int).eq(0)
+          z['primary']=z.ell_maj_beams.ge(2.0)
+          z['eligible']=z.qflag0 & z.primary
+          def counts(df,col): return {str(k):int(v) for k,v in df[col].value_counts().sort_index().items()}
+          rep={
+            'schema':'WALLABY_BLIND_READINESS_CENSUS_v1',
+            'outcome_blind':True,
+            'vrot_loaded':False,
+            'residuals_computed':False,
+            'gate_statistics_computed':False,
+            'n_response_ids':int(len(kg)),
+            'n_qflag0':int(z.qflag0.sum()),
+            'n_primary_ge2_beams':int(z.primary.sum()),
+            'n_primary_qflag0_eligible':int(z.eligible.sum()),
+            'eligible_by_field':counts(z[z.eligible],'field_id_source'),
+            'eligible_by_stratum':counts(z[z.eligible],'stratum'),
+            'all_matched_by_field':counts(z,'field_id_source'),
+            'all_matched_by_stratum':counts(z,'stratum'),
+            'frozen_primary_rule':'ell_maj_beams >= 2.0 and QFlag_model == 0',
+            'planning_reference':'P04 frozen power statement: N=92 gives ~57-59% Test-A planning power at alpha=0.05; N=148 gives 75-89%; these are planning surrogates, not outcome evidence.'
+          }
+          out=root/'post-stage0/blind-readiness'; out.mkdir(parents=True,exist_ok=True)
+          (out/'READINESS.json').write_text(json.dumps(rep,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(rep,sort_keys=True))
+          PY
+      - name: Commit readiness census
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/blind-readiness/READINESS.json
+          git commit -m 'Record outcome-blind WALLABY readiness census' || exit 0
+          git pull --rebase origin main
+          git push
