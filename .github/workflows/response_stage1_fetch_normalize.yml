@@ -34,13 +34,20 @@ jobs:
           endpoint='https://ws-uv.canfar.net/youcat/sync'
           table='cirada.Wallaby_dr2_kinematic_catalogue'
           doi='10.25919/7w8n-9h19'
-          query=f'SELECT name,QFlag_model,Rad,Vrot_model FROM {table}'
+          final_releases=('NGC 4808 TR1','NGC5044 TR3','Vela TR1')
+          where=" OR ".join(f"team_release='{x}'" for x in final_releases)
+          query=f'SELECT name,team_release,team_release_kin,QFlag_model,Rad,Vrot_model FROM {table} WHERE {where}'
           r=requests.post(endpoint,data={'REQUEST':'doQuery','LANG':'ADQL','FORMAT':'csv','QUERY':query},timeout=180)
           r.raise_for_status()
-          raw=pd.read_csv(io.BytesIO(r.content),dtype={'name':str})
-          need={'name','QFlag_model','Rad','Vrot_model'}
+          raw=pd.read_csv(io.BytesIO(r.content),dtype={'name':str,'team_release':str,'team_release_kin':str})
+          need={'name','team_release','team_release_kin','QFlag_model','Rad','Vrot_model'}
           if not need.issubset(raw.columns): raise SystemExit(f'kinematic TAP response missing {sorted(need-set(raw.columns))}')
-          if raw['name'].duplicated().any(): raise SystemExit('duplicate kinematic source names in public catalogue')
+          got_releases=set(raw['team_release'].astype(str).str.strip())
+          if not got_releases.issubset(set(final_releases)):
+              raise SystemExit(f'unexpected release rows after frozen filter: {sorted(got_releases-set(final_releases))}')
+          if raw['name'].astype(str).str.strip().duplicated().any():
+              dup=raw.loc[raw['name'].astype(str).str.strip().duplicated(keep=False),['name','team_release','team_release_kin']]
+              raise SystemExit('duplicate kinematic source names remain inside frozen final releases: '+dup.to_json(orient='records'))
 
           pred=pd.read_csv(root/'post-stage0/source-stage1-target/source_predictors.csv',dtype={'galaxy_id':str})
           pcols={'galaxy_id','field_id','release_phase'}
@@ -83,17 +90,21 @@ jobs:
             'manifest_version':'WALLABY_RESPONSE_EXPORT_v1','stage':'RESPONSE','join_key':'galaxy_id',
             'source_stage_timestamp_verified':True,
             'product_ids':{'kinematic_catalogue':f'DOI:{doi}; CADC:{table}'},
+            'release_filter':list(final_releases),
+            'release_filter_basis':'metadata-only post-receipt preflight; NGC5044 TR1/TR2 superseded by frozen NGC5044 TR3 final release',
             'column_map':{
               'galaxy_id':'name','field_id':'source-stage frozen field_id joined by name',
               'release_phase':'source-stage frozen release_phase joined by name',
               'qflag_model':'QFlag_model','rad_arcsec':'Rad','vrot_kms':'Vrot_model'},
             'normalized_files':{'kinematics':{'path':'post-stage0/response-stage1/kinematics.csv','sha256':sha(kin)}},
-            'notes':'Created only after public Stage-1 source receipt c7125a4c5e09b3be1f278e6da2c682f71a44b0de. Validation membership/field labels are inherited from the sealed source-stage identifiers; no response value is used to define membership.'}
+            'notes':'Created only after public Stage-1 source receipt c7125a4c5e09b3be1f278e6da2c682f71a44b0de. Release partition was fixed from metadata-only preflight before successful response export. Validation membership/field labels are inherited from the sealed source-stage identifiers; no QFlag_model, Rad or Vrot_model value is used to define release membership.'}
           (outdir/'RESPONSE_EXPORT_MANIFEST.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
           report={'schema':'WALLABY_RESPONSE_EXPORT_REPORT_v1','public_table':table,'public_doi':doi,
-                  'n_public_catalogue_rows':int(len(raw)),'n_source_stage_identifiers_with_kinematics':int(matched),
+                  'final_release_filter':list(final_releases),'n_final_release_catalogue_rows':int(len(raw)),
+                  'n_source_stage_identifiers_with_kinematics':int(matched),
                   'n_normalized_radial_rows':int(len(out)),'normalized_kinematics_sha256':sha(kin),
-                  'stage1_receipt_verified':True,'selection_basis':'stable source-stage galaxy_id only; no response-value selection in transport'}
+                  'stage1_receipt_verified':True,
+                  'selection_basis':'frozen final-release metadata then stable source-stage galaxy_id only; no response-value selection in transport'}
           (outdir/'RESPONSE_EXPORT_REPORT.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
           print(json.dumps(report,sort_keys=True))
           PY
