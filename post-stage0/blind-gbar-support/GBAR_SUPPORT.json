@@ -1,0 +1,148 @@
+{
+  "bin_support": [
+    {
+      "eligible": false,
+      "gbar_bin": 0,
+      "hi": -11.755,
+      "high": 1,
+      "lo": -12.08,
+      "low": 2,
+      "middle": 1
+    },
+    {
+      "eligible": false,
+      "gbar_bin": 1,
+      "hi": -11.43,
+      "high": 0,
+      "lo": -11.755,
+      "low": 6,
+      "middle": 2
+    },
+    {
+      "eligible": true,
+      "gbar_bin": 2,
+      "hi": -11.105,
+      "high": 2,
+      "lo": -11.43,
+      "low": 10,
+      "middle": 4
+    },
+    {
+      "eligible": true,
+      "gbar_bin": 3,
+      "hi": -10.78,
+      "high": 2,
+      "lo": -11.105,
+      "low": 8,
+      "middle": 4
+    },
+    {
+      "eligible": true,
+      "gbar_bin": 4,
+      "hi": -10.455,
+      "high": 2,
+      "lo": -10.78,
+      "low": 7,
+      "middle": 3
+    },
+    {
+      "eligible": true,
+      "gbar_bin": 5,
+      "hi": -10.13,
+      "high": 2,
+      "lo": -10.455,
+      "low": 5,
+      "middle": 2
+    },
+    {
+      "eligible": true,
+      "gbar_bin": 6,
+      "hi": -9.805,
+      "high": 2,
+      "lo": -10.13,
+      "low": 4,
+      "middle": 2
+    },
+    {
+      "eligible": false,
+      "gbar_bin": 7,
+      "hi": -9.48,
+      "high": 1,
+      "lo": -9.805,
+      "low": 0,
+      "middle": 0
+    },
+    {
+      "eligible": false,
+      "gbar_bin": 8,
+      "hi": -9.155,
+      "high": 0,
+      "lo": -9.48,
+      "low": 0,
+      "middle": 0
+    },
+    {
+      "eligible": false,
+      "gbar_bin": 9,
+      "hi": -8.83,
+      "high": 0,
+      "lo": -9.155,
+      "low": 0,
+      "middle": 0
+    },
+    {
+      "eligible": false,
+      "gbar_bin": 10,
+      "hi": -8.505,
+      "high": 0,
+      "lo": -8.83,
+      "low": 0,
+      "middle": 0
+    },
+    {
+      "eligible": false,
+      "gbar_bin": 11,
+      "hi": -8.18,
+      "high": 0,
+      "lo": -8.505,
+      "low": 0,
+      "middle": 0
+    }
+  ],
+  "delta_ref_computed": false,
+  "eligible_bins": [
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "gate_statistics_computed": false,
+  "gbar_bin_edges": [
+    -12.08,
+    -11.755,
+    -11.43,
+    -11.105,
+    -10.78,
+    -10.455,
+    -10.13,
+    -9.805,
+    -9.48,
+    -9.155,
+    -8.83,
+    -8.505,
+    -8.18
+  ],
+  "gobs_computed": false,
+  "gravity_reconstruction_failures": [],
+  "kappa_lock_check": "sealed kappa_HI compared to serialized R_HI90/R_dstar at audited 1e-9 serialization tolerance",
+  "min_galaxies_per_stratum_per_bin": 2,
+  "n_eligible_bins": 5,
+  "n_galaxies_with_gbar_rows": 23,
+  "n_galaxy_bin_cells": 72,
+  "n_gravity_reconstruction_failures": 0,
+  "outcome_blind": true,
+  "schema": "WALLABY_BLIND_GBAR_SUPPORT_CENSUS_v1",
+  "scoreable_under_frozen_support_rule": true,
+  "vrot_loaded": false
+}
