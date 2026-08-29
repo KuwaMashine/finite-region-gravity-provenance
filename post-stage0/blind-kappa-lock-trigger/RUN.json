@@ -1,4 +1,5 @@
 {
-  "schema": "WALLABY_KAPPA_LOCK_AUDIT_TRIGGER_v1",
-  "scope": "Source-only identity audit of kappa_HI between the frozen predictor table and frozen proxy-strata map. No response values loaded or statistics computed."
+  "schema": "WALLABY_KAPPA_LOCK_AUDIT_TRIGGER_v2",
+  "audit_workflow_commit": "815b058085ec60deedbd91aa7a3deb99ec446951",
+  "scope": "Source-only serialization audit of kappa_HI between predictor representation, serialized R_HI90/R_dstar geometry, and sealed proxy-strata representation. No response values loaded or statistics computed."
 }
