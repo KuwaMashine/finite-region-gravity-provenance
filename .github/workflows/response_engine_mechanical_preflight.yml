@@ -18,14 +18,17 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/v499_response
-          cat post-stage0/frozen-v4.99-response-bundle/chunk_*.b64 | base64 -d > /tmp/v499_response.tar.gz
+          : > /tmp/v499_response.tar.gz
+          for f in post-stage0/frozen-v4.99-response-bundle/chunk_*.b64; do
+            base64 -d "$f" >> /tmp/v499_response.tar.gz
+          done
           tar -xzf /tmp/v499_response.tar.gz -C /tmp/v499_response
           find /tmp/v499_response -type f -print | sort
       - name: Locate response preparation integrity guard without executing outcomes
         run: |
           set -euo pipefail
           python - <<'PY'
-          import hashlib,json,re
+          import hashlib,json
           from pathlib import Path
           root=Path('/tmp/v499_response')
           files=[]; hits=[]
