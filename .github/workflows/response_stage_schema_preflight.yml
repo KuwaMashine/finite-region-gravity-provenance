@@ -17,7 +17,7 @@ jobs:
       - name: Verify Stage-1 receipt exists before response catalogue access
         run: |
           python - <<'PY'
-          import json, hashlib
+          import json
           from pathlib import Path
           r=json.loads(Path('post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json').read_text())
           assert r['source_stage_commit']=='23ef651806d1b2c5ea0afd59c54239491869f69e'
@@ -26,30 +26,34 @@ jobs:
           assert r['validation_kinematics_opened_before_receipt'] is False
           print('Stage-1 receipt prerequisite: PASS')
           PY
-      - name: Query public CADC TAP schema only
+      - name: Query public CADC TAP schema and release metadata only
         run: |
           python - <<'PY'
           import requests, json
           from pathlib import Path
           endpoint='https://ws-uv.canfar.net/youcat/sync'
           table='cirada.Wallaby_dr2_kinematic_catalogue'
-          q=("SELECT column_name, datatype, arraysize, unit, description "
-             "FROM TAP_SCHEMA.columns WHERE table_name='"+table+"' ORDER BY column_index")
-          r=requests.post(endpoint,data={'REQUEST':'doQuery','LANG':'ADQL','FORMAT':'csv','QUERY':q},timeout=120)
-          r.raise_for_status()
+          def query(q):
+              r=requests.post(endpoint,data={'REQUEST':'doQuery','LANG':'ADQL','FORMAT':'csv','QUERY':q},timeout=120)
+              r.raise_for_status(); return r.content
           out=Path('post-stage0/response-stage-schema-preflight'); out.mkdir(parents=True,exist_ok=True)
-          (out/'tap_schema.csv').write_bytes(r.content)
-          meta={'schema':'WALLABY_RESPONSE_SCHEMA_PREFLIGHT_v1','endpoint':endpoint,'table':table,
-                'query_kind':'TAP_SCHEMA metadata only; no catalogue rows/response values loaded',
+          q1=("SELECT column_name, datatype, arraysize, unit, description "
+              "FROM TAP_SCHEMA.columns WHERE table_name='"+table+"' ORDER BY column_index")
+          (out/'tap_schema.csv').write_bytes(query(q1))
+          q2=("SELECT team_release, team_release_kin, COUNT(*) AS n_rows "
+              "FROM "+table+" GROUP BY team_release, team_release_kin "
+              "ORDER BY team_release, team_release_kin")
+          (out/'release_metadata.csv').write_bytes(query(q2))
+          meta={'schema':'WALLABY_RESPONSE_SCHEMA_PREFLIGHT_v2','endpoint':endpoint,'table':table,
+                'query_kind':'TAP_SCHEMA plus distinct/grouped release metadata only; no Rad, Vrot_model, QFlag_model or other response values loaded',
                 'stage1_receipt_verified':True,'response_values_loaded':False}
           (out/'SCHEMA_PREFLIGHT.json').write_text(json.dumps(meta,indent=2,sort_keys=True)+'\n')
-          print(r.text)
           PY
       - name: Commit schema metadata receipt
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add post-stage0/response-stage-schema-preflight
-          git commit -m 'Record post-receipt kinematic catalogue schema' || exit 0
+          git commit -m 'Record post-receipt kinematic release metadata' || exit 0
           git pull --rebase origin main
           git push
