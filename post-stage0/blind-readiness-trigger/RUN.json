@@ -2,5 +2,8 @@
   "schema": "WALLABY_BLIND_READINESS_TRIGGER_v1",
   "stage1_receipt_commit": "c7125a4c5e09b3be1f278e6da2c682f71a44b0de",
   "response_export_commit": "87ab52c96206f5c998ecac1fd1e62ab88603a0d9",
+  "readiness_workflow_repair_commit": "514f16914a79878d4bb57e78548afe0055b00ac2",
+  "prior_run_id": 33272606166,
+  "prior_failure_scope": "missing pandas dependency before table load; no readiness count or outcome statistic computed",
   "scope": "Outcome-blind readiness census only: galaxy IDs, QFlag_model, source-side ell_maj_beams and frozen proxy strata. Do not load Vrot_model, compute residuals or compute Gate A/B statistics."
 }
