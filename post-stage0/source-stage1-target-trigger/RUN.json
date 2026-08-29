@@ -1,0 +1,15 @@
+{
+  "schema": "WALLABY_STAGE1_TARGET_TRIGGER_v1",
+  "optical_freeze_commit": "842fa97125ddf5b859ddc0e927d5e8c717626b37",
+  "optical_report_path": "post-stage0/source-optical-stage1/SOURCE_OPTICAL_STAGE1_REPORT.json",
+  "optical_response_products_used": false,
+  "hi_freeze_commit": "229a4780c7ce7d1f3dc327c4392473a7d0e776a5",
+  "stage0_proof_commit": "15abeac9b6d285ce42caf26498115c0686d9bcd3",
+  "frozen_v499_manifest_sha256": "61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c",
+  "source_engine_verification": "pass",
+  "mechanical_optical_repair_commit": "44cad4b01a9b1ff69c66eb41b9653fd4d0f2d61d",
+  "science_definitions_changed": false,
+  "response_products_used": false,
+  "validation_kinematics_opened": false,
+  "instruction": "Run the already-armed exact-v4.99 TARGET source-only workflow and freeze source predictors, baryonic H I fold, proxy strata, beam report, prepare report, timestamp payload and SHA256SUMS before any response-side data are opened."
+}
