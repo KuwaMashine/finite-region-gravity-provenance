@@ -1,0 +1,189 @@
+{
+  "config": "/tmp/v499_response/WALLABY_v1/config_target.runtime.json",
+  "input": "/tmp/blind/analysis_input.csv",
+  "input_sha256": "f3b03e711380bb838f731e4edd0c898b34b43c1de1f046afc8e56cb335d404a3",
+  "mode": "TARGET",
+  "observed": {
+    "T_N": -0.5541755253088784,
+    "T_spread": 0.5791028781357349,
+    "eligible_bins": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "n_bins": 5,
+    "per_bin": [
+      {
+        "A_N_medians": {
+          "high": 0.2632796897687665,
+          "low": 0.674646504443644,
+          "middle": 0.6840737436314526
+        },
+        "delta_ref_medians": {
+          "high": -0.447861085418,
+          "low": 0.01984505228005,
+          "middle": -0.021264108114369996
+        },
+        "gbar_bin": 2,
+        "high_minus_low_A_N": -0.41136681467487757,
+        "spread": 0.46770613769805003
+      },
+      {
+        "A_N_medians": {
+          "high": 0.5074913831979126,
+          "low": 0.7340248735517623,
+          "middle": 0.5430949125873394
+        },
+        "delta_ref_medians": {
+          "high": -0.080533872790825,
+          "low": 0.16091379010975002,
+          "middle": -0.0033983296660749993
+        },
+        "gbar_bin": 3,
+        "high_minus_low_A_N": -0.22653349035384962,
+        "spread": 0.241447662900575
+      },
+      {
+        "A_N_medians": {
+          "high": -0.2204302667344429,
+          "low": 0.5896737341783131,
+          "middle": 0.28528345180938225
+        },
+        "delta_ref_medians": {
+          "high": -0.7099766193414999,
+          "low": 0.15436482123849998,
+          "middle": -0.103195753669
+        },
+        "gbar_bin": 4,
+        "high_minus_low_A_N": -0.810104000912756,
+        "spread": 0.8643414405799998
+      },
+      {
+        "A_N_medians": {
+          "high": 0.2986215242875404,
+          "low": 0.4273316296729792,
+          "middle": 0.33393100954813537
+        },
+        "delta_ref_medians": {
+          "high": -0.03836976791025,
+          "low": 0.11029215662179999,
+          "middle": -0.00392057074695
+        },
+        "gbar_bin": 5,
+        "high_minus_low_A_N": -0.1287101053854388,
+        "spread": 0.14866192453205
+      },
+      {
+        "A_N_medians": {
+          "high": -0.6502462036832227,
+          "low": 0.5439170115342468,
+          "middle": 0.2505265451919228
+        },
+        "delta_ref_medians": {
+          "high": -0.8587570374915,
+          "low": 0.3146001874765,
+          "middle": 0.06835520602535
+        },
+        "gbar_bin": 6,
+        "high_minus_low_A_N": -1.1941632152174695,
+        "spread": 1.173357224968
+      }
+    ]
+  },
+  "permutation": {
+    "n": 25000,
+    "null_gate_A_quantiles": [
+      0.5320259035086,
+      0.563106483094935,
+      0.611062981553975
+    ],
+    "null_gate_B_quantiles": [
+      -0.5541755253088784,
+      -0.5258276886025877,
+      -0.4932947993240832
+    ],
+    "p_gate_A_upper": 0.4156633734650614,
+    "p_gate_B_one_sided_positive": 1.0,
+    "seed": 3911654986,
+    "stratification": "survey field + frozen gbar-bin coverage signature"
+  },
+  "stellar_only_conditioning_sensitivity": {
+    "observed": {
+      "T_N": -0.5334826194650457,
+      "T_spread": 0.49261477599878334,
+      "eligible_bins": [
+        2,
+        3,
+        6
+      ],
+      "n_bins": 3,
+      "per_bin": [
+        {
+          "A_N_medians": {
+            "high": 0.5149542205875094,
+            "low": 0.7742308451651876,
+            "middle": 0.635849197065083
+          },
+          "delta_ref_medians": {
+            "high": -0.0978245942722,
+            "low": 0.089651379261,
+            "middle": -0.01407402576381
+          },
+          "gbar_bin": 2,
+          "high_minus_low_A_N": -0.2592766245776782,
+          "spread": 0.1874759735332
+        },
+        {
+          "A_N_medians": {
+            "high": 0.47589972387076884,
+            "low": 0.6229077424707583,
+            "middle": 0.520440089149203
+          },
+          "delta_ref_medians": {
+            "high": -0.032293646757950004,
+            "low": 0.0847174827372,
+            "middle": -0.00335242713095
+          },
+          "gbar_bin": 3,
+          "high_minus_low_A_N": -0.14700801859998947,
+          "spread": 0.11701112949515001
+        },
+        {
+          "A_N_medians": {
+            "high": -0.6502462036832227,
+            "low": 0.5439170115342468,
+            "middle": 0.2505265451919228
+          },
+          "delta_ref_medians": {
+            "high": -0.8587570374915,
+            "low": 0.3146001874765,
+            "middle": 0.06835520602535
+          },
+          "gbar_bin": 6,
+          "high_minus_low_A_N": -1.1941632152174695,
+          "spread": 1.173357224968
+        }
+      ]
+    },
+    "permutation": {
+      "n": 25000,
+      "null_gate_A_quantiles": [
+        0.4712817983806666,
+        0.48935011402830003,
+        0.5178674051750667
+      ],
+      "null_gate_B_quantiles": [
+        -0.5507007207624731,
+        -0.5319598519377929,
+        -0.4989012362282759
+      ],
+      "p_gate_A_upper": 0.42070317187312506,
+      "p_gate_B_one_sided_positive": 0.6627334906603736,
+      "seed": 3911654986,
+      "stratification": "survey field + frozen gbar-bin coverage signature"
+    },
+    "status": "ok"
+  }
+}

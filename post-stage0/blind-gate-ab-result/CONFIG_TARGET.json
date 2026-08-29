@@ -1,0 +1,45 @@
+{
+  "frozen": {
+    "gbar_bin_edges": [
+      -12.08,
+      -11.755,
+      -11.43,
+      -11.105,
+      -10.78,
+      -10.455,
+      -10.13,
+      -9.805,
+      -9.48,
+      -9.155,
+      -8.83,
+      -8.505,
+      -8.18
+    ],
+    "min_galaxies_per_stratum_per_bin": 2,
+    "n_permutations": 25000,
+    "proxy_cuts": null,
+    "proxy_rule": "preassigned_source_rank_tertiles",
+    "seed": 3911654986
+  },
+  "input_csv": "/tmp/blind/analysis_input.csv",
+  "input_sha256": "f3b03e711380bb838f731e4edd0c898b34b43c1de1f046afc8e56cb335d404a3",
+  "mode": "TARGET",
+  "proxy_strata_map": {
+    "beam_report": {
+      "sealed_file": "/home/runner/work/finite-region-gravity-provenance/finite-region-gravity-provenance/post-stage0/source-stage1-target/source_beam_report.json",
+      "sha256": "fcdb63935652d58671b8d53591f19d1479e3c5479635f65eecb4d0294c178262"
+    },
+    "sealed_file": "/home/runner/work/finite-region-gravity-provenance/finite-region-gravity-provenance/post-stage0/source-stage1-target/proxy_strata.csv",
+    "sha256": "ef3f903283a5ed99973226b4cb9612803057c9b3457fa72d625d52e14fe6dd8a",
+    "timestamp_receipt": "/home/runner/work/finite-region-gravity-provenance/finite-region-gravity-provenance/post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json"
+  },
+  "reference_constructor": {
+    "sealed_file": "gate_a_reference.py",
+    "sha256": "4e2ec5b7ac5741f7069bd129e472807cfa50ca0323ebb62069c18e1222bd1278"
+  },
+  "target_adapter": {
+    "sealed_file": "TARGET_ADAPTER_LOCK.json",
+    "sha256": "de9de2a36ce0d6488f7b59faa0143538090a1c90462677044d4462bb22bd7223"
+  },
+  "timestamp_receipt": "/home/runner/work/finite-region-gravity-provenance/finite-region-gravity-provenance/post-stage0/STAGE0_EXTERNAL_TIMESTAMP_RECEIPT.json"
+}

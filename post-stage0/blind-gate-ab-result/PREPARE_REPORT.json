@@ -1,0 +1,15 @@
+{
+  "crossfit": "baryonic H I profile is complementary to predictor H I annuli and was sealed before response load",
+  "failures": [],
+  "kinematic_quality": "QFlag_model == 0",
+  "mode": "TARGET",
+  "n_failures": 0,
+  "n_galaxies": 23,
+  "n_rows": 136,
+  "primary_resolution": "ell_maj_beams >= 2.0",
+  "validation_fields": [
+    "NGC4808",
+    "NGC5044",
+    "Vela"
+  ]
+}
