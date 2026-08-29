@@ -1,0 +1,19 @@
+{
+  "schema": "WALLABY_STAGE1_EXTERNAL_TIMESTAMP_RECEIPT_v1",
+  "timestamp_service": "GitHub public commit record",
+  "timestamp_utc": "2026-08-29T19:24:22Z",
+  "proof_reference": "https://github.com/KuwaMashine/finite-region-gravity-provenance/commit/23ef651806d1b2c5ea0afd59c54239491869f69e",
+  "source_stage_commit": "23ef651806d1b2c5ea0afd59c54239491869f69e",
+  "source_stage_commit_message": "Freeze exact-v4.99 Stage-1 source-only TARGET payload",
+  "stage1_timestamp_payload_sha256": "6032c6e20ac0b34619297bf382612dbd8b20583ea8262c7d9586e10aab34f290",
+  "frozen_manifest_file_sha256": "61fa4a6f69d93df4616cc0e0ad664797e8cf89c0cd5d6f65a31c0dd695c82a0c",
+  "proxy_strata_map_sha256": "ef3f903283a5ed99973226b4cb9612803057c9b3457fa72d625d52e14fe6dd8a",
+  "proxy_strata_metadata_sha256": "3618d5157d68b98709212a50b5c97321e0907fb6b91862b85fc4838aa9399dbd",
+  "source_beam_report_sha256": "fcdb63935652d58671b8d53591f19d1479e3c5479635f65eecb4d0294c178262",
+  "source_predictors_sha256": "2ad4a78dd1cb3d56cf17f3247451a08458797beddd8e0fd56528bfdd943388a2",
+  "baryonic_hi_fold_sha256": "99a54c62c1e0c9968201b0596f82d8ee6af29542036be3d80d69c749cc0ba44f",
+  "source_prepare_report_sha256": "09617998f703f3c8382afa4a7c9766976d960253aebe9456caf9cafe5af63e68",
+  "response_products_used_before_receipt": false,
+  "validation_kinematics_opened_before_receipt": false,
+  "firewall_statement": "This receipt binds the publicly committed Stage-1 source-only TARGET state before any validation response/kinematic products are opened."
+}
