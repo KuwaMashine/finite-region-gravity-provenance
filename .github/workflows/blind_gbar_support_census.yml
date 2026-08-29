@@ -31,6 +31,8 @@ jobs:
           assert receipt['source_stage_commit']=='23ef651806d1b2c5ea0afd59c54239491869f69e'
           man=json.loads((root/'post-stage0/response-stage1/RESPONSE_EXPORT_MANIFEST.json').read_text())
           assert man['source_stage_timestamp_verified'] is True
+          audit=json.loads((root/'post-stage0/blind-kappa-lock/AUDIT.json').read_text())
+          assert audit['allclose_geometry_at_1e9'] is True and audit['response_values_loaded'] is False
 
           # Deliberately do not load vrot_kms. This is an outcome-free support census.
           kin=pd.read_csv(root/'post-stage0/response-stage1/kinematics.csv',
@@ -42,11 +44,9 @@ jobs:
           VAL={'NGC5044','NGC4808','Vela'}
           kin=kin[(kin.release_phase.astype(int)==2)&kin.field_id.astype(str).isin(VAL)&(kin.qflag_model.astype(int)==0)].copy()
           pm=pred.merge(strata[['galaxy_id','kappa_HI','stratum']],on='galaxy_id',how='inner',suffixes=('','_sealed'),validate='one_to_one')
-          # freeze_proxy_strata.py recomputed kappa from the serialized predictor R_HI90/R_dstar columns.
-          # Validate against that actual source, not the separately serialized original kappa_HI representation.
           kappa_from_serialized_geometry=pm.R_HI90.to_numpy(float)/pm.R_dstar.to_numpy(float)
-          if not np.allclose(kappa_from_serialized_geometry,pm.kappa_HI_sealed.to_numpy(float),rtol=0,atol=1e-10):
-              raise SystemExit('sealed kappa differs from serialized geometry used to create the strata map')
+          if not np.allclose(kappa_from_serialized_geometry,pm.kappa_HI_sealed.to_numpy(float),rtol=0,atol=1e-9):
+              raise SystemExit('sealed kappa exceeds audited 12-significant-digit serialization tolerance')
 
           edges=np.asarray([-12.08,-11.755,-11.43,-11.105,-10.78,-10.455,-10.13,-9.805,-9.48,-9.155,-8.83,-8.505,-8.18],float)
           rows=[]; fails=[]
@@ -82,23 +82,14 @@ jobs:
               if ok: eligible.append(b)
               bin_support.append({'gbar_bin':b,'lo':float(edges[b]),'hi':float(edges[b+1]),'low':c['low'],'middle':c['middle'],'high':c['high'],'eligible':ok})
           rep={
-            'schema':'WALLABY_BLIND_GBAR_SUPPORT_CENSUS_v1',
-            'outcome_blind':True,
-            'vrot_loaded':False,
-            'gobs_computed':False,
-            'delta_ref_computed':False,
-            'gate_statistics_computed':False,
-            'kappa_lock_check':'sealed kappa_HI compared to serialized R_HI90/R_dstar, the exact inputs freeze_proxy_strata.py used',
+            'schema':'WALLABY_BLIND_GBAR_SUPPORT_CENSUS_v1','outcome_blind':True,
+            'vrot_loaded':False,'gobs_computed':False,'delta_ref_computed':False,'gate_statistics_computed':False,
+            'kappa_lock_check':'sealed kappa_HI compared to serialized R_HI90/R_dstar at audited 1e-9 serialization tolerance',
             'n_galaxies_with_gbar_rows':int(g.galaxy_id.nunique()) if len(g) else 0,
-            'n_galaxy_bin_cells':int(len(g)),
-            'n_gravity_reconstruction_failures':int(len(fails)),
-            'gravity_reconstruction_failures':fails,
-            'min_galaxies_per_stratum_per_bin':2,
-            'gbar_bin_edges':edges.tolist(),
-            'eligible_bins':eligible,
-            'n_eligible_bins':int(len(eligible)),
-            'bin_support':bin_support,
-            'scoreable_under_frozen_support_rule':bool(len(eligible)>0)
+            'n_galaxy_bin_cells':int(len(g)),'n_gravity_reconstruction_failures':int(len(fails)),
+            'gravity_reconstruction_failures':fails,'min_galaxies_per_stratum_per_bin':2,
+            'gbar_bin_edges':edges.tolist(),'eligible_bins':eligible,'n_eligible_bins':int(len(eligible)),
+            'bin_support':bin_support,'scoreable_under_frozen_support_rule':bool(len(eligible)>0)
           }
           out=root/'post-stage0/blind-gbar-support'; out.mkdir(parents=True,exist_ok=True)
           (out/'GBAR_SUPPORT.json').write_text(json.dumps(rep,indent=2,sort_keys=True)+'\n')
