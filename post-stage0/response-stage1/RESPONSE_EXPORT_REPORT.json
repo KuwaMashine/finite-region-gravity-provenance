@@ -1,0 +1,16 @@
+{
+  "final_release_filter": [
+    "NGC 4808 TR1",
+    "NGC5044 TR3",
+    "Vela TR1"
+  ],
+  "n_final_release_catalogue_rows": 120,
+  "n_normalized_radial_rows": 153,
+  "n_source_stage_identifiers_with_kinematics": 27,
+  "normalized_kinematics_sha256": "40c6046246b0bf2e65ad5e2b7a6480a46958e9e8d3ba28cd55dd882b72e84a46",
+  "public_doi": "10.25919/7w8n-9h19",
+  "public_table": "cirada.Wallaby_dr2_kinematic_catalogue",
+  "schema": "WALLABY_RESPONSE_EXPORT_REPORT_v1",
+  "selection_basis": "frozen final-release metadata then stable source-stage galaxy_id only; no response-value selection in transport",
+  "stage1_receipt_verified": true
+}

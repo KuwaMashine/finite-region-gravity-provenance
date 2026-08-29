@@ -1,0 +1,30 @@
+{
+  "column_map": {
+    "field_id": "source-stage frozen field_id joined by name",
+    "galaxy_id": "name",
+    "qflag_model": "QFlag_model",
+    "rad_arcsec": "Rad",
+    "release_phase": "source-stage frozen release_phase joined by name",
+    "vrot_kms": "Vrot_model"
+  },
+  "join_key": "galaxy_id",
+  "manifest_version": "WALLABY_RESPONSE_EXPORT_v1",
+  "normalized_files": {
+    "kinematics": {
+      "path": "post-stage0/response-stage1/kinematics.csv",
+      "sha256": "40c6046246b0bf2e65ad5e2b7a6480a46958e9e8d3ba28cd55dd882b72e84a46"
+    }
+  },
+  "notes": "Created only after public Stage-1 source receipt c7125a4c5e09b3be1f278e6da2c682f71a44b0de. Release partition was fixed from metadata-only preflight before successful response export. Validation membership/field labels are inherited from the sealed source-stage identifiers; no QFlag_model, Rad or Vrot_model value is used to define release membership.",
+  "product_ids": {
+    "kinematic_catalogue": "DOI:10.25919/7w8n-9h19; CADC:cirada.Wallaby_dr2_kinematic_catalogue"
+  },
+  "release_filter": [
+    "NGC 4808 TR1",
+    "NGC5044 TR3",
+    "Vela TR1"
+  ],
+  "release_filter_basis": "metadata-only post-receipt preflight; NGC5044 TR1/TR2 superseded by frozen NGC5044 TR3 final release",
+  "source_stage_timestamp_verified": true,
+  "stage": "RESPONSE"
+}
