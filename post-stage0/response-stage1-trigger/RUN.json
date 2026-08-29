@@ -1,12 +1,14 @@
 {
-  "schema": "WALLABY_RESPONSE_STAGE1_TRIGGER_v1",
+  "schema": "WALLABY_RESPONSE_STAGE1_TRIGGER_v2",
   "stage1_receipt_commit": "c7125a4c5e09b3be1f278e6da2c682f71a44b0de",
   "source_stage_commit": "23ef651806d1b2c5ea0afd59c54239491869f69e",
-  "schema_preflight_commit_basis": "post-stage0/response-stage-schema-preflight/tap_schema.csv",
+  "schema_preflight_paths": ["post-stage0/response-stage-schema-preflight/tap_schema.csv","post-stage0/response-stage-schema-preflight/release_metadata.csv"],
   "public_kinematic_product_doi": "10.25919/7w8n-9h19",
   "cadc_table": "cirada.Wallaby_dr2_kinematic_catalogue",
+  "final_release_filter": ["NGC 4808 TR1","NGC5044 TR3","Vela TR1"],
+  "release_filter_basis": "metadata-only post-receipt preflight; NGC5044 TR1/TR2 are superseded and excluded",
   "mapping": {"galaxy_id":"name","qflag_model":"QFlag_model","rad_arcsec":"Rad","vrot_kms":"Vrot_model"},
   "field_and_phase_source": "sealed Stage-1 source_predictors.csv joined by stable galaxy_id",
   "science_definitions_changed": false,
-  "instruction": "Fetch the complete public kinematic catalogue only after the Stage-1 receipt, normalize the frozen response fields without response-value selection, hash and commit the export for exact-v4.99 blind execution."
+  "instruction": "Fetch only the frozen final-release rows from the public kinematic catalogue after the Stage-1 receipt, normalize the frozen response fields without response-value selection, hash and commit the export for exact-v4.99 blind execution."
 }
