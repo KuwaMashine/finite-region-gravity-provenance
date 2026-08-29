@@ -1,0 +1,7 @@
+{
+  "schema": "WALLABY_BLIND_GBAR_SUPPORT_TRIGGER_v1",
+  "stage1_receipt_commit": "c7125a4c5e09b3be1f278e6da2c682f71a44b0de",
+  "response_export_commit": "87ab52c96206f5c998ecac1fd1e62ab88603a0d9",
+  "readiness_report": "post-stage0/blind-readiness/READINESS.json",
+  "scope": "Outcome-blind frozen gbar support only. Load response radii but not Vrot_model; reconstruct gbar from sealed source predictors and baryonic H I, then count preregistered low/middle/high galaxy support per frozen gbar bin. Do not compute gobs, delta_ref, Gate A or Gate B."
+}
