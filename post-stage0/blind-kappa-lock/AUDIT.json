@@ -1,15 +1,16 @@
 {
-  "max_abs_finite_diff": 9.999894245993346e-10,
-  "n_both_nan": 0,
+  "allclose_geometry_at_1e9": true,
+  "allclose_geometry_at_2e9": true,
   "n_finite": 389,
-  "n_finite_diff_gt_1e10": 30,
   "n_joined": 389,
-  "n_one_sided_nan": 0,
-  "n_pred_nan": 0,
-  "n_sealed_nan": 0,
-  "np_allclose_exact_script_equal_nan_false": false,
-  "np_allclose_if_shared_nan_allowed": false,
+  "predictor_vs_sealed_max_abs_diff": 9.999894245993346e-10,
+  "predictor_vs_sealed_n_gt_1e10": 30,
   "response_values_loaded": false,
-  "schema": "WALLABY_KAPPA_LOCK_AUDIT_v1",
-  "source_only": true
+  "schema": "WALLABY_KAPPA_LOCK_AUDIT_v2",
+  "serialized_geometry_vs_sealed_max_abs_diff": 4.5713477447861806e-10,
+  "serialized_geometry_vs_sealed_n_gt_1e10": 8,
+  "serialized_geometry_vs_sealed_n_gt_1e9": 0,
+  "serialized_geometry_vs_sealed_n_gt_2e9": 0,
+  "source_only": true,
+  "writer_basis": "freeze_proxy_strata.py reads serialized R_HI90/R_dstar, recomputes ratio, then writes kappa_HI with %.12g"
 }
