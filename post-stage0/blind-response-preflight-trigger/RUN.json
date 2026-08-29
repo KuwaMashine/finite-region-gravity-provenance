@@ -1,10 +1,12 @@
 {
-  "schema": "WALLABY_BLIND_RESPONSE_PREFLIGHT_TRIGGER_v1",
+  "schema": "WALLABY_BLIND_RESPONSE_PREFLIGHT_TRIGGER_v2",
   "stage1_external_receipt": "post-stage0/STAGE1_EXTERNAL_TIMESTAMP_RECEIPT.json",
   "response_manifest": "post-stage0/response-stage1/RESPONSE_EXPORT_MANIFEST.json",
   "support_census": "post-stage0/blind-gbar-support/GBAR_SUPPORT.json",
   "kappa_serialization_audit": "post-stage0/blind-kappa-lock/AUDIT.json",
-  "archive_reconstruction_repair_commit": "f472209476efdfa1d8ba1fde5cdd6d55ea5ea324",
-  "prior_preflight_runs": [33273227251, 33273265297],
-  "scope": "Inventory the frozen v4.99 response bundle from the single sealed base64 blob and locate the over-tight kappa serialization guard. Normalize whitespace only during base64 decode. Do not load response values and do not compute Gate A/B."
+  "exact_response_bundle_manifest": "post-stage0/frozen-v4.99-response-bundle-exact/MANIFEST.json",
+  "exact_response_bundle_manifest_commit": "8ac71703460af1488a9707952a747439e25854cc",
+  "preflight_workflow_repair_commit": "56d918192fba12e28947aada2baa75ecb604f232",
+  "prior_decode_failures": [33273227251, 33273265297, 33273332124],
+  "scope": "Reconstruct the byte-exact recovered v4.99 response engine, verify its hashes, apply only the audited kappa serialization integrity-guard repair in a temporary copy, and prove that source-side guard passes. Do not load Vrot, compute gobs/delta_ref, or compute Gate A/B."
 }
