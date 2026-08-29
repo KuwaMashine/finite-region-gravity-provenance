@@ -1,9 +1,10 @@
 {
-  "schema": "WALLABY_RESPONSE_SCHEMA_TRIGGER_v1",
+  "schema": "WALLABY_RESPONSE_SCHEMA_TRIGGER_v2",
   "stage1_receipt_commit": "c7125a4c5e09b3be1f278e6da2c682f71a44b0de",
   "source_stage_commit": "23ef651806d1b2c5ea0afd59c54239491869f69e",
   "public_kinematic_product_doi": "10.25919/7w8n-9h19",
   "cadc_table": "cirada.Wallaby_dr2_kinematic_catalogue",
-  "scope": "metadata-only TAP_SCHEMA query; no response values",
+  "scope": "metadata-only TAP_SCHEMA plus grouped team_release/team_release_kin; no QFlag_model, Rad or Vrot_model values",
+  "reason": "public catalogue contains duplicate names across releases; resolve release partition before response-value export",
   "response_values_loaded": false
 }
