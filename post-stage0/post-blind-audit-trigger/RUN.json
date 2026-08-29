@@ -1,0 +1,8 @@
+{
+  "schema": "WALLABY_POST_BLIND_AUDIT_TRIGGER_v1",
+  "primary_result_commit": "0f46f9c3d6c3035a7b439f660078bb2f7fbc4395",
+  "primary_verdict": "A_FAIL_B_FAIL",
+  "post_blind_only": true,
+  "no_retuning": true,
+  "requested_action": "forensic_audit_and_freeze"
+}
