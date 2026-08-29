@@ -64,6 +64,10 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # Undo runtime-only executable-bit changes before any pull/rebase.
+          # This restores the tracked frozen engine exactly; no source bytes or science outputs change.
+          git restore --worktree post-stage0/frozen-v4.99-source-engine
+          test -z "$(git status --porcelain -- post-stage0/frozen-v4.99-source-engine)"
           git add post-stage0/SOURCE_EXPORT_MANIFEST.json post-stage0/source-stage1-target
           if git diff --cached --quiet; then
             echo 'No Stage-1 TARGET source changes.'
