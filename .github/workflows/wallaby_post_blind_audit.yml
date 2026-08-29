@@ -1,0 +1,215 @@
+name: WALLABY post-blind forensic audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'post-stage0/post-blind-audit-trigger/RUN.json'
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install analysis dependencies
+        run: python -m pip -q install numpy pandas scipy
+      - name: Reconstruct exact v4.99 engine and audit frozen result
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/v499_response /tmp/postblind
+          mkdir -p /tmp/v499_response /tmp/postblind
+          python - <<'PY'
+          import base64, hashlib, json
+          from pathlib import Path
+          root=Path('post-stage0/frozen-v4.99-response-bundle-exact')
+          man=json.loads((root/'MANIFEST.json').read_text())
+          compact=''.join(''.join((root/x).read_text().split()) for x in man['part_order'])
+          data=base64.b64decode(compact,validate=True)
+          assert hashlib.sha256(data).hexdigest()==man['exact_response_tar_sha256']
+          Path('/tmp/v499_response.tar.gz').write_bytes(data)
+          PY
+          tar -xzf /tmp/v499_response.tar.gz -C /tmp/v499_response
+          PYTHONPATH=/tmp/v499_response/WALLABY_v1 python - <<'PY'
+          import itertools, json, math
+          from collections import Counter
+          from pathlib import Path
+          import numpy as np
+          import pandas as pd
+          from wallaby_ab import ABConfig, prepare_grouped, statistics_from_grouped, _permutation_arrays, _stats_numpy
+
+          edges=(-12.08,-11.755,-11.43,-11.105,-10.78,-10.455,-10.13,-9.805,-9.48,-9.155,-8.83,-8.505,-8.18)
+          cfg=ABConfig(edges,None,2,25000,3911654986)
+          df=pd.read_csv('post-stage0/blind-gate-ab-result/analysis_input.csv')
+          result=json.loads(Path('post-stage0/blind-gate-ab-result/GATE_AB_RESULT.json').read_text())
+          g=prepare_grouped(df,cfg)
+          obs=statistics_from_grouped(g,cfg)
+          if abs(obs['T_spread']-result['observed']['T_spread'])>1e-12 or abs(obs['T_N']-result['observed']['T_N'])>1e-12:
+              raise SystemExit('Frozen observed statistics do not reproduce')
+
+          orig,groups,row_gal,row_bin,delta,an,bins=_permutation_arrays(g,cfg)
+          rng=np.random.default_rng(cfg.seed)
+          null_A=np.empty(cfg.n_permutations,float); null_B=np.empty(cfg.n_permutations,float)
+          codes=orig.copy()
+          for i in range(cfg.n_permutations):
+              codes[:]=orig
+              for inds in groups.values():
+                  if len(inds)>1:
+                      ia=np.asarray(inds,dtype=int)
+                      codes[ia]=rng.permutation(orig[ia])
+              null_A[i],null_B[i]=_stats_numpy(codes,row_gal,row_bin,delta,an,bins)
+          pA=(1+np.sum(null_A>=obs['T_spread']))/(cfg.n_permutations+1)
+          pBplus=(1+np.sum(null_B>=obs['T_N']))/(cfg.n_permutations+1)
+          pBminus=(1+np.sum(null_B<=obs['T_N']))/(cfg.n_permutations+1)
+          pBtwo=min(1.0,2*min(pBplus,pBminus))
+          if abs(pA-result['permutation']['p_gate_A_upper'])>1e-12 or abs(pBplus-result['permutation']['p_gate_B_one_sided_positive'])>1e-12:
+              raise SystemExit('Frozen permutation result does not reproduce')
+
+          scode={0:'low',1:'middle',2:'high'}
+          group_rows=[]; total_states=1
+          for key,inds in sorted(groups.items(),key=lambda kv:(kv[0][0],kv[0][1])):
+              cnt=Counter(int(orig[i]) for i in inds)
+              n=len(inds); states=math.factorial(n)
+              for c in cnt.values(): states//=math.factorial(c)
+              total_states*=states
+              group_rows.append({'field_id':key[0],'coverage_signature':list(key[1]),'n_galaxies':n,'stratum_counts':{scode[k]:v for k,v in sorted(cnt.items())},'distinct_label_assignments':states})
+
+          # Exact randomization if the conditioned state space is manageable.
+          exact={'status':'not_enumerated','total_states':int(total_states)}
+          if total_states<=1000000:
+              gal_codes=orig.copy()
+              per_group=[]
+              for key,inds in groups.items():
+                  labels=tuple(int(orig[i]) for i in inds)
+                  perms=sorted(set(itertools.permutations(labels)))
+                  per_group.append((np.asarray(inds,dtype=int),perms))
+              exA=[]; exB=[]
+              for choice in itertools.product(*[p for _,p in per_group]):
+                  gal_codes[:]=orig
+                  for (inds,_),vals in zip(per_group,choice): gal_codes[inds]=vals
+                  a,b=_stats_numpy(gal_codes,row_gal,row_bin,delta,an,bins)
+                  exA.append(a); exB.append(b)
+              exA=np.asarray(exA); exB=np.asarray(exB)
+              exact={
+                'status':'enumerated', 'total_states':int(total_states),
+                'p_gate_A_upper':float(np.mean(exA>=obs['T_spread'])),
+                'p_gate_B_positive':float(np.mean(exB>=obs['T_N'])),
+                'p_gate_B_negative_exploratory':float(np.mean(exB<=obs['T_N'])),
+                'p_gate_B_two_sided_exploratory':float(min(1.0,2*min(np.mean(exB>=obs['T_N']),np.mean(exB<=obs['T_N'])))),
+                'null_A_quantiles':np.quantile(exA,[.025,.5,.975]).tolist(),
+                'null_B_quantiles':np.quantile(exB,[.025,.5,.975]).tolist(),
+                'n_unique_A':int(len(np.unique(np.round(exA,14)))),
+                'n_unique_B':int(len(np.unique(np.round(exB,14))))
+              }
+
+          # Strata and field census.
+          galmeta=g.groupby('galaxy_id',as_index=False).agg(field_id=('field_id','first'),stratum=('stratum','first'),proxy_value=('proxy_value','first'),n_bins=('gbar_bin','nunique'),median_A_N=('A_N','median'),median_delta_ref=('delta_ref','median'))
+          strata_counts={str(k):int(v) for k,v in galmeta['stratum'].astype(str).value_counts().sort_index().items()}
+          field_strata=(galmeta.assign(stratum=galmeta['stratum'].astype(str)).groupby(['field_id','stratum']).size().unstack(fill_value=0))
+          field_counts={str(idx):{str(c):int(v) for c,v in row.items()} for idx,row in field_strata.iterrows()}
+          high=galmeta[galmeta['stratum'].astype(str)=='high'].sort_values(['field_id','galaxy_id'])
+          high_rows=high.to_dict(orient='records')
+
+          # Per-bin directional stability and leave-one-bin-out.
+          per_bin=result['observed']['per_bin']
+          dirs=np.array([float(x['high_minus_low_A_N']) for x in per_bin])
+          loo_bins=[]
+          for i,x in enumerate(per_bin):
+              vals=np.delete(dirs,i)
+              loo_bins.append({'removed_gbar_bin':int(x['gbar_bin']),'T_N_remaining':float(vals.mean()),'remaining_all_negative':bool(np.all(vals<0))})
+
+          # Leave-one-galaxy-out observed robustness. Recompute only when at least one eligible bin survives.
+          loo_gal=[]
+          for gal in sorted(g['galaxy_id'].unique()):
+              gg=g[g['galaxy_id']!=gal].copy()
+              try:
+                  s=statistics_from_grouped(gg,cfg)
+                  loo_gal.append({'galaxy_id':gal,'T_N':s['T_N'],'T_spread':s['T_spread'],'n_bins':s['n_bins'],'eligible_bins':s['eligible_bins']})
+              except Exception as e:
+                  loo_gal.append({'galaxy_id':gal,'status':'not_scoreable','reason':str(e)})
+          score=[x for x in loo_gal if 'T_N' in x]
+          loo_summary={
+            'n_scoreable':len(score),
+            'n_not_scoreable':len(loo_gal)-len(score),
+            'T_N_min':float(min(x['T_N'] for x in score)) if score else None,
+            'T_N_max':float(max(x['T_N'] for x in score)) if score else None,
+            'all_scoreable_T_N_negative':bool(score and all(x['T_N']<0 for x in score)),
+            'T_spread_min':float(min(x['T_spread'] for x in score)) if score else None,
+            'T_spread_max':float(max(x['T_spread'] for x in score)) if score else None
+          }
+
+          audit={
+            'schema':'WALLABY_POST_BLIND_FORENSIC_AUDIT_v1',
+            'primary_verdict_frozen':{'gate_A':'FAIL','gate_B':'FAIL','T_spread':obs['T_spread'],'p_gate_A_upper':float(pA),'T_N':obs['T_N'],'p_gate_B_positive':float(pBplus)},
+            'interpretation_firewall':{
+              'primary_verdict_reinterpreted':False,
+              'negative_direction_is_post_blind_exploratory_only':True,
+              'no_threshold_or_proxy_or_bin_or_permutation_rule_changed':True
+            },
+            'monte_carlo_reproduction':{
+              'n':cfg.n_permutations,'seed':cfg.seed,
+              'p_gate_A_upper':float(pA),'p_gate_B_positive':float(pBplus),
+              'p_gate_B_negative_exploratory':float(pBminus),'p_gate_B_two_sided_exploratory':float(pBtwo),
+              'null_A_quantiles':np.quantile(null_A,[.025,.5,.975]).tolist(),
+              'null_B_quantiles':np.quantile(null_B,[.025,.5,.975]).tolist()
+            },
+            'conditioned_randomization_space':{'n_groups':len(groups),'total_distinct_label_assignments':int(total_states),'groups':group_rows,'exact_randomization':exact},
+            'sample':{'n_galaxies':int(galmeta.shape[0]),'strata_counts':strata_counts,'field_strata_counts':field_counts,'high_stratum_galaxies':high_rows},
+            'directional_stability':{
+              'per_bin_high_minus_low_A_N':[{ 'gbar_bin':int(x['gbar_bin']),'value':float(x['high_minus_low_A_N'])} for x in per_bin],
+              'all_five_bins_negative':bool(np.all(dirs<0)),
+              'leave_one_bin_out':loo_bins,
+              'leave_one_galaxy_out_summary':loo_summary,
+              'leave_one_galaxy_out':loo_gal
+            },
+            'stellar_only_conditioning_sensitivity':result.get('stellar_only_conditioning_sensitivity',{}),
+            'conclusion':{
+              'gate_A':'The preregistered structural-spread statistic is null in this holdout and is not a near-threshold pass.',
+              'gate_B':'The preregistered positive-direction scalar law fails; the coherent negative orientation is an exploratory post-blind clue, not a success.',
+              'bridge_status':'The frozen kappa_HI/source-history to response mapping is not supported by this holdout. Upstream finite-region theorems are not tested directly by this failure.',
+              'next_test':'Audit whether the negative orientation is a measurement/model-systematic artifact or evidence that the phenomenological read/sign mapping was wrong; any revised observable/sign law must be preregistered on a new independent holdout.'
+            }
+          }
+          Path('/tmp/postblind/POST_BLIND_AUDIT.json').write_text(json.dumps(audit,indent=2,sort_keys=True)+'\n')
+
+          md=[]
+          md.append('# WALLABY post-blind forensic audit\n')
+          md.append('**Status:** post-blind diagnostic only. The preregistered verdict is frozen as **Gate A FAIL / Gate B FAIL** and is not reinterpreted.\n')
+          md.append(f"- Primary Gate A: `T_spread={obs['T_spread']:.12g}`, `p={pA:.12g}`.\n")
+          md.append(f"- Primary Gate B: `T_N={obs['T_N']:.12g}`, preregistered positive-tail `p={pBplus:.12g}`.\n")
+          md.append(f"- Exploratory opposite-tail Gate-B probability from the identical 25,000 permutations: `p_minus={pBminus:.12g}`; two-sided exploratory `p={pBtwo:.12g}`. This is **not** a preregistered success.\n")
+          md.append(f"- All five eligible bins have negative high-minus-low `A_N`; every leave-one-bin-out mean remains negative.\n")
+          md.append(f"- Leave-one-galaxy-out: {loo_summary['n_scoreable']} scoreable deletions; `T_N` range `{loo_summary['T_N_min']}` to `{loo_summary['T_N_max']}`; all scoreable values negative = `{loo_summary['all_scoreable_T_N_negative']}`.\n")
+          md.append(f"- Conditioned permutation space: {total_states} distinct source-label assignments across {len(groups)} field+coverage groups. Exact enumeration status: `{exact['status']}`.\n")
+          if exact['status']=='enumerated':
+              md.append(f"- Exact randomization: Gate-A upper `p={exact['p_gate_A_upper']:.12g}`; Gate-B positive `p={exact['p_gate_B_positive']:.12g}`; exploratory negative `p={exact['p_gate_B_negative_exploratory']:.12g}`; exploratory two-sided `p={exact['p_gate_B_two_sided_exploratory']:.12g}`.\n")
+          md.append('\n## Scientific audit\n')
+          md.append('1. **What failed:** the frozen galaxy bridge from source-side `kappa_HI`/history stratum to independent dynamical residual structure. Gate A is consistent with its null and Gate B has the wrong preregistered sign.\n')
+          md.append('2. **What did not fail:** P01/P02/P03 finite-region geometry, composition and capacity theorems are upstream mathematical claims and were not directly tested by this galaxy proxy failure.\n')
+          md.append('3. **Non-negotiable interpretation:** the negative Gate-B orientation cannot be flipped and counted as the original prediction. It is a new post-blind clue only.\n')
+          md.append('4. **Most important next question:** determine whether the coherent negative orientation is caused by the baryonic/kinematic measurement pipeline, a proxy-direction/sign mismatch, or the fact that `kappa_HI` is not the physical WRITE/READ coordinate. A replacement law requires a new independent holdout.\n')
+          md.append('5. **P04 disposition:** the positive regional-state phenomenology route is not earned by this holdout. P04 should move to an empirical constraint/no-go or parked status until a new independently motivated bridge survives a new holdout.\n')
+          Path('/tmp/postblind/POST_BLIND_AUDIT.md').write_text(''.join(md))
+          print(json.dumps({'primary':'A_FAIL_B_FAIL','pA':float(pA),'pBplus':float(pBplus),'pBminus_exploratory':float(pBminus),'randomization_states':int(total_states),'exact_status':exact['status']},sort_keys=True))
+          PY
+      - name: Commit post-blind audit
+        run: |
+          set -euo pipefail
+          mkdir -p post-stage0/post-blind-audit
+          cp /tmp/postblind/POST_BLIND_AUDIT.json post-stage0/post-blind-audit/
+          cp /tmp/postblind/POST_BLIND_AUDIT.md post-stage0/post-blind-audit/
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          d=Path('post-stage0/post-blind-audit')
+          names=['POST_BLIND_AUDIT.json','POST_BLIND_AUDIT.md']
+          (d/'SHA256SUMS.txt').write_text(''.join(f"{hashlib.sha256((d/n).read_bytes()).hexdigest()}  {n}\n" for n in names))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add post-stage0/post-blind-audit
+          git commit -m 'Freeze WALLABY post-blind forensic audit'
+          git pull --rebase origin main
+          git push
