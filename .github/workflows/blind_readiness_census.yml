@@ -14,10 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install census dependency
+        run: python -m pip -q install pandas
       - name: Outcome-blind readiness census
         run: |
           python - <<'PY'
-          import json, hashlib
+          import json
           from pathlib import Path
           import pandas as pd
           root=Path.cwd()
@@ -29,7 +31,6 @@ jobs:
           pred=pd.read_csv(root/'post-stage0/source-stage1-target/source_predictors.csv',usecols=['galaxy_id','field_id','ell_maj_beams'])
           strata=pd.read_csv(root/'post-stage0/source-stage1-target/proxy_strata.csv',usecols=['galaxy_id','stratum'])
           kg=kin.drop_duplicates('galaxy_id')
-          if kg.galaxy_id.duplicated().any(): raise SystemExit('duplicate response IDs')
           z=kg.merge(pred,on='galaxy_id',suffixes=('_response','_source'),validate='one_to_one').merge(strata,on='galaxy_id',validate='one_to_one')
           z['qflag0']=z.qflag_model.astype(int).eq(0)
           z['primary']=z.ell_maj_beams.ge(2.0)
